@@ -4,6 +4,7 @@ import Blockquote from './blocks/blockquote/blockquote'
 import Divider from './blocks/divider/divider'
 import Orderlist from './blocks/lists/orderlist'
 import Unorderlist from './blocks/lists/unorderlist'
+import Todolist from './blocks/lists/todolist'
 
 const spanMap = {
   bold: 'strong',
@@ -21,7 +22,8 @@ const blockMap = {
   blockquote: Blockquote,
   divider: Divider,
   orderlist: Orderlist,
-  unorderlist: Unorderlist
+  unorderlist: Unorderlist,
+  todolist: Todolist
 }
 
 export { spanMap, blockMap }

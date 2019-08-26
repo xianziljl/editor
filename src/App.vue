@@ -76,7 +76,7 @@ export default {
 </script>
 
 <style lang="scss">
-  #app{margin: 60px;font-size: 16px;}
+  #app{margin: 0 auto;font-size: 16px;max-width: 700px;padding: 60px;}
   .toolbar{
     user-select: none;
     margin-bottom: 10px;

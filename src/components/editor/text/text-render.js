@@ -1,8 +1,8 @@
 import { spanMap } from '../map'
 // import * as snabbdom from 'snabbdom'
 
-function createLinkNode (createElement, context, child) {
-  return createElement('a', {
+function createLinkNode (h, context, child) {
+  return h('a', {
     attrs: {
       href: child._href,
       target: 'blank'
@@ -16,13 +16,13 @@ function createLinkNode (createElement, context, child) {
 
 /**
  * 渲染 inline 文字样式
- * @param {function} createElement vue createElement 方法
+ * @param {function} h vue createElement 方法
  * @param {function} createTextNode vue._v 方法,用以创建纯文本节点
  * @param {string} text 文字内容
  * @param {array} ranges 样式范围
  * @returns {array} vnodes
  */
-export default function (createElement, context, text, ranges) {
+export default function (h, context, text, ranges) {
   const length = text.length
   const inlines = []
   const createTextNode = context._v
@@ -57,7 +57,7 @@ export default function (createElement, context, text, ranges) {
     let el = createTextNode(innerText)
     styles.forEach(style => {
       const tagName = spanMap[style] || 'span'
-      if (style !== 'link' && tagName) el = createElement(tagName, [el])
+      if (style !== 'link' && tagName) el = h(tagName, [el])
     })
     if (styles.has('link')) el._href = href
     inlines.push(el)
@@ -71,11 +71,11 @@ export default function (createElement, context, text, ranges) {
       children.add(item)
       linkNode = null
     } else if (!linkNode) {
-      linkNode = createLinkNode(createElement, context, item)
+      linkNode = createLinkNode(h, context, item)
     } else if (item._href === linkNode.children[0]._href) {
       linkNode.children.push(item)
     } else {
-      linkNode = createLinkNode(createElement, context, item)
+      linkNode = createLinkNode(h, context, item)
     }
 
     if (linkNode) children.add(linkNode)

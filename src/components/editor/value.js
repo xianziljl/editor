@@ -19,14 +19,14 @@ export default {
       ranges: []
     },
     {
-      type: 'orderlist',
+      type: 'todolist',
       blocks: [{
-        text: 'This an order list.',
+        text: 'This a todo list.',
         ranges: [
           { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
         ]
       }, {
-        text: 'This another order list too.',
+        text: 'This another todo list too.',
         ranges: []
       }]
     },
