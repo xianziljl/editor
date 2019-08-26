@@ -2,6 +2,8 @@ import Heading from './blocks/heading/heading'
 import Paragraph from './blocks/paragraph/paragraph'
 import Blockquote from './blocks/blockquote/blockquote'
 import Divider from './blocks/divider/divider'
+import Orderlist from './blocks/lists/orderlist'
+import Unorderlist from './blocks/lists/unorderlist'
 
 const spanMap = {
   bold: 'strong',
@@ -17,7 +19,9 @@ const blockMap = {
   heading: Heading,
   paragraph: Paragraph,
   blockquote: Blockquote,
-  divider: Divider
+  divider: Divider,
+  orderlist: Orderlist,
+  unorderlist: Unorderlist
 }
 
 export { spanMap, blockMap }

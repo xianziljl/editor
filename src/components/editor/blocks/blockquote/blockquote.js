@@ -4,9 +4,9 @@ import blockMixin from '../block-mixin'
 export default {
   name: 'editor-block-blockquote',
   mixins: [blockMixin],
-  render (createElement) {
+  render (h) {
     let { value } = this
     const tagName = 'blockquote'
-    return createBlockTextElement(createElement, this, tagName, value)
+    return createBlockTextElement(h, this, tagName, value)
   }
 }

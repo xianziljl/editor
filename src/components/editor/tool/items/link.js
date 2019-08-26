@@ -7,29 +7,32 @@ export default {
       isInput: false // 是否在输入界面
     }
   },
-  render (createElement) {
+  render (h) {
     const { styles } = this.editor.selection
-    const children = [createElement('button', {
-      class: ['editor-tool-btn', styles.link ? 'editor-tool-btn-on' : ''],
+    const children = [h('button', {
+      class: [
+        'editor-tool-btn',
+        'editor-tool-link',
+        styles.link ? 'editor-tool-btn-on' : ''
+      ],
       on: {
         click: this.onClick
       }
-    }, ['L'])]
+    })]
     if (this.isInput) {
-      const input = createElement('input', {
+      const input = h('input', {
         attrs: {
-          placeholder: 'URL',
+          placeholder: '输入链接并回车',
           value: this.href
         },
         on: {
-          input: this.onInput,
           keydown: this.onKeydown
         }
       })
       children.push(input)
     }
-    return createElement('div', {
-      class: 'editor-tool-link'
+    return h('div', {
+      class: 'editor-tool--link'
     }, children)
   },
   methods: {
@@ -50,9 +53,18 @@ export default {
       this.href = e.target.value
     },
     onKeydown (e) {
+      // console.log(e.keyCode)
+      e.stopPropagation()
       if (e.isComposing) return
       if (e.keyCode === 13) {
-        this.editor.exe('link', this.href)
+        e.stopPropagation()
+        if (!e.target.value) return
+        this.editor.exe('link', e.target.value)
+        this.editor.isOperating = false
+        this.floatTool.close()
+        return
+      }
+      if (e.keyCode === 27) {
         this.editor.isOperating = false
         this.floatTool.close()
       }

@@ -71,12 +71,13 @@ export function getFocusNodeAndOffset (root, offset) {
       focusNode = item
       focusOffset = itemLength - (len - offset)
       break
+    } else if (i === length - 1) {
+      focusNode = item
+      focusOffset = len
     }
   }
-  if (focusNode.nodeType !== 3) {
-    return getFocusNodeAndOffset(focusNode, focusOffset)
-  }
-  return { focusNode, focusOffset }
+  if (focusNode.nodeType === 3) return { focusNode, focusOffset }
+  return getFocusNodeAndOffset(focusNode, focusOffset)
 }
 
 // 获取选中的文字所应用的样式

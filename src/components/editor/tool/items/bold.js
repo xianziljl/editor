@@ -1,14 +1,18 @@
 export default {
   name: 'editor-tool-bold',
   inject: ['editor'],
-  render (createElement) {
+  render (h) {
     const { styles } = this.editor.selection
-    return createElement('button', {
-      class: ['editor-tool-btn', styles.bold ? 'editor-tool-btn-on' : ''],
+    return h('button', {
+      class: [
+        'editor-tool-btn',
+        'editor-tool-bold',
+        styles.bold ? 'editor-tool-btn-on' : ''
+      ],
       on: {
         click: this.onClick
       }
-    }, ['B'])
+    })
   },
   methods: {
     onClick (e) {

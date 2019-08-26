@@ -9,13 +9,13 @@ export default {
       default: () => ({})
     }
   },
-  render (createElement) {
+  render (h) {
     const { tagName, value } = this
     const { text, ranges } = value
-    return createElement(
+    return h(
       tagName || 'div',
       { class: 'editor-text-view' },
-      textRender(createElement, this, text || '', ranges || [])
+      textRender(h, this, text || '', ranges || [])
     )
   },
   mounted () {

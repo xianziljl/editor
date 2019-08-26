@@ -1,14 +1,18 @@
 export default {
   name: 'editor-tool-italic',
   inject: ['editor'],
-  render (createElement) {
+  render (h) {
     const { styles } = this.editor.selection
-    return createElement('button', {
-      class: ['editor-tool-btn', styles.italic ? 'editor-tool-btn-on' : ''],
+    return h('button', {
+      class: [
+        'editor-tool-btn',
+        'editor-tool-italic',
+        styles.italic ? 'editor-tool-btn-on' : ''
+      ],
       on: {
         click: this.onClick
       }
-    }, ['I'])
+    })
   },
   methods: {
     onClick (e) {

@@ -1,13 +1,18 @@
-// import debounce from 'debounce'
+import debounce from 'debounce'
 import { blockMap } from './map'
 import ToolFloat from './tool/float'
 import textRange from './text/text-range'
-import formatters from './formatters'
+// import formatters from './formatters'
 import createGUID from './utils/createGUID'
+import getEditorByKey from './utils/getEditorByKey'
 
 function formatValue (value) {
-  if (!value || !(value instanceof Array)) return
-  value.forEach(item => { item.key = createGUID() })
+  if (!value) return
+  if (!value.blocks || !(value.blocks instanceof Array)) value.blocks = []
+  value.blocks.forEach(item => {
+    item.key = createGUID()
+    if (item.blocks && item.blocks.length) formatValue(item)
+  })
 }
 
 export default {
@@ -15,8 +20,8 @@ export default {
   props: {
     readonly: Boolean,
     value: {
-      type: Array,
-      default: () => []
+      type: Object,
+      default: () => ({})
     }
   },
   data () {
@@ -25,12 +30,15 @@ export default {
       isSelecting: false,
       isComposing: false, // 正在拼写
       isOperating: false, // 正在操作工具栏
+      isHistoryBacking: false, // 正在进行回退
       selection: {
+        oldRange: null,
         range: null, // { offset, length }
         styles: {}, // 选中文字已有的样式
         rect: null, // { width, height, left, top }
         target: null // TextEditor
-      }
+      },
+      history: []
     }
   },
   provide () {
@@ -42,17 +50,24 @@ export default {
   created () {
     formatValue(this.value)
   },
-  watch: {
-    value (val) {
-      formatValue(val)
-    }
-  },
-  render (createElement) {
+  // watch: {
+  //   value: {
+  //     handler () {
+  //       if (this.isHistoryBacking) {
+  //         this.isHistoryBacking = false
+  //         return
+  //       }
+  //       this.historyForward()
+  //     },
+  //     deep: true
+  //   }
+  // },
+  render (h) {
     const { value, readonly, selection } = this
     // 渲染子元素
-    const children = value.map(item => {
+    const children = value.blocks.map(item => {
       const component = blockMap[item.type] || blockMap['paragraph']
-      return createElement(component, {
+      return h(component, {
         props: { value: item, readonly },
         on: {
           'link-hover': e => { console.log('link-hover', e.target.getAttribute('href')) },
@@ -63,14 +78,14 @@ export default {
     })
     // 渲染工具条
     if (!readonly && selection.range && selection.range.length) {
-      const toolFloat = createElement(ToolFloat, {
+      const toolFloat = h(ToolFloat, {
         props: { rect: this.selection.rect },
         ref: 'floatTool'
       })
       children.push(toolFloat)
     }
     //
-    return createElement('article', {
+    return h('article', {
       class: ['editor'],
       on: readonly ? {} : {
         mousedown: this.onMousedown,
@@ -99,9 +114,11 @@ export default {
       if (!this.selection.target || e.target !== this.selection.target.$el) return
       const { replaceRange, splitRange, mergeRanges, filterRanges } = textRange
       const { value, $el } = this.selection.target
+      const { range } = this.selection
       const oldLength = value.text.length
       const newLength = $el.innerText.length
-      const oldRange = this.selection.range
+      const oldRange = { offset: range.offset, length: range.length }
+      // this.onSelectionchange()
       let inputLength = e.data ? e.data.length : newLength + oldRange.length - oldLength
       // 选中英文单词删除时会多删除单词前的空格，此时 inputLength < 0, 将选区修正为选中单词前的空格 inputLength 修正为 0。
       if (inputLength < 0) {
@@ -109,6 +126,8 @@ export default {
         oldRange.length -= inputLength
         inputLength = 0
       }
+      // console.log(range.offset, this.selection.range.offset)
+      // console.log(JSON.stringify(oldRange), inputLength)
       replaceRange(value.ranges, oldRange, inputLength)
       // 在 range 末尾输入空格时 跳出 range
       if (e.data === ' ' && !oldRange.length) {
@@ -124,10 +143,10 @@ export default {
         newRanges.forEach(r => { value.ranges.push(r) })
       }
       value.text = $el.innerText.replace(/\n/g, ' ')
-
-      formatters.forEach(formatter => {
-        formatter(value)
-      })
+      // 用于快捷格式化段落
+      // formatters.forEach(formatter => {
+      //   formatter(value)
+      // })
       // 整理range
       mergeRanges(value.ranges)
       filterRanges(value.ranges, $el.innerText)
@@ -137,9 +156,9 @@ export default {
       this.selection.target.key += 1
       // 复位光标
       this.$nextTick(() => {
-        const offset = this.selection.range ? this.selection.range.offset : 0
+        const newOffset = oldRange.offset + inputLength
         // console.log(this.selection.target)
-        this.setRange(this.selection.target, offset, 0)
+        this.setRange(this.selection.target, newOffset, 0)
       })
     },
     onCompositionstart (e) {
@@ -158,13 +177,17 @@ export default {
       this.isMousedown = false
     },
     onKeydown (e) {
+      // console.log(e)
+      this.onSelectionchange()
       const ctrl = (e.metaKey || e.ctrlKey)
       // if (ctrl) e.preventDefault()
       switch (e.keyCode) {
         case 13: // 回车
           e.preventDefault()
-          this.$emit('')
           break
+        // case 8:
+        //   this.onBackspace(e)
+        //   break
       }
       // 禁用快捷键
       if (ctrl) {
@@ -178,21 +201,45 @@ export default {
             e.preventDefault()
             break
           }
+          case 90: // ctrl+Z
+            // this.historyBack()
+            break
         }
       }
     },
+    // onEnter (e) {
+    //   e.preventDefault()
+    //   if (this.isOperating) return
+    //   const { range, target } = this.selection
+    //   if (range && range.offset === 0 && !range.length) {
+    //     target.keyEnterAtStart()
+    //   }
+    // },
+    // onBackspace (e) {
+    //   const { range, target } = this.selection
+    //   if (range && range.offset === 0 && !range.length) {
+    //     target.keyBackspaceAtStart()
+    //   }
+    // },
     onSelectionchange (e) {
-      // console.log(e)
+      // console.log('selection change')
       if (this.isOperating) return
       if (this.isComposing || this.readonly || !this.selection.target) return
+      const { getRange, getRangeRect, getRangeStyles } = textRange
       // console.log(JSON.stringify(this.selection.rect))
       const focusNode = document.activeElement
-      const range = textRange.getRange(focusNode)
-      const rangeRect = textRange.getRangeRect(this.$el)
+      const range = getRange(focusNode)
+      const rangeRect = getRangeRect(this.$el)
+      // this.selection.oldRange = this.selection.range
       this.selection.range = range
-      this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
+      // console.log(range.offset)
+      this.selection.styles = getRangeStyles(this.selection.range, this.selection.target.value.ranges)
       if (this.isMousedown && (!range || !range.length)) this.isSelecting = true
       this.selection.rect = (!range || !range.length) ? null : rangeRect
+
+      if (!this.history.length) {
+        this.historyForward()
+      }
     },
     onCut (e) {
       console.log('onCut')
@@ -267,6 +314,7 @@ export default {
       const end = length ? getFocusNodeAndOffset(target.$el, offset + length) : start
       const selection = getSelection()
       const range = document.createRange()
+      // console.log('set range', offset, length, start, end)
       range.setStart(start.focusNode, start.focusOffset)
       range.setEnd(end.focusNode, end.focusOffset)
       selection.removeAllRanges()
@@ -277,6 +325,31 @@ export default {
       // console.log(this.$refs.floatTool)
       const { target, range } = this.selection
       this.setTextStyle(target, range, style, href)
+    },
+    historyForward: debounce(function () {
+      const { range, target } = this.selection
+      this.history.push(JSON.stringify({
+        range,
+        focusKey: target ? target.value.key : null,
+        blocks: this.value.blocks
+      }))
+      if (this.history.length > 10) this.history.shift()
+    }, 300),
+    historyBack () {
+      if (this.history.length < 2) return
+      this.isHistoryBacking = true
+      this.history.pop()
+      const value = JSON.parse(this.history[this.history.length - 1])
+      const { range, focusKey } = value
+      console.log(range, focusKey)
+      this.value.blocks = value.blocks
+      this.$nextTick(() => {
+        this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
+
+        const target = getEditorByKey(focusKey)
+        if (range && target) this.setRange(target, range.offset, range.length)
+        // console.log(range.offset, range.length)
+      })
     }
   }
 }

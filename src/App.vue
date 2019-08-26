@@ -25,10 +25,11 @@
     </div>
     <heading :value="testValue" readonly></heading> -->
     <!-- <input type="text"> -->
-    <editor :value="testValue"></editor>
-    <div>
+    <editor :readonly="readonly" :value="testValue"></editor>
+    <button @click="readonly=!readonly">readonly: {{readonly}}</button>
+    <!-- <div>
       <img src="./assets/24px.svg" alt="">
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -56,6 +57,7 @@ export default {
   components: { Editor },
   data () {
     return {
+      readonly: false,
       testValue,
       range: {},
       rangeStyles: {}
@@ -74,7 +76,7 @@ export default {
 </script>
 
 <style lang="scss">
-  #app{margin: 60px;font-size: 18px;}
+  #app{margin: 60px;font-size: 16px;}
   .toolbar{
     user-select: none;
     margin-bottom: 10px;

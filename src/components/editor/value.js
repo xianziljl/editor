@@ -1,26 +1,59 @@
-export default [{
-  type: 'heading',
-  level: 1,
-  text: 'GitHub acquires Pull Panda—a better way to collaborate on code reviews',
-  ranges: []
-}, {
-  type: 'blockquote',
-  text: 'Pull Panda helps thousands of teams work together on code and improve their process along the way by combining three features: Pull Reminders, Pull Analytics, and Pull Assigner.',
-  ranges: [
-    { offset: 5, length: 5, style: 'link', href: 'https://www.google.com' }
+export default {
+  blocks: [
+    {
+      type: 'heading',
+      level: 1,
+      text: 'How the Colts Are Pushing Forward Without Andrew Luck',
+      ranges: []
+    },
+    {
+      type: 'blockquote',
+      text: 'The 2019 NFL season starts in less than two weeks, and Indianapolis is trying to maintain a sense of normalcy after Andrew Luck announced his retirement. But what does that new normal look like? For now, Jacoby Brissett is a large piece of it. Also, Jason Witten’s advice for Rob Gronkowski, what Josh Allen was up to this offseason, the NFL’s field surface struggles and more.',
+      ranges: [
+        { offset: 4, length: 8, style: 'link', href: 'https://www.google.com' }
+      ]
+    },
+    {
+      type: 'paragraph',
+      text: 'INDIANAPOLIS — The building on West 56th Street in Indianapolis is a workplace, just like the buildings so many of you are heading to for the beginning of a new week. And on Sunday, the day after everything changed with the news of Andrew Luck’s unexpected retirement, the Colts’ home facility was like how you might expect your workplace to be on the day after a seismic, shifting event.',
+      ranges: []
+    },
+    {
+      type: 'orderlist',
+      blocks: [{
+        text: 'This an order list.',
+        ranges: [
+          { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
+        ]
+      }, {
+        text: 'This another order list too.',
+        ranges: []
+      }]
+    },
+    // {
+    //   type: 'divider'
+    // },
+    {
+      type: 'unorderlist',
+      blocks: [{
+        text: 'This an unorderlist.',
+        ranges: [
+          { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
+        ]
+      }, {
+        text: 'This another unorderlist too.',
+        ranges: []
+      }]
+    },
+    {
+      type: 'paragraph',
+      text: 'This is a tough one inside the facility. Just like Luck’s decision to retire was a human one, the Indianapolis coaches and scouts had a human response, too. They talked off to the side in groups, as the leaders tried their best to set a course forward with the beginning of the regular season less than two weeks away. Some staffers knew Friday. Others found out during the game Saturday with the public. Some who know Luck well, trainers and strength staffers, weren’t surprised.',
+      ranges: []
+    },
+    {
+      type: 'paragraph',
+      text: 'But many were caught off-guard, which is why the coach and GM tried to foster normalcy as best they could, leaning on a culture that they believe can absorb adversity of even this kind. I’m told neither GM Chris Ballard nor coach Frank Reich addressed Luck’s decision directly as they gathered en masse for a 5 p.m. personnel meeting. There’s a lot to do between now and 4:05 ET in Los Angeles on Sept. 8, and if Ballard and Reich aren’t forging forward, no one will be.      ',
+      ranges: []
+    }
   ]
-}, {
-  type: 'paragraph',
-  text: 'We’re excited to share some big news: we’ve acquired Pull Panda to help teams create more efficient and effective code review workflows on GitHub. Better code reviews mean better code for software teams of all sizes, whether you work in open source or on a Fortune 500 team. However, fast-moving teams can run into delays as pull requests pile up and fall through the cracks. Teams need a better way to manage reviews, reduce turnaround times, and ship code faster.',
-  ranges: []
-}, {
-  type: 'divider'
-}, {
-  type: 'paragraph',
-  text: 'he train engine moved toward us, a transparent attempt on the part of the rail workers to intimidate the group of us sitting on the tracks. They blew the horn loudly, while the group chanted and waved signs protesting the recent explosion and fire that had happened during a train derailment in Mosier, Oregon a…',
-  ranges: []
-}, {
-  type: 'paragraph',
-  text: 'he train engine moved toward us, a transparent attempt on the part of the rail workers to intimidate the group of us sitting on the tracks. They blew the horn loudly, while the group chanted and waved signs protesting the recent explosion and fire that had happened during a train derailment in Mosier, Oregon a…',
-  ranges: []
-}]
+}

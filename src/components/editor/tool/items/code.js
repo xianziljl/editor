@@ -1,14 +1,18 @@
 export default {
   name: 'editor-tool-code',
   inject: ['editor'],
-  render (createElement) {
+  render (h) {
     const { styles } = this.editor.selection
-    return createElement('button', {
-      class: ['editor-tool-btn', styles.code ? 'editor-tool-btn-on' : ''],
+    return h('button', {
+      class: [
+        'editor-tool-btn',
+        'editor-tool-code',
+        styles.code ? 'editor-tool-btn-on' : ''
+      ],
       on: {
         click: this.onClick
       }
-    }, ['<>'])
+    })
   },
   methods: {
     onClick (e) {

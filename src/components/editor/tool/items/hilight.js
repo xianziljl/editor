@@ -1,14 +1,18 @@
 export default {
   name: 'editor-tool-hilight',
   inject: ['editor'],
-  render (createElement) {
+  render (h) {
     const { styles } = this.editor.selection
-    return createElement('button', {
-      class: ['editor-tool-btn', styles.hilight ? 'editor-tool-btn-on' : ''],
+    return h('button', {
+      class: [
+        'editor-tool-btn',
+        'editor-tool-hilight',
+        styles.hilight ? 'editor-tool-btn-on' : ''
+      ],
       on: {
         click: this.onClick
       }
-    }, ['Hi'])
+    })
   },
   methods: {
     onClick (e) {

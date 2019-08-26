@@ -12,7 +12,9 @@ function createTextEditorElement (createElement, context, tagName, value, option
   return createElement(TextEditor, {
     class: 'editor-block',
     props: { tagName, value },
-    on: context.$listeners
+    on: Object.assign({}, context.$listeners, {
+      //
+    })
   })
 }
 

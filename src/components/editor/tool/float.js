@@ -5,7 +5,7 @@ import Code from './items/code'
 import Hilight from './items/hilight'
 import Strikethrough from './items/strikethrough'
 
-const items = [Border, Italic, Link, Code, Hilight, Strikethrough]
+const items = [Border, Italic, Strikethrough, Link, Code, Hilight]
 
 export default {
   name: 'editor-tool-flaot',
@@ -24,12 +24,12 @@ export default {
       floatTool: this
     }
   },
-  render (createElement) {
+  render (h) {
     const { x, y } = this.position
     const children = items.map(item => {
-      return createElement(item)
+      return h(item)
     })
-    return createElement('div', {
+    return h('div', {
       class: ['editor-tool-flaot', this.isShow ? 'editor-tool-flaot-show' : ''],
       style: {
         left: x + 'px',
@@ -56,7 +56,8 @@ export default {
       if (!this.rect || !this.$el) return { x: 0, y: 0 }
       const PADDING = 0
       const { clientWidth, clientHeight } = this.$el
-      const { innerWidth } = window
+      const innerWidth = this.$el.parentNode.clientWidth
+      // console.log(this.$el.parentNode)
       const { left, top, width, height } = this.rect
       let x = ~~(left + (width - clientWidth) / 2)
       let y = ~~(top - clientHeight - 10)
@@ -75,8 +76,9 @@ export default {
     },
     close (e) {
       this.editor.isOperating = false
-      console.log('close')
+      // console.log('close')
       const { range, target } = this.editor.selection
+      // console.log(range.offset, range.length)
       range.offset = range.offset + range.length
       range.length = 0
       this.editor.selection.rect = null
