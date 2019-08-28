@@ -1,29 +1,19 @@
-# eversec-university
+# 富文本编辑器
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## TODO
+### 修改
+- 选中文字鼠标未松开不弹出工具条
+- list 末尾回车如果此项是空则将此项改为普通段落，而非在后面插入新的段落
+- 在非 list 开始位置回车，应在之前插入普通段落，而非相同格式段落
+### 未实现
+- block 工具条的实现
+- block 的拖动排序
+- image 组件（可拖动排序）
+- video 组件
+- attach 组件
+- table 组件
+- chart 组件
+- blockcode 组件
+- 输入拦截器（markdown快捷输入）
+- 历史记录功能
+- 标题导航功能
