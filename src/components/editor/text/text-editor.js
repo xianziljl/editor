@@ -31,7 +31,10 @@ export default {
     return h(
       this.tagName || 'div',
       {
-        class: 'editor-text-editor',
+        class: [
+          'editor-text-editor',
+          this.value.text ? '' : 'editor-text-editor-empty'
+        ],
         attrs: { contenteditable: true },
         on: {
           focus: this.onFocus,
@@ -47,9 +50,6 @@ export default {
       this.editor.selection.target = this
       this.editor.selection.targetKey = this.value.key
     },
-    keyBackspaceAtStart () {
-      console.log('keyBackspaceAtStart')
-    },
     keyEnterAtStart () {},
     onKeydown (e) {
       switch (e.keyCode) {
@@ -59,18 +59,18 @@ export default {
           this.onKeyEnter()
           break
         case 8:
-          this.onKeyBackspace()
+          this.onKeyBackspace(e)
           break
       }
     },
     onKeyEnter () {
       const { range } = this.editor.selection
       if (!range) return
-      if (range.offset > 0) {
+      if (!this.value.text.length || range.offset > 0) {
         const results = splitValue(this.value, range)
-        this.$emit('after-insert', results[1])
+        this.$emit('insert-after', results[1])
       } else {
-        this.$emit('before-insert', {
+        this.$emit('insert-before', {
           key: createGUID(),
           text: '',
           ranges: []
@@ -78,7 +78,20 @@ export default {
       }
       // console.log(values)
     },
-    onKeyBackspace () {}
+    onKeyBackspace (e) {
+      const { range } = this.editor.selection
+      if (!range.offset && !range.length) {
+        e.preventDefault()
+        if (this.value.type !== 'paragraph') {
+          // console.log(this.value.type)
+          this.$emit('clear-block-style', this.value)
+          console.log('clear-block-style')
+          return
+        }
+        this.$emit('merge-to-prev', this.value)
+        console.log('merge-to-prev')
+      }
+    }
   }
 }
 
@@ -109,7 +122,9 @@ function splitValue (value, range) {
       ranges1.push(item)
       ranges2.push({
         offset: 0,
-        length: itemEnd - rangeEnd
+        length: itemEnd - rangeEnd,
+        style: item.style,
+        href: item.href
       })
     }
     if (itemStart > rangeStart && itemStart < rangeEnd) {

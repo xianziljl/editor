@@ -22,11 +22,13 @@ export default {
       type: 'todolist',
       blocks: [{
         text: 'This a todo list.',
+        checked: false,
         ranges: [
           { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
         ]
       }, {
         text: 'This another todo list too.',
+        checked: true,
         ranges: []
       }]
     },
@@ -42,6 +44,24 @@ export default {
         ]
       }, {
         text: 'This another unorderlist too.',
+        ranges: []
+      }]
+    },
+    {
+      type: 'orderlist',
+      blocks: [{
+        text: 'This an unorderlist.',
+        ranges: [
+          { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
+        ]
+      }, {
+        text: 'hello orderlist',
+        ranges: []
+      }, {
+        text: 'caught off-guard, which is why the',
+        ranges: []
+      }, {
+        text: 'ugh one inside the facility. Just like Luck’s dec',
         ranges: []
       }]
     },

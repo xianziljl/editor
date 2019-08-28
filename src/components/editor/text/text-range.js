@@ -55,7 +55,9 @@ export function getRangeRect (el) {
 }
 
 // 根据全局 offset 值查找光标所在的文本节点和相对节点的位置
+let i = 0
 export function getFocusNodeAndOffset (root, offset) {
+  i += 1
   let len = 0
   let focusNode = root
   let focusOffset = 0
@@ -63,20 +65,28 @@ export function getFocusNodeAndOffset (root, offset) {
   const length = nodes.length
   for (let i = 0; i < length; i++) {
     const item = nodes[i]
-    // 这里 item 可能是 Element, TextNode
-    let itemLength = item.length
-    if (!(itemLength >= 0)) itemLength = item.innerText ? item.innerText.length : 0
-    len += itemLength
-    if (len >= offset) {
-      focusNode = item
-      focusOffset = itemLength - (len - offset)
-      break
-    } else if (i === length - 1) {
-      focusNode = item
-      focusOffset = len
+    if (!item.dataset || !item.dataset.skipCheck) { // 跳过一些无需检查的元素 data-skip-check
+      // 这里 item 可能是 Element, TextNode
+      let itemLength = item.length
+      if (!(itemLength >= 0)) itemLength = item.innerText ? item.innerText.length : 0
+      len += itemLength
+      if (len >= offset) {
+        focusNode = item
+        focusOffset = itemLength - (len - offset)
+        break
+      } else if (i === length - 1) {
+        focusNode = item
+        focusOffset = len
+      }
     }
   }
-  if (focusNode.nodeType === 3) return { focusNode, focusOffset }
+  if (focusNode.nodeType === 3) {
+    return { focusNode, focusOffset }
+  }
+  if (i > 1000) {
+    i = 0
+    return { focusNode, focusOffset }
+  }
   return getFocusNodeAndOffset(focusNode, focusOffset)
 }
 

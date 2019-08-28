@@ -1,26 +1,33 @@
 export default {
   name: 'editor-checkbox',
   props: {
-    checked: Boolean
+    checked: Boolean,
+    readonly: Boolean
   },
   render (h) {
     return h('label', {
       class: 'editor-checkbox',
+      attrs: {
+        'data-skip-check': 1
+      },
       on: {
-        click: this.onClick
+        change: this.onChange
       }
     }, [
       h('input', {
         attrs: {
           type: 'checkbox',
-          checked: this.checked
+          'data-skip-check': 1,
+          checked: this.checked,
+          disabled: this.readonly
         }
       })
     ])
   },
   methods: {
-    onClick (e) {
-      console.log('on click')
+    onChange (e) {
+      this.$emit('change', e.target.checked)
+      console.log('on change', e.target.checked)
     }
   }
 }

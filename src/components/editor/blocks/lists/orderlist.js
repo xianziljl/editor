@@ -1,17 +1,19 @@
-import blockMixin from '../block-mixin'
+import listMixin from './list-mixin'
 import Listitem from './listitem'
 
 export default {
   name: 'editor-block-orderlist',
-  inject: ['editor'],
-  mixins: [blockMixin],
+  mixins: [listMixin],
   render (h) {
     const items = this.value.blocks.map(item => {
       return h(Listitem, {
         props: { value: item, readonly: this.readonly },
-        key: item.key
+        key: item.key,
+        on: Object.assign({}, this.$listeners, {})
       })
     })
-    return h('ol', items)
+    return h('ol', {
+      class: 'editor-block-orderlist'
+    }, items)
   }
 }

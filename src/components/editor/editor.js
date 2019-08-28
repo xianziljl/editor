@@ -171,7 +171,8 @@ export default {
     onMousedown (e) {
       this.isMousedown = true
       const floatTool = this.$refs.floatTool
-      this.isOperating = !!((floatTool && e.path.includes(this.$refs.floatTool.$el)))
+      const path = e.path || (e.composedPath && e.composedPath())
+      this.isOperating = !!((floatTool && path.includes(this.$refs.floatTool.$el)))
     },
     onMouseup (e) {
       this.isMousedown = false
@@ -207,20 +208,6 @@ export default {
         }
       }
     },
-    // onEnter (e) {
-    //   e.preventDefault()
-    //   if (this.isOperating) return
-    //   const { range, target } = this.selection
-    //   if (range && range.offset === 0 && !range.length) {
-    //     target.keyEnterAtStart()
-    //   }
-    // },
-    // onBackspace (e) {
-    //   const { range, target } = this.selection
-    //   if (range && range.offset === 0 && !range.length) {
-    //     target.keyBackspaceAtStart()
-    //   }
-    // },
     onSelectionchange (e) {
       // console.log('selection change')
       if (this.isOperating) return
@@ -309,16 +296,22 @@ export default {
      * @param {number} length 选区长度
      */
     setRange (target, offset, length) {
+      // console.log(target.$el, offset, length)
       const { getFocusNodeAndOffset } = textRange
       const start = getFocusNodeAndOffset(target.$el, offset)
       const end = length ? getFocusNodeAndOffset(target.$el, offset + length) : start
       const selection = getSelection()
       const range = document.createRange()
-      // console.log('set range', offset, length, start, end)
-      range.setStart(start.focusNode, start.focusOffset)
-      range.setEnd(end.focusNode, end.focusOffset)
-      selection.removeAllRanges()
-      selection.addRange(range)
+      // console.log(range, start, end)
+      // console.log(start, end)
+      try {
+        range.setStart(start.focusNode, start.focusOffset)
+        range.setEnd(end.focusNode, end.focusOffset)
+        selection.removeAllRanges()
+        selection.addRange(range)
+      } catch (err) {
+        console.warn('setRange failed: ' + err.message)
+      }
     },
     // 快捷调用 自动确定选区和操作对象
     exe (style, href) {
@@ -341,14 +334,27 @@ export default {
       this.history.pop()
       const value = JSON.parse(this.history[this.history.length - 1])
       const { range, focusKey } = value
-      console.log(range, focusKey)
+      // console.log(range, focusKey)
       this.value.blocks = value.blocks
       this.$nextTick(() => {
         this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
 
         const target = getEditorByKey(focusKey)
         if (range && target) this.setRange(target, range.offset, range.length)
-        // console.log(range.offset, range.length)
+      })
+    },
+    insertBeforeBlock (blocks, block, insertBlock) {
+      const i = blocks.indexOf(block)
+      blocks.splice(i, 0, insertBlock)
+    },
+    insertAfterBlock (blocks, block, insertBlock) {
+      const i = blocks.indexOf(block)
+      blocks.splice(i + 1, 0, insertBlock)
+      const key = insertBlock.key
+      this.$nextTick(() => {
+        const target = getEditorByKey(this, key)
+        // console.log(target)
+        this.setRange(target, 0, 0)
       })
     }
   }

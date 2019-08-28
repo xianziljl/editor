@@ -5,10 +5,10 @@ import Code from './items/code'
 import Hilight from './items/hilight'
 import Strikethrough from './items/strikethrough'
 
-const items = [Border, Italic, Strikethrough, Link, Code, Hilight]
+const items = [Border, Italic, Link, Strikethrough, Code, Hilight]
 
 export default {
-  name: 'editor-tool-flaot',
+  name: 'editor-tool-float',
   inject: ['editor'],
   props: {
     rect: Object // 矩形范围
@@ -16,6 +16,7 @@ export default {
   data () {
     return {
       isShow: false,
+      isUnder: false,
       position: {}
     }
   },
@@ -25,12 +26,20 @@ export default {
     }
   },
   render (h) {
-    const { x, y } = this.position
+    const { x, y, arrowX } = this.position
     const children = items.map(item => {
       return h(item)
     })
+    children.push(h('i', {
+      class: 'editor-tool-float-arrow',
+      style: { left: arrowX + '%' }
+    }))
     return h('div', {
-      class: ['editor-tool-flaot', this.isShow ? 'editor-tool-flaot-show' : ''],
+      class: [
+        'editor-tool-float',
+        this.isUnder ? 'editor-tool-float-under' : '',
+        this.isShow ? 'editor-tool-float-show' : ''
+      ],
       style: {
         left: x + 'px',
         top: y + 'px'
@@ -57,14 +66,19 @@ export default {
       const PADDING = 0
       const { clientWidth, clientHeight } = this.$el
       const innerWidth = this.$el.parentNode.clientWidth
-      // console.log(this.$el.parentNode)
-      const { left, top, width, height } = this.rect
+
+      const { left, top, width } = this.rect
       let x = ~~(left + (width - clientWidth) / 2)
       let y = ~~(top - clientHeight - 10)
+      let arrowX = 50
       if (x < PADDING) x = PADDING
       if (x + clientWidth + PADDING > innerWidth) x = innerWidth - clientWidth - PADDING
-      if (y < PADDING) y = top + height + 10
-      return { x, y }
+      arrowX = (left - x + width / 2) / clientWidth * 100
+      // if (y < PADDING) {
+      //   y = top + height + 10
+      //   this.isUnder = true
+      // }
+      return { x, y, arrowX }
     },
     onMousedown (e) {
       this.editor.isOperating = true
