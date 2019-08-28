@@ -67,11 +67,11 @@ export default {
       const { range } = this.editor.selection
       if (!range) return
       if (!this.value.text.length || range.offset > 0) {
-        console.log('insert-after')
+        // console.log('insert-after')
         const results = splitValue(this.value, range)
         this.$emit('insert-after', results[1])
       } else {
-        console.log('insert-before')
+        // console.log('insert-before')
         this.$emit('insert-before', {
           key: createGUID(),
           text: '',
@@ -87,11 +87,11 @@ export default {
         if (this.value.type !== 'paragraph') {
           // console.log(this.value.type)
           this.$emit('clear-block-style', this.value)
-          console.log('clear-block-style')
+          // console.log('clear-block-style')
           return
         }
         this.$emit('merge-to-prev', this.value)
-        console.log('merge-to-prev')
+        // console.log('merge-to-prev')
       }
     }
   }

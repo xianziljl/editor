@@ -27,7 +27,7 @@
     <!-- <input type="text"> -->
     <editor :readonly="readonly" :value="testValue"></editor>
     <button @click="readonly=!readonly">readonly: {{readonly}}</button>
-    <i class="material-icons-outlined">pie_chart</i>
+    <!-- <i class="material-icons-outlined">pie_chart</i> -->
     <!-- <div>
       <img src="./assets/24px.svg" alt="">
     </div> -->

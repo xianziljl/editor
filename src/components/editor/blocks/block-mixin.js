@@ -1,4 +1,5 @@
 import { mergeRanges } from '../text/text-range'
+import { listTypes } from '../map'
 
 export default {
   inject: ['editor'],
@@ -17,7 +18,8 @@ export default {
     },
     insertAfter (val) {
       const { blocks } = this.editor.value
-      this.$set(val, 'type', this.value.type)
+      const type = listTypes[this.value.type] && this.value.text.length ? this.value.type : 'paragraph'
+      this.$set(val, 'type', type)
       this.editor.insertAfterBlock(blocks, this.value, val)
     },
     clearBlockStyle (val) {

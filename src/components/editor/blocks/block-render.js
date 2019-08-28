@@ -1,10 +1,4 @@
-import { blockMap } from '../map'
-
-const listTypes = {
-  orderlist: 'ol',
-  unorderlist: 'ul',
-  todolist: 'ul'
-}
+import { blockMap, listTypes } from '../map'
 
 function renderBlocks (h, blocks, readonly) {
   let children = []
@@ -14,6 +8,7 @@ function renderBlocks (h, blocks, readonly) {
     const component = blockMap[type] || blockMap.paragraph
     const child = h(component, {
       props: { value: item, readonly },
+      attrs: { 'data-index': listTypes[type] ? `${list.length + 1}.` : null },
       class: 'editor-block-' + type,
       key: item.key,
       on: {

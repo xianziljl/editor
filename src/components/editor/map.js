@@ -28,4 +28,10 @@ const blockMap = {
   todolist: Todoitem
 }
 
-export { spanMap, blockMap }
+const listTypes = {
+  orderlist: 'ol',
+  unorderlist: 'ul',
+  todolist: 'ul'
+}
+
+export { spanMap, blockMap, listTypes }

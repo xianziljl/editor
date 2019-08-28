@@ -32,6 +32,7 @@ export default {
       isComposing: false, // 正在拼写
       isOperating: false, // 正在操作工具栏
       isHistoryBacking: false, // 正在进行回退
+      // isSetingRange: false,
       selection: {
         oldRange: null,
         range: null, // { offset, length }
@@ -64,6 +65,7 @@ export default {
   //   }
   // },
   render (h) {
+    console.log('render')
     const { value, readonly, selection } = this
     // 渲染子元素
     const children = renderBlocks(h, value.blocks, readonly)
@@ -203,6 +205,7 @@ export default {
       // console.log('selection change')
       if (this.isOperating) return
       if (this.isComposing || this.readonly || !this.selection.target) return
+      // console.log('on selectionchange')
       const { getRange, getRangeRect, getRangeStyles } = textRange
       // console.log(JSON.stringify(this.selection.rect))
       const focusNode = document.activeElement
@@ -212,7 +215,7 @@ export default {
       this.selection.range = range
       // console.log(range.offset)
       this.selection.styles = getRangeStyles(this.selection.range, this.selection.target.value.ranges)
-      if (this.isMousedown && (!range || !range.length)) this.isSelecting = true
+      // if (this.isMousedown && (!range || !range.length)) this.isSelecting = true
       this.selection.rect = (!range || !range.length) ? null : rangeRect
 
       if (!this.history.length) {
