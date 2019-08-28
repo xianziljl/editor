@@ -81,6 +81,7 @@ export function getFocusNodeAndOffset (root, offset) {
     }
   }
   if (focusNode.nodeType === 3) {
+    i = 0
     return { focusNode, focusOffset }
   }
   if (i > 1000) {
