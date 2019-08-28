@@ -1,4 +1,4 @@
-import textRender from './text-render'
+import renderText from './text-render'
 import createGUID from '../utils/createGUID'
 
 export default {
@@ -27,7 +27,7 @@ export default {
   },
   render (h) {
     const { text, ranges } = this.value
-    const children = textRender(h, this, text, ranges)
+    const children = renderText(h, this, text, ranges)
     return h(
       this.tagName || 'div',
       {
@@ -67,9 +67,11 @@ export default {
       const { range } = this.editor.selection
       if (!range) return
       if (!this.value.text.length || range.offset > 0) {
+        console.log('insert-after')
         const results = splitValue(this.value, range)
         this.$emit('insert-after', results[1])
       } else {
+        console.log('insert-before')
         this.$emit('insert-before', {
           key: createGUID(),
           text: '',

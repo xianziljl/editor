@@ -31,7 +31,7 @@
   h4{font-size: 1.3em;}
   h5{font-size: 1.15em;}
   h6{font-size: 1.05em;}
-  p, ul, ol{margin: 1em 0;}
+  p, ul, ol{margin: 1em 0;padding: 0;}
   blockquote{margin: 1em 0;padding-left: 30px;border-left: 5px solid rgba(0, 158, 100, 0.2);}
   code{
     font-family: monospace, Menlo, Monaco, Consolas, Courier New;padding: 2px 4px;border-radius: 3px;
@@ -116,19 +116,11 @@
 }
 .editor-block{
   min-height: 25px;
-  &-orderlist{
-    padding-left: 36px;
-    li{padding-left: 6px;margin: 0.3em 0;}
-  }
-  &-unorderlist{
-    padding-left: 36px;
-    li{padding-left: 6px;margin: 0.3em 0;}
-  }
-  &-todolist{
-    padding-left: 36px;
-    li{position: relative;list-style-type: none;box-sizing: border-box;
-      margin: 0.3em 0;padding-left: 6px;}
-    .editor-checkbox{position: absolute;left: -22px;top: 5px;}
+  &-orderlist{padding-left: 14px;margin: 0.3em 0;list-style-position: inside;}
+  &-unorderlist{padding-left: 14px;margin: 0.3em 0;list-style-position: inside;}
+  &-todolist{position: relative;list-style-type: none;box-sizing: border-box;
+    margin: 0.3em 0;padding-left: 36px;
+    .editor-checkbox{position: absolute;left: 10px;top: 5px;}
     // li .editor-text-editor{flex: 1;}
   }
 }

@@ -20,50 +20,69 @@ export default {
     },
     {
       type: 'todolist',
-      blocks: [{
-        text: 'This a todo list.',
-        checked: false,
-        ranges: [
-          { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
-        ]
-      }, {
-        text: 'This another todo list too.',
-        checked: true,
-        ranges: []
-      }]
+      checked: false,
+      text: 'This a todo item 1.',
+      ranges: [
+        { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
+      ]
     },
-    // {
-    //   type: 'divider'
-    // },
+    {
+      type: 'todolist',
+      checked: false,
+      text: 'This a todo item 2.',
+      ranges: [
+        { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
+      ]
+    },
+    {
+      type: 'todolist',
+      checked: false,
+      text: 'This a todo item 3.',
+      ranges: [
+        { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
+      ]
+    },
     {
       type: 'unorderlist',
-      blocks: [{
-        text: 'This an unorderlist.',
-        ranges: [
-          { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
-        ]
-      }, {
-        text: 'This another unorderlist too.',
-        ranges: []
-      }]
+      text: 'This an unorderlist 1.',
+      ranges: [
+        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
+      ]
+    },
+    {
+      type: 'unorderlist',
+      text: 'This an unorderlist 2.',
+      ranges: [
+        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
+      ]
+    },
+    {
+      type: 'unorderlist',
+      text: 'This an unorderlist 3.',
+      ranges: [
+        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
+      ]
     },
     {
       type: 'orderlist',
-      blocks: [{
-        text: 'This an unorderlist.',
-        ranges: [
-          { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
-        ]
-      }, {
-        text: 'hello orderlist',
-        ranges: []
-      }, {
-        text: 'caught off-guard, which is why the',
-        ranges: []
-      }, {
-        text: 'ugh one inside the facility. Just like Luck’s dec',
-        ranges: []
-      }]
+      text: 'This an orderlist 1.',
+      ranges: [
+        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
+      ]
+    },
+    {
+      type: 'orderlist',
+      text: 'This an orderlist 2.',
+      ranges: [
+        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
+      ]
+    },
+    {
+      type: 'orderlist',
+      text: 'This an orderlist 3.',
+      ranges: [
+        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
+      ]
     },
     {
       type: 'paragraph',

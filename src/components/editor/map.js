@@ -2,9 +2,11 @@ import Heading from './blocks/heading/heading'
 import Paragraph from './blocks/paragraph/paragraph'
 import Blockquote from './blocks/blockquote/blockquote'
 import Divider from './blocks/divider/divider'
-import Orderlist from './blocks/lists/orderlist'
-import Unorderlist from './blocks/lists/unorderlist'
-import Todolist from './blocks/lists/todolist'
+import Listitem from './blocks/lists/listitem'
+import Todoitem from './blocks/lists/todoitem'
+// import Orderlist from './blocks/lists/orderlist'
+// import Unorderlist from './blocks/lists/unorderlist'
+// import Todolist from './blocks/lists/todolist'
 
 const spanMap = {
   bold: 'strong',
@@ -21,9 +23,9 @@ const blockMap = {
   paragraph: Paragraph,
   blockquote: Blockquote,
   divider: Divider,
-  orderlist: Orderlist,
-  unorderlist: Unorderlist,
-  todolist: Todolist
+  orderlist: Listitem,
+  unorderlist: Listitem,
+  todolist: Todoitem
 }
 
 export { spanMap, blockMap }

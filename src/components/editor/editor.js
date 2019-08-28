@@ -1,10 +1,11 @@
 import debounce from 'debounce'
-import { blockMap } from './map'
+// import { blockMap } from './map'
 import ToolFloat from './tool/float'
 import textRange from './text/text-range'
 // import formatters from './formatters'
 import createGUID from './utils/createGUID'
 import getEditorByKey from './utils/getEditorByKey'
+import renderBlocks from './blocks/block-render'
 
 function formatValue (value) {
   if (!value) return
@@ -65,17 +66,7 @@ export default {
   render (h) {
     const { value, readonly, selection } = this
     // 渲染子元素
-    const children = value.blocks.map(item => {
-      const component = blockMap[item.type] || blockMap['paragraph']
-      return h(component, {
-        props: { value: item, readonly },
-        on: {
-          'link-hover': e => { console.log('link-hover', e.target.getAttribute('href')) },
-          'link-leave': e => { console.log('link-leave') }
-        },
-        key: item.key
-      })
-    })
+    const children = renderBlocks(h, value.blocks, readonly)
     // 渲染工具条
     if (!readonly && selection.range && selection.range.length) {
       const toolFloat = h(ToolFloat, {

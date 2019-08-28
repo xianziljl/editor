@@ -10,6 +10,23 @@ export default {
     }
   },
   methods: {
+    insertBefore (val) {
+      const { blocks } = this.editor.value
+      this.$set(val, 'type', this.value.type)
+      this.editor.insertBeforeBlock(blocks, this.value, val)
+    },
+    insertAfter (val) {
+      const { blocks } = this.editor.value
+      this.$set(val, 'type', this.value.type)
+      this.editor.insertAfterBlock(blocks, this.value, val)
+    },
+    clearBlockStyle (val) {
+      val.type = 'paragraph'
+      this.$nextTick(() => {
+        const { target, range } = this.editor.selection
+        this.editor.setRange(target, range.offset, range.length)
+      })
+    },
     mergeNext () {
       const { editor, value } = this
       const { blocks } = editor.value

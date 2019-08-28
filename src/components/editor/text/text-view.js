@@ -1,4 +1,4 @@
-import textRender from './text-render'
+import renderText from './text-render'
 
 export default {
   name: 'editor-text-view',
@@ -15,7 +15,7 @@ export default {
     return h(
       tagName || 'div',
       { class: 'editor-text-view' },
-      textRender(h, this, text || '', ranges || [])
+      renderText(h, this, text || '', ranges || [])
     )
   },
   mounted () {
