@@ -46,8 +46,7 @@ export default {
   },
   provide () {
     return {
-      editor: this,
-      selection: this.selection
+      $editor: this
     }
   },
   created () {

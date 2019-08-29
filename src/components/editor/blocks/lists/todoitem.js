@@ -28,8 +28,8 @@ export default {
       h(TextEditor, {
         props: { tagName: 'div', value },
         on: Object.assign({}, this.$listeners, {
-          'insert-before': this.insertBefore,
-          'insert-after': this.insertAfter,
+          'newline-before': this.newlineBefore,
+          'newline-after': this.newlineAfter,
           'clear-block-style': this.clearBlockStyle
         })
       })

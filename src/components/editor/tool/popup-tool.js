@@ -9,7 +9,7 @@ const items = [Border, Italic, Link, Strikethrough, Code, Hilight]
 
 export default {
   name: 'editor-tool-popup',
-  inject: ['editor'],
+  inject: ['$editor'],
   data () {
     return {
       isShow: false,
@@ -19,7 +19,7 @@ export default {
   },
   provide () {
     return {
-      tool: this
+      $tool: this
     }
   },
   render (h) {
@@ -52,7 +52,7 @@ export default {
     this.position = this.getPosition()
   },
   watch: {
-    'editor.selection.rect' (val) {
+    '$editor.selection.rect' (val) {
       if (val) this.position = this.getPosition()
       this.$nextTick(() => {
         this.isShow = !!val
@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     getPosition () {
-      const { rect } = this.editor.selection
+      const { rect } = this.$editor.selection
       if (!rect || !this.$el) return { x: 0, y: 0 }
       const PADDING = 0
       const { clientWidth, clientHeight } = this.$el
@@ -81,22 +81,22 @@ export default {
       return { x, y, arrowX }
     },
     onMousedown (e) {
-      this.editor.isOperating = true
-      const { target, range } = this.editor.selection
-      this.editor.setRange(target, range.offset, range.length)
+      this.$editor.isOperating = true
+      const { target, range } = this.$editor.selection
+      this.$editor.setRange(target, range.offset, range.length)
     },
     onMouseuup (e) {
-      // this.editor.isOperating = false
+      // this.$editor.isOperating = false
     },
     close (e) {
-      this.editor.isOperating = false
+      this.$editor.isOperating = false
       // console.log('close')
-      const { range, target } = this.editor.selection
+      const { range, target } = this.$editor.selection
       // console.log(range.offset, range.length)
       range.offset = range.offset + range.length
       range.length = 0
-      this.editor.selection.rect = null
-      this.editor.setRange(target, range.offset, 0)
+      this.$editor.selection.rect = null
+      this.$editor.setRange(target, range.offset, 0)
     }
   }
 }

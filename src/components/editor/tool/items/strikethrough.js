@@ -15,14 +15,14 @@ export default {
     })
   },
   watch: {
-    'editor.selection.styles' (styles) {
+    '$editor.selection.styles' (styles) {
       this.isActive = !!styles.strikethrough
     }
   },
   methods: {
     onClick (e) {
-      this.editor.exe('strikethrough')
-      this.editor.isOperating = false
+      this.$editor.exe('strikethrough')
+      this.$editor.isOperating = false
     }
   }
 }

@@ -15,14 +15,14 @@ export default {
     })
   },
   watch: {
-    'editor.selection.styles' (styles) {
+    '$editor.selection.styles' (styles) {
       this.isActive = !!styles.hilight
     }
   },
   methods: {
     onClick (e) {
-      this.editor.exe('hilight')
-      this.editor.isOperating = false
+      this.$editor.exe('hilight')
+      this.$editor.isOperating = false
     }
   }
 }

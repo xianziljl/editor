@@ -1,5 +1,5 @@
 export default {
-  inject: ['editor', 'tool'],
+  inject: ['$editor', '$tool'],
   data () {
     return {
       isActive: false

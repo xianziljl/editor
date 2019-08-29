@@ -10,12 +10,12 @@ export default {
       default: () => ({})
     }
   },
-  inject: ['editor'],
+  inject: ['$editor'],
   data () {
     // 当组件被强制更新时（旧实例被销毁）通过 GUID 将新创建的组件传给 editor
-    const target = this.editor.selection.target
+    const target = this.$editor.selection.target
     if (target && target.value && target.value.key === this.value.key) {
-      this.editor.selection.target = this
+      this.$editor.selection.target = this
     }
 
     const { text, ranges } = this.value
@@ -47,8 +47,8 @@ export default {
   },
   methods: {
     onFocus (e) {
-      this.editor.selection.target = this
-      this.editor.selection.targetKey = this.value.key
+      this.$editor.selection.target = this
+      this.$editor.selection.targetKey = this.value.key
     },
     keyEnterAtStart () {},
     onKeydown (e) {
@@ -64,15 +64,15 @@ export default {
       }
     },
     onKeyEnter () {
-      const { range } = this.editor.selection
+      const { range } = this.$editor.selection
       if (!range) return
       if (!this.value.text.length || range.offset > 0) {
-        // console.log('insert-after')
+        // console.log('newline-after')
         const results = splitValue(this.value, range)
-        this.$emit('insert-after', results[1])
+        this.$emit('newline-after', results[1])
       } else {
-        // console.log('insert-before')
-        this.$emit('insert-before', {
+        // console.log('newline-before')
+        this.$emit('newline-before', {
           key: createGUID(),
           text: '',
           ranges: []
@@ -81,7 +81,7 @@ export default {
       // console.log(values)
     },
     onKeyBackspace (e) {
-      const { range } = this.editor.selection
+      const { range } = this.$editor.selection
       if (!range.offset && !range.length) {
         e.preventDefault()
         if (this.value.type !== 'paragraph') {

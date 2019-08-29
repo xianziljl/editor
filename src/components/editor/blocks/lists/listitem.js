@@ -13,8 +13,8 @@ export default {
       class: 'editor-block',
       props: { tagName, value: this.value },
       on: Object.assign({}, this.$listeners, {
-        'insert-before': this.insertBefore,
-        'insert-after': this.insertAfter,
+        'newline-before': this.newlineBefore,
+        'newline-after': this.newlineAfter,
         'clear-block-style': this.clearBlockStyle
       })
     })

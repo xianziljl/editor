@@ -15,14 +15,14 @@ export default {
     })
   },
   watch: {
-    'editor.selection.styles' (styles) {
+    '$editor.selection.styles' (styles) {
       this.isActive = !!styles.bold
     }
   },
   methods: {
     onClick (e) {
-      this.editor.exe('bold')
-      this.editor.isOperating = false
+      this.$editor.exe('bold')
+      this.$editor.isOperating = false
     }
   }
 }

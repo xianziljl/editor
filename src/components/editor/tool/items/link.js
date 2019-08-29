@@ -1,16 +1,19 @@
+import toolItemMixin from './toolItemMixin'
 export default {
   name: 'editor-tool-link',
-  inject: ['editor', 'tool'],
+  mixins: [toolItemMixin],
   data () {
     return {
-      href: this.editor.selection.styles.link || '',
-      isActive: false,
+      href: this.$editor.selection.styles.link || '',
       isInput: false // 是否在输入界面
     }
   },
   watch: {
-    'editor.selection.styles' (styles) {
+    '$editor.selection.styles' (styles) {
       this.isActive = !!styles.link
+    },
+    '$tool.isShow' (isShow) {
+      if (this.isInput && !isShow) this.cancelInput()
     }
   },
   render (h) {
@@ -41,13 +44,18 @@ export default {
     }, children)
   },
   methods: {
-    onClick (e) {
-      const { styles } = this.editor.selection
-      if (styles.link) {
-        this.editor.exe('link')
-        this.href = ''
+    cancelInput (e) {
+      setTimeout(() => {
         this.isInput = false
-        this.editor.isOperating = false
+        this.href = ''
+      }, 100)
+    },
+    onClick (e) {
+      const { styles } = this.$editor.selection
+      if (styles.link) {
+        this.$editor.exe('link')
+        this.$editor.isOperating = false
+        this.cancelInput()
       } else {
         this.isInput = true
         this.$nextTick(() => {
@@ -65,16 +73,16 @@ export default {
       if (e.keyCode === 13) {
         e.stopPropagation()
         if (!e.target.value) return
-        this.editor.exe('link', e.target.value)
-        this.isInput = false
-        this.editor.isOperating = false
-        this.tool.close()
+        this.$editor.exe('link', e.target.value)
+        this.$editor.isOperating = false
+        this.$tool.close()
+        this.cancelInput()
         return
       }
       if (e.keyCode === 27) {
-        this.editor.isOperating = false
-        this.isInput = false
-        this.tool.close()
+        this.$editor.isOperating = false
+        this.cancelInput()
+        this.$tool.close()
       }
     }
   }

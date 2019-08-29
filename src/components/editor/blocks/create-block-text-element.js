@@ -16,14 +16,14 @@ function createTextEditorElement (h, context, tagName, value, options) {
     class: 'editor-block',
     props: { tagName, value },
     on: Object.assign({}, context.$listeners, {
-      'insert-before': context.insertBefore,
-      'insert-after': context.insertAfter,
+      'newline-before': context.newlineBefore,
+      'newline-after': context.newlineAfter,
       'clear-block-style': context.clearBlockStyle,
       'merge-to-prev': val => {
-        const { blocks } = context.editor.value
+        const { blocks } = context.$editor.value
         const prevValue = blocks[blocks.indexOf(val) - 1]
         if (!prevValue) return
-        const prevComponent = getComponetByKey(context.editor, prevValue.key)
+        const prevComponent = getComponetByKey(context.$editor, prevValue.key)
         // console.log(prevComponent)
         prevComponent && prevComponent.mergeNext && prevComponent.mergeNext()
       }
