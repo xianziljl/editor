@@ -7,17 +7,9 @@
 .editor{
   position: relative;color: rgba(0, 28, 50, 0.8);
   font-family: -apple-system,
-  BlinkMacSystemFont,
-  Segoe UI,
-  Roboto,
-  Oxygen,
-  Ubuntu,
-  Cantarell,
-  Fira Sans,
-  Droid Sans,
-  Helvetica Neue,
-  sans-serif,
-  Microsoft Yahei;
+  BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+  Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+  sans-serif, Microsoft Yahei;
   line-height: 1.6;word-break: break-word;min-height: 100px;
   padding: 30px;
   &-text-editor{outline: none;}
@@ -43,7 +35,7 @@
   // inline
   a{color: #03a87c;text-decoration: none;}
   a:hover{text-decoration: underline;}
-  mark{background: rgba(12,242,143,.15);color: inherit;padding: 3px 0;}
+  mark{background: rgba(12,242,143,.15);color: inherit;padding: 0.15em 0;}
   strong{font-weight: 600;}
 
   &-checkbox{
