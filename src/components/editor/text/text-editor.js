@@ -128,6 +128,7 @@ function splitValue (value, range) {
         style: item.style,
         href: item.href
       })
+      return
     }
     if (itemStart > rangeStart && itemStart < rangeEnd) {
       item.offset = 0
