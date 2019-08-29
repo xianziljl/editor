@@ -13,7 +13,6 @@ function createTextEditorElement (h, context, tagName, value, options) {
     }, renderText(h, context, value.text || '', value.ranges || []))
   }
   return h(TextEditor, {
-    class: 'editor-block',
     props: { tagName, value },
     on: Object.assign({}, context.$listeners, {
       'newline-before': context.newlineBefore,

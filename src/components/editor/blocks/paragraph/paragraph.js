@@ -7,6 +7,6 @@ export default {
   render (h) {
     let { value } = this
     const tagName = 'p'
-    return createBlockTextElement(h, this, tagName, value)
+    return h('div', [createBlockTextElement(h, this, tagName, value)])
   }
 }

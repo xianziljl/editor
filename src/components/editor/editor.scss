@@ -5,32 +5,34 @@
   src: url(./icons/material-icons-outline.woff2) format('woff2');
 }
 .editor{
+  ::selection{background: rgba(0, 153, 255, 0.3);}
   position: relative;color: rgba(0, 28, 50, 0.8);
   font-family: -apple-system,
   BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
   Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
   sans-serif, Microsoft Yahei;
   line-height: 1.6;word-break: break-word;min-height: 100px;
-  padding: 30px;
+  padding: 15px;
   &-text-editor{outline: none;}
   &-text-view{outline: none;}
 
   div, .editor-block{box-sizing: border-box;}
-  h1, h2, h3, h4, h5, h6{font-weight: normal;}
+  h1, h2, h3, h4, h5, h6{font-weight: normal;margin: 0;}
   h1{font-size: 2em;}
   h2{font-size: 1.7em;}
   h3{font-size: 1.5em;}
   h4{font-size: 1.3em;}
   h5{font-size: 1.15em;}
   h6{font-size: 1.05em;}
-  p, ul, ol{margin: 1em 0;padding: 0;}
-  blockquote{margin: 1em 0;padding-left: 1.8em;border-left: 5px solid rgba(0, 158, 100, 0.2);}
+  p, ul, ol{margin: 0;}
+  blockquote{margin: 0;padding-left: 1.8em;border-left: 5px solid rgba(0, 158, 100, 0.2);}
   code{
-    font-family: monospace, Menlo, Monaco, Consolas, Courier New;padding: 0.1em 0.3em;border-radius: 3px;
+    font-family: Menlo, Monaco, Consolas, Courier New, monospace;padding: 0.1em 0.3em;border-radius: 3px;
     color: #a35121;font-size: 0.9em;background: rgba(255, 159, 69, 0.15);
   }
-  hr{border: none;padding: 0.8em 10%;margin: 1.5em 0;}
+  hr{border: none;padding: 1.5em 10%;margin: 0;}
   hr div{height: 1px;background: #ddd;}
+  img{vertical-align: middle;}
 
   // inline
   a{color: #03a87c;text-decoration: none;}
@@ -66,13 +68,12 @@
   -webkit-font-smoothing: antialiased;
   user-select: none;
 }
-.editor-tool-popup{
-  user-select: none;padding: 0 5px;
+.editor-tool-popup, .editor-tool-block{
+  user-select: none;padding: 0 5px;min-width: 40px;min-height: 40px;
   position: absolute;display: flex;align-items: center;//border: 1px solid rgba(0, 0, 0, 0.2);
-  background: #233036;border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);transform-origin: bottom;
+  background: #233036;border-radius: 5px;transform-origin: bottom;
   transform: translateY(10px) scale(0.95);transition: transform .1s ease, opacity .1s, visibility .1s;
-  visibility: hidden;opacity: 0;
+  visibility: hidden;opacity: 0;box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
   &-show{
     visibility: visible;opacity: 1;
     transform: translateY(0) scale(1);transition: transform .1s ease, opacity .1s;
@@ -86,6 +87,9 @@
     border-width: 0 6px 6px 6px;border-top-color: transparent;border-bottom-color: #233036;
     top: auto;bottom: 100%;
   }
+}
+.editor-tool-block{
+  position: fixed;bottom: 40px;min-width: 40px;
 }
 .editor-tool-btn{
   display: inline-flex;justify-content: center;align-items: center;
@@ -111,21 +115,35 @@
   input::-webkit-input-placeholder{color: rgba(255,255,255,0.3)}
 }
 .editor-block{
-  min-height: 1em;
+  min-height: 1em;padding: 0.5em 20px;
   &-orderlist{
-    position: relative;padding-left: 2.5em;margin: 0.3em 0;list-style-type: none;
+    position: relative;padding: 0.3em 0;padding-left: 2.5em;list-style-type: none;
     &:before{content: attr(data-index);position: absolute;left: 0.8em;}
   }
   &-unorderlist{
-    position: relative;padding-left: 2.5em;margin: 0.3em 0;list-style-type: none;
+    position: relative;padding: 0.3em 0;padding-left: 2.5em;list-style-type: none;
     &:before{content: '';position: absolute;display: block;width: 0.43em;
       height: 0.43em;background: currentColor;border-radius: 50%;
-      left: 0.9em;top: 0.5em;}
+      left: 0.9em;top: 0.9em;}
   }
   &-todolist{
-    position: relative;padding-left: 2.5em;margin: 0.3em 0;list-style-type: none;
+    position: relative;padding: 0.3em 0;padding-left: 2.5em;list-style-type: none;
     box-sizing: border-box;
-    .editor-checkbox{position: absolute;left: 0.8em;top: 0.4em;}
+    .editor-checkbox{position: absolute;left: 0.8em;top: 0.8em;}
     // li .editor-text-editor{flex: 1;}
+  }
+  &-images{
+    display: flex;padding-left: 15px;padding-right: 15px;
+  }
+  &-image{
+    padding: 5px;overflow: hidden;
+    &-desc{
+      position: relative;font-size: 0.95em;overflow: hidden;white-space: nowrap;
+      min-height: 1em;margin-top: 0.3em;text-align: center;color: rgba(0, 28, 50, 0.6);
+      &.editor-text-editor-empty:before{
+        content: '写点说明文字';position: absolute;width: 100%;left: 0;
+        color: rgba(0, 28, 50, 0.3);pointer-events: none;
+      }
+    }
   }
 }
