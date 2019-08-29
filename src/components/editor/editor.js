@@ -171,30 +171,41 @@ export default {
       this.isMousedown = false
     },
     onKeydown (e) {
-      // console.log(e)
+      console.log(e)
       this.onSelectionchange()
       const ctrl = (e.metaKey || e.ctrlKey)
       // if (ctrl) e.preventDefault()
       switch (e.keyCode) {
-        case 13: // 回车
-          e.preventDefault()
+        case 37:
+        case 38:
+          this.navitagionBack()
           break
-        // case 8:
-        //   this.onBackspace(e)
-        //   break
+        case 39:
+        case 40:
+          this.navitagionForward()
+          break
       }
       // 禁用快捷键
       if (ctrl) {
+        // console.log(e.keyCode)
         switch (e.keyCode) {
-          case 66: // ctrl+B or ctrl+b
-          case 98:
-          case 73: // ctrl+I or ctrl+i
-          case 105:
-          case 85: // ctrl+U or ctrl+u
-          case 117: {
+          case 66: // ctrl+B
             e.preventDefault()
+            this.exe('bold')
             break
-          }
+          case 73: // ctrl+I
+            e.preventDefault()
+            this.exe('italic')
+            break
+          case 85: // ctrl+U
+            e.preventDefault()
+            this.exe('underline')
+            break
+          case 83: // ctrl+S
+            // e.preventDefault()
+            // console.log(e)
+            // this.exe('underline')
+            break
           case 90: // ctrl+Z
             // this.historyBack()
             break
@@ -354,6 +365,17 @@ export default {
         // console.log(target)
         this.setRange(target, 0, 0)
       })
+    },
+    navitagionBack () {
+      const { range } = this.selection
+      if (!range || range.offset !== 0 || range.length) return
+      console.log('navitagionBack')
+      // const prevValue =
+    },
+    navitagionForward () {
+      const { range, target } = this.selection
+      if (!range || !target || range.offset !== target.value.text.length || range.length) return
+      console.log('navitagionForward')
     }
   }
 }

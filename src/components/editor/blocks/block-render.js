@@ -12,8 +12,8 @@ function renderBlocks (h, blocks, readonly) {
       class: 'editor-block-' + type,
       key: item.key,
       on: {
-        'link-hover': e => { console.log('link-hover', e.target.getAttribute('href')) },
-        'link-leave': e => { console.log('link-leave') }
+        // 'link-hover': e => { console.log('link-hover', e.target.getAttribute('href')) },
+        // 'link-leave': e => { console.log('link-leave') }
       }
     })
     if (!listTypes[type]) {

@@ -19,6 +19,9 @@ export default {
       ranges: []
     },
     {
+      type: 'divider'
+    },
+    {
       type: 'todolist',
       checked: false,
       text: 'This a todo item 1.',

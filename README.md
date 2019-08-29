@@ -7,11 +7,13 @@
 - ~~在非 list 开始位置回车，应在之前插入普通段落，而非相同格式段落~~
 - ~~*性能优化（onSelectionchange触发频繁）*~~ 避免在 render 中使用频繁变化的数据
 ### 未实现
+- 方向键导航功能
 - 链接的提示（通用，也可用于其它需要提示的地方）
 - block 工具条的实现
 - block 的拖动排序
 - image 组件（可拖动排序）
 - video 组件
+- audio 组件
 - attach 组件
 - table 组件
 - chart 组件

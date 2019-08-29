@@ -5,7 +5,7 @@ import Code from './items/code'
 import Hilight from './items/hilight'
 import Strikethrough from './items/strikethrough'
 
-const items = [Border, Italic, Link, Strikethrough, Code, Hilight]
+const items = [Border, Italic, Strikethrough, Link, Code, Hilight]
 
 export default {
   name: 'editor-tool-popup',
