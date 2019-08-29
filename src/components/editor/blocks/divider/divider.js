@@ -6,5 +6,11 @@ export default {
     return h('hr', this.readonly ? {} : {
       attrs: { tabindex: 0 }
     }, [h('div')])
+  },
+  methods: {
+    mergeNext () {
+      const { blocks } = this.$editor.value
+      blocks.splice(blocks.indexOf(this.value), 1)
+    }
   }
 }

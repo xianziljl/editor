@@ -37,6 +37,8 @@ export default {
     },
     clearBlockStyle (val) {
       val.type = 'paragraph'
+      if (!val.text) this.$set(val, 'text', '')
+      if (!val.ranges) this.$set(val, 'ranges', [])
       this.$nextTick(() => {
         const { target, range } = this.$editor.selection
         this.$editor.setRange(target, range.offset, range.length)

@@ -77,6 +77,7 @@ export default {
 </script>
 
 <style lang="scss">
+body{background: #eee;}
   #app{margin: 60px auto;font-size: 16px;max-width: 700px;}
   .toolbar{
     user-select: none;

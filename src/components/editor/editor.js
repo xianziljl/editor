@@ -171,7 +171,7 @@ export default {
       this.isMousedown = false
     },
     onKeydown (e) {
-      console.log(e)
+      // console.log(e)
       this.onSelectionchange()
       const ctrl = (e.metaKey || e.ctrlKey)
       // if (ctrl) e.preventDefault()

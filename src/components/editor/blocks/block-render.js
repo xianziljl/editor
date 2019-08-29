@@ -1,4 +1,5 @@
 import { blockMap, listTypes } from '../map'
+// import BlockContainer from './block-container'
 
 function renderBlocks (h, blocks, readonly) {
   let children = []
@@ -11,10 +12,7 @@ function renderBlocks (h, blocks, readonly) {
       attrs: { 'data-index': listTypes[type] ? `${list.length + 1}.` : null },
       class: 'editor-block-' + type,
       key: item.key,
-      on: {
-        // 'link-hover': e => { console.log('link-hover', e.target.getAttribute('href')) },
-        // 'link-leave': e => { console.log('link-leave') }
-      }
+      on: {}
     })
     if (!listTypes[type]) {
       children.push(child)

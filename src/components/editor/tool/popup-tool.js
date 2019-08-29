@@ -48,9 +48,6 @@ export default {
       key: 1
     }, children)
   },
-  mounted () {
-    this.position = this.getPosition()
-  },
   watch: {
     '$editor.selection.rect' (val) {
       if (val) this.position = this.getPosition()
