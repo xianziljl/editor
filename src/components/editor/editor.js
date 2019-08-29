@@ -1,6 +1,6 @@
 import debounce from 'debounce'
-// import { blockMap } from './map'
 import ToolPopup from './tool/popup-tool'
+import ToolBlock from './tool/block-tool'
 import textRange from './text/text-range'
 // import formatters from './formatters'
 import createGUID from './utils/createGUID'
@@ -72,7 +72,9 @@ export default {
     // 渲染工具条
     if (!readonly) {
       const toolPopup = h(ToolPopup, { ref: 'popupTool' })
+      const toolBlock = h(ToolBlock, { ref: 'toolBlock' })
       children.push(toolPopup)
+      children.push(toolBlock)
     }
 
     return h('article', {
@@ -99,7 +101,7 @@ export default {
   },
   methods: {
     onInput (e) {
-      if (this.isComposing) return
+      if (this.isComposing || this.isOperating) return
       // console.log('input')
       // this.isInputing = true
       // 在一些非文档编辑内容时不做处理，例如：输入 A 链接的地址时
@@ -215,7 +217,7 @@ export default {
     onSelectionchange (e) {
       // console.log(this.isInputing)
       // console.log('selection change')
-      if (this.isOperating || this.isSetingRange) return
+      if (this.isOperating || this.isSetingRange || this.value.readonly) return
       if (this.isComposing || this.readonly || !this.selection.target) return
       // console.log('on selectionchange')
       const { getRange, getRangeRect, getRangeStyles } = textRange

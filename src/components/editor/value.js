@@ -14,12 +14,44 @@ export default {
       ]
     },
     {
-      type: 'paragraph',
-      text: 'INDIANAPOLIS — The building on West 56th Street in Indianapolis is a workplace, just like the buildings so many of you are heading to for the beginning of a new week. And on Sunday, the day after everything changed with the news of Andrew Luck’s unexpected retirement, the Colts’ home facility was like how you might expect your workplace to be on the day after a seismic, shifting event.',
+      type: 'heading',
+      level: 2,
+      text: 'What is clean data',
       ranges: []
     },
     {
-      type: 'divider'
+      type: 'images',
+      images: [{
+        src: 'https://images.unsplash.com/photo-1567074679818-fc11171fab11?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+        alt: 'This an image',
+        text: 'This an image',
+        width: 500,
+        height: 750,
+        ranges: []
+      }, {
+        src: 'https://s3.ifanr.com/wp-content/uploads/2016/12/98.jpg!720',
+        alt: 'This an image',
+        text: 'This an image',
+        width: 720,
+        height: 450,
+        ranges: []
+      }]
+    },
+    // {
+    //   type: 'images',
+    //   images: [{
+    //     src: 'https://s3.ifanr.com/wp-content/uploads/2019/07/00cover-1.jpg!720',
+    //     alt: 'This an image',
+    //     text: 'This an image',
+    //     width: 720,
+    //     height: 405,
+    //     ranges: []
+    //   }]
+    // },
+    {
+      type: 'paragraph',
+      text: 'INDIANAPOLIS — The building on West 56th Street in Indianapolis is a workplace, just like the buildings so many of you are heading to for the beginning of a new week. And on Sunday, the day after everything changed with the news of Andrew Luck’s unexpected retirement, the Colts’ home facility was like how you might expect your workplace to be on the day after a seismic, shifting event.',
+      ranges: []
     },
     {
       type: 'todolist',
@@ -88,13 +120,11 @@ export default {
       ]
     },
     {
-      type: 'paragraph',
-      text: 'This is a tough one inside the facility. Just like Luck’s decision to retire was a human one, the Indianapolis coaches and scouts had a human response, too. They talked off to the side in groups, as the leaders tried their best to set a course forward with the beginning of the regular season less than two weeks away. Some staffers knew Friday. Others found out during the game Saturday with the public. Some who know Luck well, trainers and strength staffers, weren’t surprised.',
-      ranges: []
+      type: 'divider'
     },
     {
       type: 'paragraph',
-      text: 'But many were caught off-guard, which is why the coach and GM tried to foster normalcy as best they could, leaning on a culture that they believe can absorb adversity of even this kind. I’m told neither GM Chris Ballard nor coach Frank Reich addressed Luck’s decision directly as they gathered en masse for a 5 p.m. personnel meeting. There’s a lot to do between now and 4:05 ET in Los Angeles on Sept. 8, and if Ballard and Reich aren’t forging forward, no one will be.      ',
+      text: 'This is a tough one inside the facility. Just like Luck’s decision to retire was a human one, the Indianapolis coaches and scouts had a human response, too. They talked off to the side in groups, as the leaders tried their best to set a course forward with the beginning of the regular season less than two weeks away. Some staffers knew Friday. Others found out during the game Saturday with the public. Some who know Luck well, trainers and strength staffers, weren’t surprised.',
       ranges: []
     }
   ]

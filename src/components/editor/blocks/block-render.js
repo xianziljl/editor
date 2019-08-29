@@ -10,10 +10,11 @@ function renderBlocks (h, blocks, readonly) {
     const child = h(component, {
       props: { value: item, readonly },
       attrs: { 'data-index': listTypes[type] ? `${list.length + 1}.` : null },
-      class: 'editor-block-' + type,
+      class: ['editor-block', 'editor-block-' + type],
       key: item.key,
       on: {}
     })
+
     if (!listTypes[type]) {
       children.push(child)
       return
@@ -22,7 +23,9 @@ function renderBlocks (h, blocks, readonly) {
     list.push(child)
     const next = blocks[i + 1]
     if (!next || next.type !== item.type) {
-      children.push(h(listTypes[type], list))
+      children.push(h(listTypes[type], {
+        class: 'editor-block'
+      }, list))
       list = []
     }
   })

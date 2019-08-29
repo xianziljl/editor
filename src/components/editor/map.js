@@ -4,6 +4,7 @@ import Blockquote from './blocks/blockquote/blockquote'
 import Divider from './blocks/divider/divider'
 import Listitem from './blocks/lists/listitem'
 import Todoitem from './blocks/lists/todoitem'
+import Images from './blocks/image/images'
 // import Orderlist from './blocks/lists/orderlist'
 // import Unorderlist from './blocks/lists/unorderlist'
 // import Todolist from './blocks/lists/todolist'
@@ -25,7 +26,8 @@ const blockMap = {
   divider: Divider,
   orderlist: Listitem,
   unorderlist: Listitem,
-  todolist: Todoitem
+  todolist: Todoitem,
+  images: Images
 }
 
 const listTypes = {
