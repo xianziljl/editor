@@ -9,8 +9,8 @@ export default {
     }
   },
   watch: {
-    'tool.isShow' (isShow) {
-      if (isShow) this.isActive = !!this.editor.selection.styles.link
+    'editor.selection.styles' (styles) {
+      this.isActive = !!styles.link
     }
   },
   render (h) {
@@ -46,6 +46,7 @@ export default {
       if (styles.link) {
         this.editor.exe('link')
         this.href = ''
+        this.isInput = false
         this.editor.isOperating = false
       } else {
         this.isInput = true
@@ -65,12 +66,14 @@ export default {
         e.stopPropagation()
         if (!e.target.value) return
         this.editor.exe('link', e.target.value)
+        this.isInput = false
         this.editor.isOperating = false
         this.tool.close()
         return
       }
       if (e.keyCode === 27) {
         this.editor.isOperating = false
+        this.isInput = false
         this.tool.close()
       }
     }

@@ -15,8 +15,8 @@ export default {
     })
   },
   watch: {
-    'tool.isShow' (isShow) {
-      if (isShow) this.isActive = !!this.editor.selection.styles.code
+    'editor.selection.styles' (styles) {
+      this.isActive = !!styles.code
     }
   },
   methods: {
