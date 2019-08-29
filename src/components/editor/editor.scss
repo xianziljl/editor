@@ -79,8 +79,12 @@
   position: absolute;display: flex;align-items: center;//border: 1px solid rgba(0, 0, 0, 0.2);
   background: #233036;border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);transform-origin: bottom;
-  opacity: 0;transform: translateY(10px) scale(0.95);transition: transform .1s ease, opacity .1s ease;
-  &-show{opacity: 1;transform: translateY(0) scale(1)}
+  transform: translateY(10px) scale(0.95);transition: transform .1s ease, opacity .1s, visibility .1s;
+  visibility: hidden;opacity: 0;
+  &-show{
+    visibility: visible;opacity: 1;
+    transform: translateY(0) scale(1);transition: transform .1s ease, opacity .1s;
+  }
   &-arrow{
     content: '';display: block;position: absolute;width: 0;height: 0;
     border: 1px solid transparent;border-width: 6px 6px 0 6px;left: 50%;top: 100%;
