@@ -8,11 +8,8 @@ import Strikethrough from './items/strikethrough'
 const items = [Border, Italic, Link, Strikethrough, Code, Hilight]
 
 export default {
-  name: 'editor-tool-float',
+  name: 'editor-tool-popup',
   inject: ['editor'],
-  props: {
-    rect: Object // 矩形范围
-  },
   data () {
     return {
       isShow: false,
@@ -22,7 +19,7 @@ export default {
   },
   provide () {
     return {
-      floatTool: this
+      tool: this
     }
   },
   render (h) {
@@ -31,14 +28,14 @@ export default {
       return h(item)
     })
     children.push(h('i', {
-      class: 'editor-tool-float-arrow',
+      class: 'editor-tool-popup-arrow',
       style: { left: arrowX + '%' }
     }))
     return h('div', {
       class: [
-        'editor-tool-float',
-        this.isUnder ? 'editor-tool-float-under' : '',
-        this.isShow ? 'editor-tool-float-show' : ''
+        'editor-tool-popup',
+        // this.isUnder ? 'editor-tool-popup-under' : '',
+        this.isShow ? 'editor-tool-popup-show' : ''
       ],
       style: {
         left: x + 'px',
@@ -53,21 +50,24 @@ export default {
   },
   mounted () {
     this.position = this.getPosition()
-    this.$nextTick(() => { this.isShow = true })
   },
   watch: {
-    rect () {
-      this.position = this.getPosition()
+    'editor.selection.rect' (val) {
+      if (val) this.position = this.getPosition()
+      this.$nextTick(() => {
+        this.isShow = !!val
+      })
     }
   },
   methods: {
     getPosition () {
-      if (!this.rect || !this.$el) return { x: 0, y: 0 }
+      const { rect } = this.editor.selection
+      if (!rect || !this.$el) return { x: 0, y: 0 }
       const PADDING = 0
       const { clientWidth, clientHeight } = this.$el
       const innerWidth = this.$el.parentNode.clientWidth
 
-      const { left, top, width } = this.rect
+      const { left, top, width } = rect
       let x = ~~(left + (width - clientWidth) / 2)
       let y = ~~(top - clientHeight - 10)
       let arrowX = 50

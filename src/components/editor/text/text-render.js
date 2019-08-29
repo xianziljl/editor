@@ -23,6 +23,7 @@ function createLinkNode (h, context, child) {
  * @returns {array} vnodes
  */
 export default function (h, context, text, ranges) {
+  // console.log('text render')
   const length = text.length
   const inlines = []
   const createTextNode = context._v

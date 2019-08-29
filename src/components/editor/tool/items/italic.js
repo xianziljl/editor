@@ -1,18 +1,23 @@
+import toolItemMixin from './toolItemMixin'
 export default {
   name: 'editor-tool-italic',
-  inject: ['editor'],
+  mixins: [toolItemMixin],
   render (h) {
-    const { styles } = this.editor.selection
     return h('button', {
       class: [
         'editor-tool-btn',
         'editor-tool-italic',
-        styles.italic ? 'editor-tool-btn-on' : ''
+        this.isActive ? 'editor-tool-btn-on' : ''
       ],
       on: {
         click: this.onClick
       }
     })
+  },
+  watch: {
+    'tool.isShow' (isShow) {
+      if (isShow) this.isActive = !!this.editor.selection.styles.italic
+    }
   },
   methods: {
     onClick (e) {

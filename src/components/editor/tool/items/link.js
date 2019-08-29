@@ -1,19 +1,24 @@
 export default {
   name: 'editor-tool-link',
-  inject: ['editor', 'floatTool'],
+  inject: ['editor', 'tool'],
   data () {
     return {
       href: this.editor.selection.styles.link || '',
+      isActive: false,
       isInput: false // 是否在输入界面
     }
   },
+  watch: {
+    'tool.isShow' (isShow) {
+      if (isShow) this.isActive = !!this.editor.selection.styles.link
+    }
+  },
   render (h) {
-    const { styles } = this.editor.selection
     const children = [h('button', {
       class: [
         'editor-tool-btn',
         'editor-tool-link',
-        styles.link ? 'editor-tool-btn-on' : ''
+        this.isActive ? 'editor-tool-btn-on' : ''
       ],
       on: {
         click: this.onClick
@@ -61,12 +66,12 @@ export default {
         if (!e.target.value) return
         this.editor.exe('link', e.target.value)
         this.editor.isOperating = false
-        this.floatTool.close()
+        this.tool.close()
         return
       }
       if (e.keyCode === 27) {
         this.editor.isOperating = false
-        this.floatTool.close()
+        this.tool.close()
       }
     }
   }

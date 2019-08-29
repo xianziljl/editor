@@ -13,14 +13,27 @@ export default {
   methods: {
     insertBefore (val) {
       const { blocks } = this.editor.value
-      this.$set(val, 'type', this.value.type)
+      const { type } = this.value
+      this.$set(val, 'type', listTypes[type] ? type : 'paragraph')
       this.editor.insertBeforeBlock(blocks, this.value, val)
     },
     insertAfter (val) {
       const { blocks } = this.editor.value
-      const type = listTypes[this.value.type] && this.value.text.length ? this.value.type : 'paragraph'
-      this.$set(val, 'type', type)
+      const { type, text } = this.value
+      if (!listTypes[type]) {
+        this.$set(val, 'type', 'paragraph')
+        this.editor.insertAfterBlock(blocks, this.value, val)
+        return
+      }
+      // 单独处理 list
+      if (text.length) {
+        this.$set(val, 'type', type)
+        this.editor.insertAfterBlock(blocks, this.value, val)
+        return
+      }
+      this.$set(val, 'type', 'paragraph')
       this.editor.insertAfterBlock(blocks, this.value, val)
+      blocks.splice(blocks.indexOf(this.value), 1)
     },
     clearBlockStyle (val) {
       val.type = 'paragraph'

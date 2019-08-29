@@ -1,18 +1,23 @@
+import toolItemMixin from './toolItemMixin'
 export default {
   name: 'editor-tool-strikethrough',
-  inject: ['editor'],
+  mixins: [toolItemMixin],
   render (h) {
-    const { styles } = this.editor.selection
     return h('button', {
       class: [
         'editor-tool-btn',
         'editor-tool-strikethrough',
-        styles.strikethrough ? 'editor-tool-btn-on' : ''
+        this.isActive ? 'editor-tool-btn-on' : ''
       ],
       on: {
         click: this.onClick
       }
     })
+  },
+  watch: {
+    'tool.isShow' (isShow) {
+      if (isShow) this.isActive = !!this.editor.selection.styles.strikethrough
+    }
   },
   methods: {
     onClick (e) {

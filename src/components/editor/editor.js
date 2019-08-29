@@ -1,6 +1,6 @@
 import debounce from 'debounce'
 // import { blockMap } from './map'
-import ToolFloat from './tool/float'
+import ToolPopup from './tool/popup-tool'
 import textRange from './text/text-range'
 // import formatters from './formatters'
 import createGUID from './utils/createGUID'
@@ -27,12 +27,13 @@ export default {
   },
   data () {
     return {
+      isInputing: false,
       isMousedown: false,
       isSelecting: false,
       isComposing: false, // 正在拼写
       isOperating: false, // 正在操作工具栏
       isHistoryBacking: false, // 正在进行回退
-      // isSetingRange: false,
+      isSetingRange: false,
       selection: {
         oldRange: null,
         range: null, // { offset, length }
@@ -66,18 +67,15 @@ export default {
   // },
   render (h) {
     console.log('render')
-    const { value, readonly, selection } = this
+    const { value, readonly } = this
     // 渲染子元素
     const children = renderBlocks(h, value.blocks, readonly)
     // 渲染工具条
-    if (!readonly && selection.range && selection.range.length) {
-      const toolFloat = h(ToolFloat, {
-        props: { rect: this.selection.rect },
-        ref: 'floatTool'
-      })
-      children.push(toolFloat)
+    if (!readonly) {
+      const toolPopup = h(ToolPopup, { ref: 'popupTool' })
+      children.push(toolPopup)
     }
-    //
+
     return h('article', {
       class: ['editor'],
       on: readonly ? {} : {
@@ -103,6 +101,8 @@ export default {
   methods: {
     onInput (e) {
       if (this.isComposing) return
+      // console.log('input')
+      // this.isInputing = true
       // 在一些非文档编辑内容时不做处理，例如：输入 A 链接的地址时
       if (!this.selection.target || e.target !== this.selection.target.$el) return
       const { replaceRange, splitRange, mergeRanges, filterRanges } = textRange
@@ -150,8 +150,9 @@ export default {
       // 复位光标
       this.$nextTick(() => {
         const newOffset = oldRange.offset + inputLength
-        // console.log(this.selection.target)
         this.setRange(this.selection.target, newOffset, 0)
+        // console.log('input end')
+        // console.log('set range 3')
       })
     },
     onCompositionstart (e) {
@@ -163,9 +164,9 @@ export default {
     },
     onMousedown (e) {
       this.isMousedown = true
-      const floatTool = this.$refs.floatTool
+      const popupTool = this.$refs.popupTool
       const path = e.path || (e.composedPath && e.composedPath())
-      this.isOperating = !!((floatTool && path.includes(this.$refs.floatTool.$el)))
+      this.isOperating = !!((popupTool && path.includes(this.$refs.popupTool.$el)))
     },
     onMouseup (e) {
       this.isMousedown = false
@@ -202,8 +203,9 @@ export default {
       }
     },
     onSelectionchange (e) {
+      // console.log(this.isInputing)
       // console.log('selection change')
-      if (this.isOperating) return
+      if (this.isOperating || this.isSetingRange) return
       if (this.isComposing || this.readonly || !this.selection.target) return
       // console.log('on selectionchange')
       const { getRange, getRangeRect, getRangeStyles } = textRange
@@ -291,6 +293,7 @@ export default {
      */
     setRange (target, offset, length) {
       // console.log(target.$el, offset, length)
+      this.isSetingRange = true
       const { getFocusNodeAndOffset } = textRange
       const start = getFocusNodeAndOffset(target.$el, offset)
       const end = length ? getFocusNodeAndOffset(target.$el, offset + length) : start
@@ -306,10 +309,12 @@ export default {
       } catch (err) {
         console.warn('setRange failed: ' + err.message)
       }
+      // console.log('set range 2')
+      this.isSetingRange = false
     },
     // 快捷调用 自动确定选区和操作对象
     exe (style, href) {
-      // console.log(this.$refs.floatTool)
+      // console.log(this.$refs.popupTool)
       const { target, range } = this.selection
       this.setTextStyle(target, range, style, href)
     },

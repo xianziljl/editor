@@ -1,18 +1,25 @@
+import toolItemMixin from './toolItemMixin'
+
 export default {
   name: 'editor-tool-bold',
-  inject: ['editor'],
+  mixins: [toolItemMixin],
   render (h) {
-    const { styles } = this.editor.selection
+    // const { styles } = this.editor.selection
     return h('button', {
       class: [
         'editor-tool-btn',
         'editor-tool-bold',
-        styles.bold ? 'editor-tool-btn-on' : ''
+        this.isActive ? 'editor-tool-btn-on' : ''
       ],
       on: {
         click: this.onClick
       }
     })
+  },
+  watch: {
+    'tool.isShow' (isShow) {
+      if (isShow) this.isActive = !!this.editor.selection.styles.bold
+    }
   },
   methods: {
     onClick (e) {
