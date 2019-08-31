@@ -30,7 +30,15 @@ export default {
     return h('div', {
       class: 'editor-block-image',
       attrs: readonly ? null : { tabindex: 1 },
-      style: { flex: width }
+      style: { flex: width },
+      on: readonly ? null : {
+        focus: this.onFocus
+      }
     }, [img, desc])
+  },
+  methods: {
+    onFocus (e) {
+      console.log(e)
+    }
   }
 }

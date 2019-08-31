@@ -29,8 +29,7 @@ export default {
     const { text, ranges } = this.value
     const children = renderText(h, this, text, ranges)
     return h(
-      this.tagName || 'div',
-      {
+      this.tagName || 'div', {
         class: [
           'editor-text-editor',
           this.value.text ? '' : 'editor-text-editor-empty'
@@ -41,9 +40,7 @@ export default {
           keydown: this.onKeydown
         },
         key: this.key
-      },
-      children
-    )
+      }, children)
   },
   methods: {
     onFocus (e) {
@@ -71,7 +68,7 @@ export default {
         const results = splitValue(this.value, range)
         this.$emit('newline-after', results[1])
       } else {
-        // console.log('newline-before')
+        console.log('newline-before')
         this.$emit('newline-before', {
           key: createGUID(),
           text: '',
@@ -87,11 +84,11 @@ export default {
         if (this.value.type !== 'paragraph') {
           // console.log(this.value.type)
           this.$emit('clear-block-style', this.value)
-          // console.log('clear-block-style')
+          console.log('clear-block-style')
           return
         }
         this.$emit('merge-to-prev', this.value)
-        // console.log('merge-to-prev')
+        console.log('merge-to-prev')
       }
     }
   }

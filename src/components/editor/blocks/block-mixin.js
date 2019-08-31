@@ -1,5 +1,6 @@
 import { mergeRanges } from '../text/text-range'
 import { listTypes } from '../map'
+import getComponetByKey from '../utils/getComponentByKey'
 
 export default {
   inject: ['$editor'],
@@ -43,6 +44,14 @@ export default {
         const { target, range } = this.$editor.selection
         this.$editor.setRange(target, range.offset, range.length)
       })
+    },
+    mergeToPrev (val) {
+      const { blocks } = this.$editor.value
+      const prevValue = blocks[blocks.indexOf(val) - 1]
+      if (!prevValue) return
+      const prevComponent = getComponetByKey(this.$editor, prevValue.key)
+      // console.log(prevComponent)
+      prevComponent && prevComponent.mergeNext && prevComponent.mergeNext()
     },
     mergeNext () {
       const { $editor, value } = this

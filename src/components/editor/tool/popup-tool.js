@@ -5,7 +5,10 @@ import Code from './items/code'
 import Hilight from './items/hilight'
 import Strikethrough from './items/strikethrough'
 
-const items = [Border, Italic, Strikethrough, Link, Code, Hilight]
+import Images from './items/images'
+// import Blockquote from './items/blockquote'
+
+const items = [Border, Italic, Strikethrough, Link, Code, Hilight, Images]
 
 export default {
   name: 'editor-tool-popup',

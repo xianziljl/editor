@@ -2,6 +2,15 @@ import toolItemMixin from './toolItemMixin'
 
 export default {
   name: 'editor-tool-blockquote',
-  inject: ['$editor'],
-  mixins: [toolItemMixin]
+  mixins: [toolItemMixin],
+  watch: {
+    '$editor.selection.blockStyle' (val) {
+      this.isActive = val === 'blockquote'
+    }
+  },
+  methods: {
+    onClick () {
+      console.log('blockquote')
+    }
+  }
 }

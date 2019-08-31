@@ -31,6 +31,7 @@
     <!-- <div>
       <img src="./assets/24px.svg" alt="">
     </div> -->
+    <input type="file" @change="onFileChange">
   </div>
 </template>
 
@@ -71,6 +72,14 @@ export default {
     onSelection (range, rangeStyles) {
       this.range = range
       this.rangeStyles = rangeStyles
+    },
+    onFileChange (e) {
+      const file = e.target.files[0]
+      console.log(file)
+      const url = URL.createObjectURL(file)
+      const img = new Image()
+      img.src = url
+      document.body.appendChild(img)
     }
   }
 }

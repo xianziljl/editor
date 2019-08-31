@@ -1,8 +1,8 @@
 import debounce from 'debounce'
 import ToolPopup from './tool/popup-tool'
-import ToolBlock from './tool/block-tool'
+// import ToolBlock from './tool/block-tool'
 import textRange from './text/text-range'
-// import formatters from './formatters'
+import formatters from './formatters'
 import createGUID from './utils/createGUID'
 import getEditorByKey from './utils/getEditorByKey'
 import renderBlocks from './blocks/block-render'
@@ -38,6 +38,7 @@ export default {
         oldRange: null,
         range: null, // { offset, length }
         styles: {}, // 选中文字已有的样式
+        blockStyle: null, // 选中的 block 样式
         rect: null, // { width, height, left, top }
         target: null // TextEditor
       },
@@ -72,9 +73,9 @@ export default {
     // 渲染工具条
     if (!readonly) {
       const toolPopup = h(ToolPopup, { ref: 'popupTool' })
-      const toolBlock = h(ToolBlock, { ref: 'toolBlock' })
+      // const toolBlock = h(ToolBlock, { ref: 'toolBlock' })
       children.push(toolPopup)
-      children.push(toolBlock)
+      // children.push(toolBlock)
     }
 
     return h('article', {
@@ -138,19 +139,23 @@ export default {
       }
       value.text = $el.innerText.replace(/\n/g, ' ')
       // 用于快捷格式化段落
-      // formatters.forEach(formatter => {
-      //   formatter(value)
-      // })
+      let formatted = false
+      if (value.type === 'paragraph') {
+        formatters.forEach(formatter => {
+          const res = formatter(value, this)
+          if (res) formatted = true
+        })
+      }
       // 整理range
       mergeRanges(value.ranges)
       filterRanges(value.ranges, $el.innerText)
       // ranges 更改后也要更新光标处的已经应用样式
-      this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
+      // this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
       // 更新文字
       this.selection.target.key += 1
       // 复位光标
       this.$nextTick(() => {
-        const newOffset = oldRange.offset + inputLength
+        const newOffset = formatted ? 0 : oldRange.offset + inputLength
         this.setRange(this.selection.target, newOffset, 0)
         // console.log('input end')
         // console.log('set range 3')
@@ -229,6 +234,7 @@ export default {
       this.selection.range = range
       // console.log(range.offset)
       this.selection.styles = getRangeStyles(this.selection.range, this.selection.target.value.ranges)
+      this.selection.blockStyle = this.selection.target.value.type
       // if (this.isMousedown && (!range || !range.length)) this.isSelecting = true
       this.selection.rect = (!range || !range.length) ? null : rangeRect
 
@@ -280,7 +286,7 @@ export default {
       mergeRanges(value.ranges)
       filterRanges(value.ranges, value.text)
       // ranges 更改后也要更新光标处的已经应用样式
-      this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
+      // this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
       target.key += 1
       this.$nextTick(() => {
         this.setRange(target, range.offset, range.length)
@@ -348,7 +354,7 @@ export default {
       // console.log(range, focusKey)
       this.value.blocks = value.blocks
       this.$nextTick(() => {
-        this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
+        // this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
 
         const target = getEditorByKey(focusKey)
         if (range && target) this.setRange(target, range.offset, range.length)

@@ -37,17 +37,6 @@ export default {
         ranges: []
       }]
     },
-    // {
-    //   type: 'images',
-    //   images: [{
-    //     src: 'https://s3.ifanr.com/wp-content/uploads/2019/07/00cover-1.jpg!720',
-    //     alt: 'This an image',
-    //     text: 'This an image',
-    //     width: 720,
-    //     height: 405,
-    //     ranges: []
-    //   }]
-    // },
     {
       type: 'paragraph',
       text: 'INDIANAPOLIS — The building on West 56th Street in Indianapolis is a workplace, just like the buildings so many of you are heading to for the beginning of a new week. And on Sunday, the day after everything changed with the news of Andrew Luck’s unexpected retirement, the Colts’ home facility was like how you might expect your workplace to be on the day after a seismic, shifting event.',
@@ -57,67 +46,49 @@ export default {
       type: 'todolist',
       checked: false,
       text: 'This a todo item 1.',
-      ranges: [
-        { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
-      ]
+      ranges: []
     },
     {
       type: 'todolist',
       checked: false,
       text: 'This a todo item 2.',
-      ranges: [
-        { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
-      ]
+      ranges: []
     },
     {
       type: 'todolist',
       checked: false,
       text: 'This a todo item 3.',
-      ranges: [
-        { offset: 8, length: 5, style: 'link', href: 'https://www.google.com' }
-      ]
+      ranges: []
     },
     {
       type: 'unorderlist',
       text: 'This an unorderlist 1.',
-      ranges: [
-        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
-      ]
+      ranges: []
     },
     {
       type: 'unorderlist',
       text: 'This an unorderlist 2.',
-      ranges: [
-        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
-      ]
+      ranges: []
     },
     {
       type: 'unorderlist',
       text: 'This an unorderlist 3.',
-      ranges: [
-        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
-      ]
+      ranges: []
     },
     {
       type: 'orderlist',
       text: 'This an orderlist 1.',
-      ranges: [
-        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
-      ]
+      ranges: []
     },
     {
       type: 'orderlist',
       text: 'This an orderlist 2.',
-      ranges: [
-        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
-      ]
+      ranges: []
     },
     {
       type: 'orderlist',
       text: 'This an orderlist 3.',
-      ranges: [
-        { offset: 8, length: 11, style: 'link', href: 'https://www.google.com' }
-      ]
+      ranges: []
     },
     {
       type: 'divider'
