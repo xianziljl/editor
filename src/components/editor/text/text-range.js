@@ -157,22 +157,11 @@ export function filterRanges (ranges, text) {
       item.offset < 0 ||
       item.length <= 0 ||
       !item.style ||
-      item.offset >= text.length ||
-      (item.style === 'link' && !item.href)
+      item.offset >= text.length
     ) {
       ranges.splice(i, 1)
     }
   })
-  // return ranges.filter(item => {
-  //   // console.log(item.)
-  //   return !(
-  //     item.offset < 0 ||
-  //     item.length <= 0 ||
-  //     !item.style ||
-  //     item.offset >= text.length ||
-  //     (item.style === 'link' && !item.href)
-  //   )
-  // })
 }
 
 // 在指 range 位置插入 length 长度的文字后重新计算 ranges

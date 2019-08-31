@@ -3,13 +3,13 @@ export default {
   name: 'editor-tool-code',
   mixins: [toolItemMixin],
   watch: {
-    '$editor.selection.styles' (styles) {
+    '$editor.selection.inlineStyles' (styles) {
       this.isActive = !!styles.code
     }
   },
   methods: {
     onClick (e) {
-      this.$editor.exe('code')
+      this.$editor.toggleInlineStyle('code')
       this.$editor.isOperating = false
     }
   }

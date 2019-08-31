@@ -3,13 +3,13 @@ export default {
   name: 'editor-tool-bold',
   mixins: [toolItemMixin],
   watch: {
-    '$editor.selection.styles' (styles) {
+    '$editor.selection.inlineStyles' (styles) {
       this.isActive = !!styles.bold
     }
   },
   methods: {
     onClick (e) {
-      this.$editor.exe('bold')
+      this.$editor.toggleInlineStyle('bold')
       this.$editor.isOperating = false
     }
   }

@@ -4,12 +4,11 @@ export default {
   mixins: [toolItemMixin],
   data () {
     return {
-      href: this.$editor.selection.styles.link || '',
       isInput: false // 是否在输入界面
     }
   },
   watch: {
-    '$editor.selection.styles' (styles) {
+    '$editor.selection.inlineStyles' (styles) {
       this.isActive = !!styles.link
     },
     '$tool.isShow' (isShow) {
@@ -29,13 +28,8 @@ export default {
     })]
     if (this.isInput) {
       const input = h('input', {
-        attrs: {
-          placeholder: '输入链接并回车',
-          value: this.href
-        },
-        on: {
-          keydown: this.onKeydown
-        }
+        attrs: { placeholder: '输入链接并回车' },
+        on: { keydown: this.onKeydown }
       })
       children.push(input)
     }
@@ -44,18 +38,12 @@ export default {
     }, children)
   },
   methods: {
-    cancelInput (e) {
-      setTimeout(() => {
-        this.isInput = false
-        this.href = ''
-      }, 100)
-    },
     onClick (e) {
-      const { styles } = this.$editor.selection
-      if (styles.link) {
-        this.$editor.exe('link')
+      const { inlineStyles } = this.$editor.selection
+      if (inlineStyles.link) {
+        this.$editor.toggleInlineStyle('link')
         this.$editor.isOperating = false
-        this.cancelInput()
+        this.isInput = false
       } else {
         this.isInput = true
         this.$nextTick(() => {
@@ -63,20 +51,17 @@ export default {
         })
       }
     },
-    onInput (e) {
-      this.href = e.target.value
-    },
     onKeydown (e) {
       // console.log(e.keyCode)
       e.stopPropagation()
       if (e.isComposing) return
       if (e.keyCode === 13) {
-        e.stopPropagation()
+        e.preventDefault()
         if (!e.target.value) return
-        this.$editor.exe('link', e.target.value)
+        this.$editor.toggleInlineStyle('link', { href: e.target.value })
         this.$editor.isOperating = false
         this.$tool.close()
-        this.cancelInput()
+        this.isInput = false
         return
       }
       if (e.keyCode === 27) {

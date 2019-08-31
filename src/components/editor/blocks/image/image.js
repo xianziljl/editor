@@ -1,4 +1,4 @@
-import TextEditor from '../../text/text-editor'
+// import TextEditor from '../../text/text-editor'
 import renderText from '../../text/text-render'
 
 export default {
@@ -20,12 +20,7 @@ export default {
     })
 
     const descClass = 'editor-block-image-desc'
-    const desc = readonly
-      ? h('div', { class: descClass }, renderText(h, this, text, ranges))
-      : h(TextEditor, {
-        class: descClass,
-        props: { tagName: 'div', value }
-      })
+    const desc = h('div', { class: descClass }, renderText(h, this, text, ranges))
 
     return h('div', {
       class: 'editor-block-image',

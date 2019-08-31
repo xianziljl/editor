@@ -9,7 +9,10 @@ function renderBlocks (h, blocks, readonly) {
     const component = blockMap[type] || blockMap.paragraph
     const child = h(component, {
       props: { value: item, readonly },
-      attrs: { 'data-index': listTypes[type] ? `${list.length + 1}.` : null },
+      attrs: {
+        'data-index': listTypes[type] ? `${list.length + 1}.` : null,
+        'data-key': item.key
+      },
       class: ['editor-block', 'editor-block-' + type],
       key: item.key,
       on: {}

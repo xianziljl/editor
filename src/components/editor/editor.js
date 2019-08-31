@@ -1,20 +1,7 @@
-import debounce from 'debounce'
 import ToolPopup from './tool/popup-tool'
-// import ToolBlock from './tool/block-tool'
-import textRange from './text/text-range'
-import formatters from './formatters'
-import createGUID from './utils/createGUID'
-import getEditorByKey from './utils/getEditorByKey'
 import renderBlocks from './blocks/block-render'
-
-function formatValue (value) {
-  if (!value) return
-  if (!value.blocks || !(value.blocks instanceof Array)) value.blocks = []
-  value.blocks.forEach(item => {
-    item.key = createGUID()
-    if (item.blocks && item.blocks.length) formatValue(item)
-  })
-}
+import formatValue from './utils/formatValue'
+// import debounce from 'debounce'
 
 export default {
   name: 'editor',
@@ -27,22 +14,19 @@ export default {
   },
   data () {
     return {
-      isInputing: false,
-      isMousedown: false,
-      isSelecting: false,
-      isComposing: false, // 正在拼写
-      isOperating: false, // 正在操作工具栏
-      isHistoryBacking: false, // 正在进行回退
-      isSetingRange: false,
+      isComposing: false,
+      isOperating: false,
+
       selection: {
-        oldRange: null,
-        range: null, // { offset, length }
-        styles: {}, // 选中文字已有的样式
-        blockStyle: null, // 选中的 block 样式
-        rect: null, // { width, height, left, top }
-        target: null // TextEditor
-      },
-      history: []
+        startOffset: null, // 开始点相对 block 区域的 offset
+        endOffset: null, // 结束点相对 block 区域的 offset
+        startBlock: null,
+        endBlock: null,
+        rangeRect: null, // 选中文字的坐标区域
+        blocks: null, // 被选中的 block value
+        blockStyle: null, // 被选中的 block 部分所应用的样式
+        inlineStyles: null // 被选中的部分所应用的 inline 样式
+      }
     }
   },
   provide () {
@@ -53,113 +37,38 @@ export default {
   created () {
     formatValue(this.value)
   },
-  // watch: {
-  //   value: {
-  //     handler () {
-  //       if (this.isHistoryBacking) {
-  //         this.isHistoryBacking = false
-  //         return
-  //       }
-  //       this.historyForward()
-  //     },
-  //     deep: true
-  //   }
-  // },
   render (h) {
-    console.log('render')
     const { value, readonly } = this
-    // 渲染子元素
-    const children = renderBlocks(h, value.blocks, readonly)
-    // 渲染工具条
-    if (!readonly) {
-      const toolPopup = h(ToolPopup, { ref: 'popupTool' })
-      // const toolBlock = h(ToolBlock, { ref: 'toolBlock' })
-      children.push(toolPopup)
-      // children.push(toolBlock)
-    }
+    let article, toolPopup
 
-    return h('article', {
-      class: ['editor'],
-      on: readonly ? {} : {
-        mousedown: this.onMousedown,
-        mouseup: this.onMouseup,
+    article = h('article', {
+      attrs: { contenteditable: !readonly },
+      on: readonly ? null : {
         input: this.onInput,
-        compositionstart: this.onCompositionstart,
-        compositionend: this.onCompositionend,
         keydown: this.onKeydown,
-        cut: this.onCut,
-        copy: this.onCopy,
-        paste: this.onPaste,
-        drop: this.onDrop
-      }
-    }, children)
+        mousedown: this.onMousedown,
+        compositionstart: this.onCompositionstart,
+        compositionend: this.onCompositionend
+      },
+      ref: 'article'
+    }, renderBlocks(h, value.blocks))
+
+    if (!readonly) toolPopup = h(ToolPopup, { ref: 'popupTool' })
+
+    return h('div', {
+      class: 'editor'
+    }, [article, toolPopup])
   },
   mounted () {
-    document.addEventListener('selectionchange', this.onSelectionchange)
-    this.$once('hook:beforeDestroy', () => {
-      document.removeEventListener('selectionchange', this.onSelectionchange)
-    })
+    this.addListeners()
+    this.$once('hook:beforeDestroy', this.removeListeners)
   },
   methods: {
-    onInput (e) {
-      if (this.isComposing || this.isOperating) return
-      // console.log('input')
-      // this.isInputing = true
-      // 在一些非文档编辑内容时不做处理，例如：输入 A 链接的地址时
-      if (!this.selection.target || e.target !== this.selection.target.$el) return
-      const { replaceRange, splitRange, mergeRanges, filterRanges } = textRange
-      const { value, $el } = this.selection.target
-      const { range } = this.selection
-      const oldLength = value.text.length
-      const newLength = $el.innerText.length
-      const oldRange = { offset: range.offset, length: range.length }
-      // this.onSelectionchange()
-      let inputLength = e.data ? e.data.length : newLength + oldRange.length - oldLength
-      // 选中英文单词删除时会多删除单词前的空格，此时 inputLength < 0, 将选区修正为选中单词前的空格 inputLength 修正为 0。
-      if (inputLength < 0) {
-        oldRange.offset += inputLength
-        oldRange.length -= inputLength
-        inputLength = 0
-      }
-      // console.log(range.offset, this.selection.range.offset)
-      // console.log(JSON.stringify(oldRange), inputLength)
-      replaceRange(value.ranges, oldRange, inputLength)
-      // 在 range 末尾输入空格时 跳出 range
-      if (e.data === ' ' && !oldRange.length) {
-        let newRanges = []
-        value.ranges.forEach((item, i) => {
-          if (oldRange.offset === item.offset + item.length - 1) {
-            const splited = splitRange(item, { offset: oldRange.offset, length: 1 })
-            splited.forEach(r => { r.href = item.href })
-            newRanges = newRanges.concat(splited)
-            item.offset = item.length = 0
-          }
-        })
-        newRanges.forEach(r => { value.ranges.push(r) })
-      }
-      value.text = $el.innerText.replace(/\n/g, ' ')
-      // 用于快捷格式化段落
-      let formatted = false
-      if (value.type === 'paragraph') {
-        formatters.forEach(formatter => {
-          const res = formatter(value, this)
-          if (res) formatted = true
-        })
-      }
-      // 整理range
-      mergeRanges(value.ranges)
-      filterRanges(value.ranges, $el.innerText)
-      // ranges 更改后也要更新光标处的已经应用样式
-      // this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
-      // 更新文字
-      this.selection.target.key += 1
-      // 复位光标
-      this.$nextTick(() => {
-        const newOffset = formatted ? 0 : oldRange.offset + inputLength
-        this.setRange(this.selection.target, newOffset, 0)
-        // console.log('input end')
-        // console.log('set range 3')
-      })
+    addListeners () {
+      document.addEventListener('selectionchange', this.onSelectionchange)
+    },
+    removeListeners () {
+      document.removeEventListener('selectionchange', this.onSelectionchange)
     },
     onCompositionstart (e) {
       this.isComposing = true
@@ -168,157 +77,227 @@ export default {
       this.isComposing = false
       this.onInput(e)
     },
-    onMousedown (e) {
-      this.isMousedown = true
-      const popupTool = this.$refs.popupTool
-      const path = e.path || (e.composedPath && e.composedPath())
-      this.isOperating = !!((popupTool && path.includes(this.$refs.popupTool.$el)))
-    },
-    onMouseup (e) {
-      this.isMousedown = false
+    onInput (e) {
+      if (this.isComposing) return
+      console.log('input')
     },
     onKeydown (e) {
-      // console.log(e)
-      this.onSelectionchange()
-      const ctrl = (e.metaKey || e.ctrlKey)
-      // if (ctrl) e.preventDefault()
-      switch (e.keyCode) {
-        case 37:
-        case 38:
-          this.navitagionBack()
-          break
-        case 39:
-        case 40:
-          this.navitagionForward()
-          break
-      }
-      // 禁用快捷键
-      if (ctrl) {
-        // console.log(e.keyCode)
-        switch (e.keyCode) {
-          case 66: // ctrl+B
-            e.preventDefault()
-            this.exe('bold')
-            break
-          case 73: // ctrl+I
-            e.preventDefault()
-            this.exe('italic')
-            break
-          case 85: // ctrl+U
-            e.preventDefault()
-            this.exe('underline')
-            break
-          case 83: // ctrl+S
-            // e.preventDefault()
-            // console.log(e)
-            // this.exe('underline')
-            break
-          case 90: // ctrl+Z
-            // this.historyBack()
-            break
-        }
-      }
+      //
+    },
+    onMousedown (e) {
+      this.selection.rangeRect = null
     },
     onSelectionchange (e) {
-      // console.log(this.isInputing)
-      // console.log('selection change')
-      if (this.isOperating || this.isSetingRange || this.value.readonly) return
-      if (this.isComposing || this.readonly || !this.selection.target) return
-      // console.log('on selectionchange')
-      const { getRange, getRangeRect, getRangeStyles } = textRange
-      // console.log(JSON.stringify(this.selection.rect))
-      const focusNode = document.activeElement
-      const range = getRange(focusNode)
-      const rangeRect = getRangeRect(this.$el)
-      // this.selection.oldRange = this.selection.range
-      this.selection.range = range
-      // console.log(range.offset)
-      this.selection.styles = getRangeStyles(this.selection.range, this.selection.target.value.ranges)
-      this.selection.blockStyle = this.selection.target.value.type
-      // if (this.isMousedown && (!range || !range.length)) this.isSelecting = true
-      this.selection.rect = (!range || !range.length) ? null : rangeRect
+      this.getSelection()
+      this.getSelectedBlockStyle()
+      this.getSelectedInlineStyles()
+      this.$emit('selectionchange', JSON.parse(JSON.stringify(this.selection)))
+    },
+    getSelection () {
+      if (this.isOperating) return
+      console.log('get selection')
+      const clearSelection = () => {
+        for (let key in this.selection) this.selection[key] = null
+      }
+      const selection = getSelection()
+      if (selection.type === 'None') {
+        clearSelection()
+        return
+      }
+      const range = selection.getRangeAt(0)
+      let rangeRect
+      if (range.startContainer === range.endContainer &&
+      range.startOffset === range.endOffset) {
+        rangeRect = null
+      } else {
+        rangeRect = getRangeRect(range, this.$el)
+      }
 
-      if (!this.history.length) {
-        this.historyForward()
+      const startNode = getBlockNodeByChildNode(range.startContainer)
+      const endNode = getBlockNodeByChildNode(range.endContainer)
+      if (!startNode || !endNode) {
+        clearSelection()
+        return
+      }
+
+      const startKey = startNode.dataset.key
+      const endKey = endNode.dataset.key
+
+      let selectedBlocks = getSelectedBlocks(this.value.blocks, startKey, endKey)
+      let startBlock = selectedBlocks[0]
+      let endBlock = selectedBlocks[selectedBlocks.length - 1]
+
+      let startOffset = getOffset(startNode, range.startContainer, range.startOffset)
+      let endOffset = getOffset(endNode, range.endContainer, range.endOffset)
+
+      // 鼠标点击三下会选中某个段落，和下一个段落的第 0 offset 这里将最后一个段落去掉
+      if (selectedBlocks.length > 1 && endOffset === 0) {
+        endBlock = selectedBlocks[selectedBlocks.length - 2]
+        endOffset = (endBlock.text || '').length
+        selectedBlocks.pop()
+      }
+
+      this.selection = {
+        startBlock,
+        endBlock,
+        startOffset,
+        endOffset,
+        rangeRect,
+        blocks: selectedBlocks
       }
     },
-    onCut (e) {
-      console.log('onCut')
-    },
-    onCopy (e) {
-      console.log('onCopy')
-    },
-    onPaste (e) {
-      console.log('onPaste')
-    },
-    onDrop (e) {
-      e.preventDefault()
-    },
-    /**
-     * 设置文字样式
-     * @param {TextEditor} target 所操作的 text-editor 组件
-     * @param {Object} range { offset, length }
-     * @param {string} style 样式名称
-     * @param {href} href style 为 link 时需要传入
-     */
-    setTextStyle (target, range, style, href) {
-      const { mergeRanges, splitRange, filterRanges } = textRange
-      const { styles } = this.selection
-      const value = target.value
-      if (!range) return
-      const { offset, length } = range
-      if (!length) return
-      if (!styles[style]) { // 新增样式
-        const newRange = { offset, length, style }
-        if (style === 'link') newRange.href = href
-        value.ranges.push(newRange)
-      } else { // 取消样式
-        const rangeEnd = offset + length
-        let focusRange = value.ranges.filter(item => {
-          const end = item.offset + item.length
-          if (item.style === style && item.offset <= offset && end >= rangeEnd) return item
-        })[0]
-        if (!focusRange) return
-        const i = value.ranges.indexOf(focusRange)
-        value.ranges.splice(i, 1)
-        if (focusRange.style !== 'link') value.ranges = value.ranges.concat(splitRange(focusRange, range))
+    getSelectedBlockStyle () {
+      const { blocks } = this.selection
+      if (!blocks || !blocks.length) {
+        this.selection.blockStyle = null
+        return
       }
-      mergeRanges(value.ranges)
-      filterRanges(value.ranges, value.text)
-      // ranges 更改后也要更新光标处的已经应用样式
-      // this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
-      target.key += 1
-      this.$nextTick(() => {
-        this.setRange(target, range.offset, range.length)
+      let styles = blocks.map(item => item.type)
+      styles = Array.from(new Set(styles))
+      this.selection.blockStyle = styles.length === 1 ? styles[0] : null
+    },
+    getSelectedInlineStyles () {
+      const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
+      if (!blocks || !blocks.length) {
+        this.selection.inlineStyles = null
+        return
+      }
+      if (blocks.length === 1) {
+        this.selection.inlineStyles = getRangeStyles(startBlock.ranges, startOffset, endOffset)
+        return
+      }
+      const stylesMap = {} // { bold: [1, 1, 1] } 判断每一项长度是否和选中的 blocks 长度相同
+      const result = {}
+      blocks.forEach(item => {
+        let styles = {}
+        if (item === startBlock) styles = getRangeStyles(item.ranges, startOffset, item.text.length)
+        else if (item === endBlock) styles = getRangeStyles(item.ranges, 0, endOffset)
+        else styles = getRangeStyles(item.ranges, 0, item.text.length)
+        for (let key in styles) {
+          if (stylesMap[key]) stylesMap[key].push(styles[key])
+          else stylesMap[key] = [styles[key]]
+        }
+      })
+      for (let key in stylesMap) {
+        const item = stylesMap[key]
+        // console.log(item)
+        if (item.length === blocks.length) result[key] = 1
+      }
+      this.selection.inlineStyles = result
+    },
+    addInlineStyle (style, attrs) {
+      const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
+
+      if (startBlock === endBlock) {
+        const newRange = { style, offset: startOffset, length: endOffset - startOffset }
+        if (attrs) {
+          for (let key in attrs) this.$set(newRange, key, attrs[key])
+        }
+        startBlock.ranges.push(newRange)
+        mergeRanges(startBlock.ranges)
+        filterRanges(startBlock.ranges, startBlock.text.length)
+        return
+      }
+
+      blocks.forEach(item => {
+        const newRange = { style, offset: 0, length: 0 }
+        if (attrs) {
+          for (let key in attrs) this.$set(newRange, key, attrs[key])
+        }
+        if (item === startBlock) {
+          newRange.offset = startOffset
+          newRange.length = item.text.length - startOffset
+          item.ranges.push(newRange)
+        } else if (item === endBlock) {
+          newRange.length = endOffset
+          item.ranges.push(newRange)
+        } else {
+          newRange.length = item.text.length
+          item.ranges.push(newRange)
+        }
+        mergeRanges(item.ranges)
+        filterRanges(item.ranges, item.text.length)
       })
     },
-    /**
-     * 设置 block 类型
-     * @param {VueComponent} target 所操作的子组件
-     * @param {string} type 对应 value 中的type
-     */
-    setBlockType (target, type) {
-      target.value.type = type
-      // this.$nextTick(() => {
-      //   this.setRange(target, range.offset, range.length)
-      // })
+    removeInlineStyle (style) {
+      const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
+
+      function handleItem (item, start, end) {
+        const ranges = item.ranges
+        let focusRange = ranges.filter(item => {
+          return item.style === style && item.offset <= start && item.offset + item.length >= end
+        })[0]
+        if (!focusRange) return
+        const i = ranges.indexOf(focusRange)
+        ranges.splice(i, 1)
+        if (focusRange.style !== 'link') {
+          const cutRange = { offset: start, length: end - start }
+          const newRanges = splitRange(focusRange, cutRange)
+          item.ranges = ranges.concat(newRanges)
+        }
+        mergeRanges(item.ranges)
+        filterRanges(item.ranges, item.text.length)
+      }
+
+      if (startBlock === endBlock) {
+        handleItem(startBlock, startOffset, endOffset)
+        return
+      }
+      blocks.forEach(item => {
+        if (item === startBlock) {
+          handleItem(item, startOffset, item.text.length)
+        } else if (item === endBlock) {
+          handleItem(item, 0, endOffset)
+        } else {
+          handleItem(item, 0, item.text.length)
+        }
+      })
     },
-    /**
-     * 设置光标位置
-     * @param {TextEditor} target 所操作的 text-editor 组件
-     * @param {number} offset 光标在 target.$el 的起始位置
-     * @param {number} length 选区长度
-     */
-    setRange (target, offset, length) {
-      // console.log(target.$el, offset, length)
-      this.isSetingRange = true
-      const { getFocusNodeAndOffset } = textRange
-      const start = getFocusNodeAndOffset(target.$el, offset)
-      const end = length ? getFocusNodeAndOffset(target.$el, offset + length) : start
+    toggleInlineStyle (style, attrs) {
+      const { inlineStyles } = this.selection
+      if (!inlineStyles[style]) {
+        this.addInlineStyle(style, attrs)
+      } else {
+        this.removeInlineStyle(style)
+      }
+      this.restoreSelection()
+    },
+    setBlockStyle (style, attrs) {
+      const { blocks } = this.selection
+      blocks.forEach(item => {
+        item.type = style
+        if (attrs) {
+          for (let key in attrs) this.$set(item, key, attrs[key])
+        }
+      })
+    },
+    removeBlockStyle (style) {
+      console.log('removeBlockStyle')
+    },
+    toggleBlockStyle (style, attrs) {
+      const { blockStyle } = this.selection
+      if (style === blockStyle) {
+        this.removeBlockStyle()
+      } else {
+        this.setBlockStyle(style, attrs)
+      }
+    },
+    restoreSelection () {
+      this.$nextTick(() => {
+        const { startBlock, endBlock, startOffset, endOffset } = this.selection
+        this.setSelection(startBlock, endBlock, startOffset, endOffset)
+      })
+    },
+    setSelection (startBlock, endBlock, startOffset, endOffset) {
+      const startNode = getNodeByKey(startBlock.key)
+      const endNode = getNodeByKey(endBlock.key)
+      const start = getFocusNodeAndOffset(startNode, startOffset)
+      const end = (startBlock === endBlock && startOffset === endOffset)
+        ? start
+        : getFocusNodeAndOffset(endNode, endOffset)
+      // console.log(start, end)
       const selection = getSelection()
       const range = document.createRange()
-      // console.log(range, start, end)
-      // console.log(start, end)
       try {
         range.setStart(start.focusNode, start.focusOffset)
         range.setEnd(end.focusNode, end.focusOffset)
@@ -327,63 +306,178 @@ export default {
       } catch (err) {
         console.warn('setRange failed: ' + err.message)
       }
-      // console.log('set range 2')
-      this.isSetingRange = false
-    },
-    // 快捷调用 自动确定选区和操作对象
-    exe (style, href) {
-      // console.log(this.$refs.popupTool)
-      const { target, range } = this.selection
-      this.setTextStyle(target, range, style, href)
-    },
-    historyForward: debounce(function () {
-      const { range, target } = this.selection
-      this.history.push(JSON.stringify({
-        range,
-        focusKey: target ? target.value.key : null,
-        blocks: this.value.blocks
-      }))
-      if (this.history.length > 10) this.history.shift()
-    }, 300),
-    historyBack () {
-      if (this.history.length < 2) return
-      this.isHistoryBacking = true
-      this.history.pop()
-      const value = JSON.parse(this.history[this.history.length - 1])
-      const { range, focusKey } = value
-      // console.log(range, focusKey)
-      this.value.blocks = value.blocks
-      this.$nextTick(() => {
-        // this.selection.styles = textRange.getRangeStyles(this.selection.range, this.selection.target.value.ranges)
-
-        const target = getEditorByKey(focusKey)
-        if (range && target) this.setRange(target, range.offset, range.length)
-      })
-    },
-    insertBeforeBlock (blocks, block, insertBlock) {
-      const i = blocks.indexOf(block)
-      blocks.splice(i, 0, insertBlock)
-    },
-    insertAfterBlock (blocks, block, insertBlock) {
-      const i = blocks.indexOf(block)
-      blocks.splice(i + 1, 0, insertBlock)
-      const key = insertBlock.key
-      this.$nextTick(() => {
-        const target = getEditorByKey(this, key)
-        // console.log(target)
-        this.setRange(target, 0, 0)
-      })
-    },
-    navitagionBack () {
-      const { range } = this.selection
-      if (!range || range.offset !== 0 || range.length) return
-      console.log('navitagionBack')
-      // const prevValue =
-    },
-    navitagionForward () {
-      const { range, target } = this.selection
-      if (!range || !target || range.offset !== target.value.text.length || range.length) return
-      console.log('navitagionForward')
     }
   }
+}
+
+function getBlockNodeByChildNode (node) {
+  if (!node) return null
+  if (node.dataset && node.dataset.key) return node
+  return getBlockNodeByChildNode(node.parentNode)
+}
+
+function getNodeByKey (key) {
+  return document.querySelector(`[data-key="${key}"]`)
+}
+
+function getSelectedBlocks (blocks, startKey, endKey) {
+  const result = new Set()
+  let go = false
+  blocks.forEach(item => {
+    if (item.key === startKey) {
+      result.add(item)
+      go = true
+    }
+    if (item.key === endKey) {
+      result.add(item)
+      go = false
+    }
+    if (go) result.add(item)
+  })
+  return Array.from(result)
+}
+// 获取 range 的相对于编辑器的坐标和宽高
+function getRangeRect (range, el) {
+  if (!el || !range) return null
+  const rangeRect = range.getBoundingClientRect()
+  const elRect = el.getBoundingClientRect()
+  return {
+    left: rangeRect.left - elRect.left,
+    top: rangeRect.top - elRect.top,
+    width: rangeRect.width,
+    height: rangeRect.height
+  }
+}
+// 获取 node 的 offse 相对于 root 的 offset 值
+function getOffset (root, node, _offset) {
+  let offset = _offset
+  if (root === node) return _offset
+  // 获取符合 node 的父辈，且符合 root 的直系子元素
+  function getRootChildNode (_root, _node) {
+    if (!_node) return null
+    return _node.parentNode === _root ? _node : getRootChildNode(_root, _node.parentNode)
+  }
+  const rootChildNode = getRootChildNode(root, node)
+  if (!rootChildNode) return null
+  if (rootChildNode.childNodes && rootChildNode.childNodes.length) {
+    offset = getOffset(rootChildNode, node, _offset)
+  }
+  const nodes = root.childNodes
+  const len = nodes.length
+  for (let i = 0; i < len; i++) {
+    const item = nodes[i]
+    if (item === rootChildNode) break
+    else if (item.nodeType === 3) offset += item.length
+    else offset += item.innerText.length
+  }
+  return offset
+}
+// 获取 在 start ~ end 内所应用的样式
+function getRangeStyles (ranges, start, end) {
+  const styles = {}
+  if (!ranges) return styles
+  ranges.forEach(item => {
+    const itemEnd = item.offset + item.length
+    // 判断是否光标在 range offset 的位置而且没有选中文字
+    const isAtStart = end - start <= 0 && start === item.offset
+
+    if (!isAtStart && start >= item.offset && end <= itemEnd) {
+      const style = item.style
+      styles[style] = 1
+    }
+  })
+  return styles
+}
+// 合并重合的 range
+function mergeRanges (ranges) {
+  if (ranges.length < 2) return ranges
+  function each (arr) {
+    let go = false // 是否继续下次循环
+    arr.forEach((item1, i) => {
+      arr.forEach((item2, j) => {
+        if (item1 === item2) return
+        if (item1.style !== item2.style) return
+        if (item1.style === 'link' && item1.href !== item2.href) return
+        let s1 = item1.offset
+        let e1 = item1.offset + item1.length
+        let s2 = item2.offset
+        let e2 = item2.offset + item2.length
+        if (s2 >= s1 && s2 <= e1) {
+          go = true
+          arr.splice(j, 1)
+          item1.offset = Math.min(s1, s2)
+          item1.length = Math.max(e1, e2) - item1.offset
+        }
+      })
+    })
+    if (go) each(ranges)
+  }
+  each(ranges)
+  return ranges
+}
+// 过滤无效 range
+function filterRanges (ranges, maxOffset) {
+  ranges.forEach((item, i) => {
+    if (
+      item.offset < 0 ||
+      item.length <= 0 ||
+      !item.style ||
+      item.offset >= maxOffset
+    ) {
+      ranges.splice(i, 1)
+    }
+  })
+}
+// 分割 range
+function splitRange (baseRange, cutRange) {
+  const { style } = baseRange
+  let points = [
+    baseRange.offset,
+    baseRange.offset + baseRange.length,
+    cutRange.offset,
+    cutRange.offset + cutRange.length
+  ].sort((a, b) => a - b)
+  return [
+    { offset: points[0], length: points[1] - points[0], style },
+    { offset: points[2], length: points[3] - points[2], style }
+  ]
+}
+// 根据全局 offset 值查找光标所在的文本节点和相对节点的位置
+function getFocusNodeAndOffset (root, offset) {
+  let i = 0
+  function getResult (_root, _offset) {
+    i += 1
+    let len = 0
+    let focusNode = _root
+    let focusOffset = 0
+    const nodes = _root.childNodes
+    const length = nodes.length
+    for (let i = 0; i < length; i++) {
+      const item = nodes[i]
+      if (!item.dataset || !item.dataset.skipCheck) { // 跳过一些无需检查的元素 data-skip-check
+        // 这里 item 可能是 Element, TextNode
+        let itemLength = item.length
+        if (!(itemLength >= 0)) itemLength = item.innerText ? item.innerText.length : 0
+        len += itemLength
+        if (len >= _offset) {
+          focusNode = item
+          focusOffset = itemLength - (len - _offset)
+          break
+        } else if (i === length - 1) {
+          focusNode = item
+          focusOffset = len
+        }
+      }
+    }
+    if (focusNode.nodeType === 3) {
+      i = 0
+      return { focusNode, focusOffset }
+    }
+    if (i > 1000) {
+      i = 0
+      return { focusNode, focusOffset }
+    }
+    return getResult(focusNode, focusOffset)
+  }
+  return getResult(root, offset)
 }
