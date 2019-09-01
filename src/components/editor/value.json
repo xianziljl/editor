@@ -131,56 +131,7 @@
       ]
     },
     {
-      "text": "Instead, the recommended approach is to give your elements class names based on their content, and use those classes as hooks in your CSS to style your markup.",
-      "ranges": [],
-      "type": "paragraph"
-    },
-    {
-      "text": "<style>",
-      "ranges": [],
-      "type": "blockcode"
-    },
-    {
-      "text": ".greeting {",
-      "ranges": [],
-      "type": "blockcode",
-      "checked": false
-    },
-    {
-      "text": "    text-align: center;",
-      "ranges": [],
-      "type": "blockcode",
-      "checked": false
-    },
-    {
-      "text": "}",
-      "ranges": [],
-      "type": "blockcode",
-      "checked": false
-    },
-    {
-      "text": "</style>",
-      "ranges": [],
-      "type": "blockcode",
-      "checked": false
-    },
-    {
-      "text": "<p class=\"greeting\">",
-      "ranges": [],
-      "type": "blockcode",
-      "checked": false
-    },
-    {
-      "text": "    Hello there!",
-      "ranges": [],
-      "type": "blockcode",
-      "checked": false
-    },
-    {
-      "text": "</p>",
-      "ranges": [],
-      "type": "blockcode",
-      "checked": false
+      "type": "divider"
     },
     {
       "text": "The quintessential example of this approach has always been CSS Zen Garden; a site designed to show that if you \"separate your concerns\", you can completely redesign a site just by swapping out the stylesheet.",
@@ -234,15 +185,295 @@
     },
     {
       "text": "",
+      "ranges": [],
+      "type": "divider"
+    },
+    {
+      "text": "上面一段英文是随便抄写的，用来展示效果",
       "ranges": [
         {
-          "style": "bold",
+          "style": "hilight",
           "offset": 0,
-          "length": 0
+          "length": 19
         }
       ],
       "type": "paragraph",
       "level": 2
+    },
+    {
+      "text": "Markdown 语法快速格式化（在段落开始出输入）",
+      "ranges": [],
+      "type": "heading",
+      "level": 3
+    },
+    {
+      "text": "引用：>空格",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 3,
+          "length": 3
+        }
+      ],
+      "type": "unorderlist"
+    },
+    {
+      "text": "标题：#空格、 ##空格、 ###空格、 ####空格",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 3,
+          "length": 3
+        },
+        {
+          "style": "code",
+          "offset": 8,
+          "length": 4
+        },
+        {
+          "style": "code",
+          "offset": 14,
+          "length": 5
+        },
+        {
+          "style": "code",
+          "offset": 21,
+          "length": 6
+        }
+      ],
+      "type": "unorderlist",
+      "checked": false
+    },
+    {
+      "text": "列表：-空格 、 +空格、 *空格",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 3,
+          "length": 3
+        },
+        {
+          "style": "code",
+          "offset": 9,
+          "length": 3
+        },
+        {
+          "style": "code",
+          "offset": 14,
+          "length": 3
+        }
+      ],
+      "type": "unorderlist",
+      "checked": false
+    },
+    {
+      "text": "有序列表：1.空格",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 5,
+          "length": 4
+        }
+      ],
+      "type": "unorderlist",
+      "checked": false
+    },
+    {
+      "text": "Todo： 未勾选[]空格 、勾选[x]空格",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 17,
+          "length": 5
+        },
+        {
+          "style": "code",
+          "offset": 0,
+          "length": 0
+        },
+        {
+          "style": "code",
+          "offset": 9,
+          "length": 4
+        }
+      ],
+      "type": "unorderlist",
+      "checked": false
+    },
+    {
+      "text": "代码块： ```",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 5,
+          "length": 3
+        }
+      ],
+      "type": "unorderlist",
+      "checked": false
+    },
+    {
+      "text": "分隔符： ---",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 5,
+          "length": 3
+        }
+      ],
+      "type": "unorderlist",
+      "checked": false
+    },
+    {
+      "text": "开发进度",
+      "ranges": [],
+      "type": "heading",
+      "level": 3
+    },
+    {
+      "text": "文字全文编辑功能 (由区域编辑重构)",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "上下文工具条",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "Markdown 语法快速格式化 Block",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "Heading 组件",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "List 组件",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "Todo 组件",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "Blockcode 组件",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "Blockquote 组件",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "单行的粘贴",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "多行粘贴和跨行粘贴",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "标题导航功能",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "Block 工具条",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "链接鼠标悬停显示和点击访问",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "Image 组件(开发中)",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "Video、Audio 组件",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "Chart 组件",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "Table 组件",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "Attach 组件",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 9,
+          "length": 0
+        }
+      ],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "历史记录功能",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "其它功能",
+      "ranges": [],
+      "type": "heading",
+      "checked": false,
+      "level": 4
+    },
+    {
+      "text": "Json、Markdown 互相转换功能",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "inline 组件的 Markdown 语法快速格式化",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 0,
+          "length": 6
+        }
+      ],
+      "type": "todolist",
+      "checked": false
     },
     {
       "text": "",

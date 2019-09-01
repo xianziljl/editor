@@ -10,9 +10,6 @@ export default {
   watch: {
     '$editor.selection.inlineStyles' (styles) {
       this.isActive = styles && styles.link
-    },
-    '$tool.isShow' (isShow) {
-      if (this.isInput && !isShow) this.cancelInput()
     }
   },
   render (h) {

@@ -13,7 +13,7 @@
       <div><span>inlineStyles: </span>{{selection.inlineStyles || 'null'}}</div>
       <div><span>offset: </span>{{selection.startOffset || 'null'}}, {{selection.endOffset || 'null'}}</div>
     </div> -->
-    <button @click="getValue">Get value</button>
+    <!-- <button @click="getValue">Get value</button> -->
   </div>
 </template>
 
