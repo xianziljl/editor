@@ -1,20 +1,22 @@
 import { blockMap, listTypes } from '../map'
 // import BlockContainer from './block-container'
 
-function renderBlocks (h, blocks, readonly) {
+function renderBlocks (h, blocks) {
   let children = []
   let list = []
   blocks.forEach((item, i) => {
     const type = item.type || 'paragraph'
     const component = blockMap[type] || blockMap.paragraph
+    const dataindex = listTypes[type] ? list.length + 1 : null
     const child = h(component, {
-      props: { value: item, readonly },
+      props: { value: item },
       attrs: {
-        'data-index': listTypes[type] ? `${list.length + 1}.` : null,
-        'data-key': item.key
+        'data-index': dataindex,
+        'data-index-num': dataindex ? dataindex + '.' : null,
+        'data-id': item.id
       },
       class: ['editor-block', 'editor-block-' + type],
-      key: item.key,
+      key: item.id,
       on: {}
     })
 

@@ -2,24 +2,25 @@
   <div id="app">
     <div class="main">
       <div class="editor-container">
-        <editor :value="testValue" @selectionchange="onSelectionchange"></editor>
+        <editor :value="testValue" ref="editor"></editor>
       </div>
       <!-- <div class="json-container">
         <json-viewer :value="testValue" :expand-depth="5"></json-viewer>
       </div> -->
     </div>
-    <div class="info-box">
+    <!-- <div class="info-box">
       <div><span>blockStyle: </span>{{selection.blockStyle || 'null'}}</div>
       <div><span>inlineStyles: </span>{{selection.inlineStyles || 'null'}}</div>
       <div><span>offset: </span>{{selection.startOffset || 'null'}}, {{selection.endOffset || 'null'}}</div>
-    </div>
+    </div> -->
+    <button @click="getValue">Get value</button>
   </div>
 </template>
 
 <script>
 // import JsonViewer from 'vue-json-viewer'
 import '@/components/editor/editor.scss'
-import testValue from './components/editor/value'
+import testValue from './components/editor/value.json'
 import Editor from '@/components/editor/editor'
 
 export default {
@@ -32,8 +33,8 @@ export default {
     }
   },
   methods: {
-    exe (type, href) {
-      this.$refs.editor.exe(type, href)
+    getValue () {
+      console.log(this.$refs.editor.getValue())
     },
     onSelectionchange (selection) {
       this.selection = selection

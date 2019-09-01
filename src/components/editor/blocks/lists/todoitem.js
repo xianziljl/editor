@@ -7,13 +7,20 @@ export default {
   mixins: [blockMixin],
   render (h) {
     const { readonly, value } = this
-    const tagName = 'li'
-    const children = renderText(h, this, value.text, value.ranges)
-    children.unshift(h(Checkbox, {
-      props: { readonly, checked: this.value.checked }
-    }))
-    return h(tagName, {
-      on: Object.assign({}, this.$listeners, {})
-    }, children)
+    const { text, ranges, key, checked } = value
+    const texts = h('div', {
+      class: 'editor-todo-content'
+    }, renderText(h, this, text, ranges))
+    const checkbox = h(Checkbox, {
+      props: { readonly, checked },
+      on: {
+        change: e => { value.checked = e }
+      }
+    })
+    return h('li', {
+      class: checked ? 'editor-todo-checked' : '',
+      on: Object.assign({}, this.$listeners, {}),
+      key
+    }, [checkbox, texts])
   }
 }

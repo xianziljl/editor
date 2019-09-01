@@ -1,49 +1,53 @@
 export default {
   paragraph: {
     type: 'paragraph',
-    key: '',
+    id: '',
     text: '',
     ranges: []
   },
   heading: {
     type: 'heading',
-    key: '',
+    id: '',
     level: 1,
     text: '',
     ranges: []
   },
   blockquote: {
     type: 'blockquote',
-    key: '',
+    id: '',
     text: '',
     ranges: []
   },
   divider: {
-    type: 'divider',
-    key: '',
+    type: 'divider'
+  },
+  todolist: {
+    type: 'todolist',
+    checked: false,
+    id: '',
     text: '',
     ranges: []
   },
   orderlist: {
     type: 'orderlist',
-    key: '',
+    id: '',
     text: '',
     ranges: []
   },
   unorderlist: {
     type: 'unorderlist',
-    key: '',
+    id: '',
     text: '',
     ranges: []
   },
   images: {
     type: 'images',
-    key: '',
+    id: '',
     images: []
   },
   image: {
     type: 'image',
-    key: '',
+    id: '',
     width: 0,
     height: 0,
     src: '',

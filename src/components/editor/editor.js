@@ -2,7 +2,8 @@ import ToolPopup from './tool/popup-tool'
 import renderBlocks from './blocks/block-render'
 import formatValue from './utils/formatValue'
 import createGUID from './utils/createGUID'
-import { textBlockMap } from './map'
+import { textBlockMap, listTypes } from './map'
+import formatters from './formatters'
 // import debounce from 'debounce'
 
 export default {
@@ -18,6 +19,8 @@ export default {
     return {
       isComposing: false,
       isOperating: false,
+
+      key: 0, // 用于一些极端情况下更新整个 article 如跨行输入
 
       selection: {
         startOffset: null, // 开始点相对 block 区域的 offset
@@ -53,7 +56,8 @@ export default {
         compositionstart: this.onCompositionstart,
         compositionend: this.onCompositionend
       },
-      ref: 'article'
+      ref: 'article',
+      key: this.key
     }, renderBlocks(h, value.blocks))
 
     if (!readonly) toolPopup = h(ToolPopup, { ref: 'popupTool' })
@@ -81,9 +85,57 @@ export default {
       this.onInput(e)
     },
     onInput (e) {
-      if (this.isComposing) return
-      console.log('input', e.data) // input 比 selectionchange 先触发
-      // const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
+      if (this.isComposing || e.srcElement !== this.$refs.article) return
+      // console.log('input', e) // input 比 selectionchange 先触发
+      const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      if (startBlock === endBlock) {
+        const oldLength = startBlock.text.length
+        const node = getNodeById(startBlock.id)
+        const newLength = node.innerText.length
+        const range = { offset: startOffset, length: endOffset - startOffset }
+        let inputLength = e.data ? e.data.length : newLength + range.length - oldLength
+        if (inputLength < 0) {
+          range.offset += inputLength
+          range.length -= inputLength
+          inputLength = 0
+        }
+        replaceRange(startBlock.ranges, range, inputLength)
+        startBlock.text = node.innerText.replace(/\n/g, '')
+        // 执行快速格式化
+        let formated = false
+        formatters.forEach(format => {
+          const res = format(startBlock, this)
+          if (res) formated = true
+        })
+        startBlock.key++
+        const newOffset = formated ? 0 : range.offset + inputLength
+        this.setSelection(startBlock, startBlock, newOffset, newOffset)
+        return
+      }
+      this.onInputCrossBlocks()
+      startBlock.text += e.data || ''
+      mergeBlocks(startBlock, endBlock)
+      mergeRanges(startBlock.ranges)
+      this.removeBlock(endBlock)
+      this.key++
+      const newOffset = startOffset + (e.data ? e.data.length : 0)
+      this.setSelection(startBlock, startBlock, newOffset, newOffset)
+    },
+    onInputCrossBlocks () { // 跨行发生输入行为后对两端 block 处理，并删除中间 block
+      const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
+      blocks.forEach(item => {
+        if (item !== startBlock && item !== endBlock) this.removeBlock(item)
+      })
+      if (isTextBlock(startBlock)) {
+        const range1 = { offset: startOffset, length: startBlock.text.length - startOffset }
+        replaceRange(startBlock.ranges, range1, 0)
+        startBlock.text = startBlock.text.substring(0, startOffset)
+      }
+      if (isTextBlock(endBlock)) {
+        const range2 = { offset: 0, length: endOffset }
+        replaceRange(endBlock.ranges, range2, 0)
+        endBlock.text = endBlock.text.substring(endOffset)
+      }
     },
     onPaste (e) {
       e.preventDefault()
@@ -91,10 +143,26 @@ export default {
       const text = clipboardData.getData('text/plain')
       if (!text) return
       const arr = text.split(/\n/)
-      console.log('on paste: ', arr)
+      console.log(arr)
+      const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      if (arr.length === 1 && startBlock === endBlock) {
+        const data = arr[0]
+        const range = { offset: startOffset, length: endOffset - startOffset }
+        replaceRange(startBlock.ranges, range, data.length)
+        const t = startBlock.text
+        startBlock.text = t.substring(0, startOffset) + data + t.substring(endOffset)
+        startBlock.key++
+        const newOffset = startOffset + data.length
+        this.setSelection(startBlock, startBlock, newOffset, newOffset)
+        return
+      }
+      if (arr.length === 1) {
+
+      }
     },
     onKeydown (e) {
       const code = e.keyCode
+      this.selection.rangeRect = null
       // const ctrl = (e.ctrlKey || e.metaKey)
       // console.log(ctrl, code)
       switch (code) {
@@ -107,25 +175,111 @@ export default {
       }
     },
     onKeyBackspace (e) {
-      // const { startBlock, endBlock, startOffset, endOffset } = this.selection
-      // if (!(startBlock === endBlock && startOffset === endOffset)) {
-      //   e.preventDefault()
-      // }
+      const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      const vblocks = this.value.blocks
+      if (startBlock === endBlock) {
+        if (endOffset === startOffset && startOffset === 0) {
+          e.preventDefault()
+          // console.log('xxx')
+          const type = startBlock.type
+          const node = getNodeById(startBlock.id)
+          // console.log(node.dataset.index)
+          // 在段落开始位置退格，合并到上一个 block 中 需要考虑 blockcode.index > 1 需要直接合并到上一个，并不清除样式
+          if (type === 'paragraph' || (type === 'blockcode' && node.dataset.index !== '1')) {
+            const prevBlock = vblocks[vblocks.indexOf(startBlock) - 1]
+            if (!prevBlock) return
+            if (!isTextBlock(prevBlock)) {
+              this.removeBlock(prevBlock)
+              return
+            }
+            const offset = prevBlock.text.length
+            mergeBlocks(prevBlock, startBlock)
+            this.removeBlock(startBlock)
+            mergeRanges(prevBlock.ranges)
+            this.setSelection(prevBlock, prevBlock, offset, offset)
+          } else {
+            if (isTextBlock(startBlock)) {
+              // if (type === 'blockcode' && )
+              startBlock.type = 'paragraph'
+              this.setSelection(startBlock, startBlock, 0, 0)
+            } else {
+              const prev = vblocks[vblocks.indexOf(startBlock) - 1]
+              this.removeBlock(startBlock)
+              if (prev && prev.text) this.setSelection(prev, prev, prev.text.length, prev.text.length)
+            }
+          }
+        }
+        return
+      }
+      e.preventDefault()
+      this.onInputCrossBlocks()
+      mergeBlocks(startBlock, endBlock)
+      mergeRanges(startBlock.ranges)
+      this.removeBlock(endBlock)
+      this.setSelection(startBlock, startBlock, startOffset, startOffset)
     },
     onKeyEnter (e) {
       e.preventDefault()
-      // const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      if (startBlock === endBlock) {
+        if (!isTextBlock(startBlock)) {
+          const newBlock = { type: 'paragraph', id: createGUID(), key: 0, text: '', ranges: [] }
+          this.addBlockAt(this.value.blocks.indexOf(startBlock) + 1, newBlock)
+          this.setSelection(newBlock, newBlock, 0, 0)
+          return
+        }
+        const range = { offset: startOffset, length: endOffset - startOffset }
+        const newBlock = splitBlock(startBlock, range)
+        const type = startBlock.type
+        const index = this.value.blocks.indexOf(startBlock)
+
+        if (!listTypes[type]) {
+          this.addBlockAt(index + 1, newBlock)
+          this.setSelection(newBlock, newBlock, 0, 0)
+          return
+        }
+        // 这里对列表类型的 block 特殊处理，回车有可能要保留原来的 type
+        if (startBlock.text.length || newBlock.text.length) {
+          newBlock.type = type
+          newBlock.checked = false
+          this.addBlockAt(index + 1, newBlock)
+          this.setSelection(newBlock, newBlock, 0, 0)
+        } else {
+          // 对代码块特殊处理两个空行才跳出
+          if (type !== 'blockcode') {
+            this.clearBlockStyle(startBlock)
+            this.setSelection(startBlock, startBlock, 0, 0)
+          } else {
+            const prev = this.value.blocks[this.value.blocks.indexOf(startBlock) - 1]
+            if (!prev) return
+            if (!prev.text.length) {
+              this.clearBlockStyle(startBlock)
+              this.setSelection(startBlock, startBlock, 0, 0)
+            } else {
+              newBlock.type = type
+              this.addBlockAt(index + 1, newBlock)
+              this.setSelection(newBlock, newBlock, 0, 0)
+            }
+          }
+        }
+        return
+      }
+      this.onInputCrossBlocks()
+      this.setSelection(endBlock, endBlock, 0, 0)
     },
     onMousedown (e) {
       // this.selection.rangeRect = null
     },
     onSelectionchange (e) {
-      // console.log('selection change', e)
+      // console.log('selection change')
       if (this.isComposing) return
       this.getSelection()
       this.getSelectedBlockStyle()
-      this.getSelectedInlineStyles()
-      this.$emit('selectionchange', JSON.parse(JSON.stringify(this.selection))) // 不用要取消，耗费性能
+      const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      if (!(startBlock === endBlock && startOffset === endOffset)) {
+        this.getSelectedInlineStyles()
+      }
+      // this.$emit('selectionchange', JSON.parse(JSON.stringify(this.selection))) // 不用要取消，耗费性能
     },
     getSelection () {
       if (this.isOperating) return
@@ -154,10 +308,10 @@ export default {
         return
       }
 
-      const startKey = startNode.dataset.key
-      const endKey = endNode.dataset.key
+      const startId = startNode.dataset.id
+      const endId = endNode.dataset.id
 
-      let selectedBlocks = getSelectedBlocks(this.value.blocks, startKey, endKey)
+      let selectedBlocks = getSelectedBlocks(this.value.blocks, startId, endId)
       let startBlock = selectedBlocks[0]
       let endBlock = selectedBlocks[selectedBlocks.length - 1]
 
@@ -182,7 +336,7 @@ export default {
     },
     getSelectedBlockStyle () {
       const { blocks } = this.selection
-      const _blocks = (blocks || []).filter(item => textBlockMap[item.type])
+      const _blocks = (blocks || []).filter(item => isTextBlock(item))
       if (!_blocks || !_blocks.length) {
         this.selection.blockStyle = null
         return
@@ -197,7 +351,7 @@ export default {
     getSelectedInlineStyles () {
       const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
       // 略过其它非文本 block
-      const _blocks = (blocks || []).filter(item => textBlockMap[item.type])
+      const _blocks = (blocks || []).filter(item => isTextBlock(item))
       if (!_blocks || !_blocks.length) {
         this.selection.inlineStyles = null
         return
@@ -229,15 +383,18 @@ export default {
       const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
 
       if (startBlock === endBlock) {
+        if (startBlock.type === 'blockcode' && style === 'code') return // 代码块不能再应用行内代码样式
         const newRange = { style, offset: startOffset, length: endOffset - startOffset }
         for (let key in attrs) this.$set(newRange, key, attrs[key])
         startBlock.ranges.push(newRange)
         mergeRanges(startBlock.ranges)
+        startBlock.key++
         return
       }
 
       blocks.forEach(item => {
-        if (!textBlockMap[item.type]) return
+        if (!isTextBlock(item)) return
+        if (item.type === 'blockcode' && style === 'code') return // 代码块不能再应用行内代码样式
         const newRange = { style, offset: 0, length: 0 }
         if (attrs) {
           for (let key in attrs) this.$set(newRange, key, attrs[key])
@@ -254,6 +411,7 @@ export default {
           item.ranges.push(newRange)
         }
         mergeRanges(item.ranges)
+        item.key++
       })
     },
     removeInlineStyle (style) {
@@ -273,6 +431,7 @@ export default {
           item.ranges = ranges.concat(newRanges)
         }
         mergeRanges(item.ranges)
+        item.key++
       }
 
       if (startBlock === endBlock) {
@@ -280,7 +439,7 @@ export default {
         return
       }
       blocks.forEach(item => {
-        if (!textBlockMap[item.type]) return
+        if (!isTextBlock(item)) return
         if (item === startBlock) {
           handleItem(item, startOffset, item.text.length)
         } else if (item === endBlock) {
@@ -302,15 +461,15 @@ export default {
     setBlockStyle (style, attrs = {}) {
       const { blocks } = this.selection
       blocks.forEach(item => {
-        if (!textBlockMap[item.type]) return
+        if (!isTextBlock(item)) return
         item.type = style
         for (let key in attrs) this.$set(item, key, attrs[key])
       })
     },
-    removeBlockStyle (style) {
+    clearBlockStyle (style) {
       const { blocks } = this.selection
       blocks.forEach(item => {
-        if (!textBlockMap[item.type]) return
+        if (!isTextBlock(item)) return
         item.type = 'paragraph'
       })
     },
@@ -321,68 +480,83 @@ export default {
       // 对 heading 特殊处理
       if (type === 'heading') isSame = blockStyle === style + attrs.level
       if (isSame) {
-        this.removeBlockStyle()
+        this.clearBlockStyle()
       } else {
         this.setBlockStyle(style, attrs)
       }
       this.restoreSelection()
     },
     restoreSelection () {
-      this.$nextTick(() => {
-        const { startBlock, endBlock, startOffset, endOffset } = this.selection
-        this.setSelection(startBlock, endBlock, startOffset, endOffset)
-      })
+      const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      this.setSelection(startBlock, endBlock, startOffset, endOffset)
     },
     setSelection (startBlock, endBlock, startOffset, endOffset) {
-      const startNode = getNodeByKey(startBlock.key)
-      const endNode = getNodeByKey(endBlock.key)
-      const start = getFocusNodeAndOffset(startNode, startOffset)
-      const end = (startBlock === endBlock && startOffset === endOffset)
-        ? start
-        : getFocusNodeAndOffset(endNode, endOffset)
-      // console.log(start, end)
-      const selection = getSelection()
-      const range = document.createRange()
-      try {
-        range.setStart(start.focusNode, start.focusOffset)
-        range.setEnd(end.focusNode, end.focusOffset)
-        selection.removeAllRanges()
-        selection.addRange(range)
-      } catch (err) {
-        console.warn('setRange failed: ' + err.message)
-      }
+      this.$nextTick(() => {
+        const startNode = getNodeById(startBlock.id)
+        const endNode = getNodeById(endBlock.id)
+        const start = getFocusNodeAndOffset(startNode, startOffset)
+        const end = (startBlock === endBlock && startOffset === endOffset)
+          ? start
+          : getFocusNodeAndOffset(endNode, endOffset)
+        // console.log(start, end)
+        const selection = getSelection()
+        const range = document.createRange()
+        try {
+          range.setStart(start.focusNode, start.focusOffset)
+          range.setEnd(end.focusNode, end.focusOffset)
+          selection.removeAllRanges()
+          selection.addRange(range)
+        } catch (err) {
+          console.warn('setRange failed: ' + err.message)
+        }
+      })
     },
-    addBlockAt (index) {
-      const newBlock = {
-        key: createGUID(),
-        type: 'paragraph',
-        text: '',
-        ranges: []
-      }
-      this.value.blocks.splice(index, 0, newBlock)
+    addBlockAt (index, block) {
+      if (!block) return
+      block.type = block.type || 'paragraph'
+      this.value.blocks.splice(index, 0, block)
+    },
+    removeBlock (block) {
+      if (!block) return
+      const { blocks } = this.value
+      const i = blocks.indexOf(block)
+      if (i < 0) return
+      blocks.splice(i, 1)
+    },
+    getValue (e) {
+      const value = JSON.parse(JSON.stringify(this.value))
+      value.blocks.forEach(item => {
+        delete item.id
+        delete item.key
+      })
+      return value
     }
   }
 }
 
+function isTextBlock (block) {
+  return !!textBlockMap[block.type]
+}
+
 function getBlockNodeByChildNode (node) {
   if (!node) return null
-  if (node.dataset && node.dataset.key) return node
+  if (node.dataset && node.dataset.id) return node
   return getBlockNodeByChildNode(node.parentNode)
 }
 
-function getNodeByKey (key) {
-  return document.querySelector(`[data-key="${key}"]`)
+function getNodeById (id) {
+  return document.querySelector(`[data-id="${id}"]`)
 }
 
-function getSelectedBlocks (blocks, startKey, endKey) {
+function getSelectedBlocks (blocks, startId, endId) {
   const result = new Set()
   let go = false
   blocks.forEach(item => {
-    if (item.key === startKey) {
+    if (item.id === startId) {
       result.add(item)
       go = true
     }
-    if (item.key === endKey) {
+    if (item.id === endId) {
       result.add(item)
       go = false
     }
@@ -402,7 +576,7 @@ function getRangeRect (range, el) {
     height: rangeRect.height
   }
 }
-// 获取 node 的 offse 相对于 root 的 offset 值
+// 获取 node 的 offset 相对于 root 的 offset 值
 function getOffset (root, node, _offset) {
   let offset = _offset
   if (root === node) return _offset
@@ -444,7 +618,8 @@ function getRangeStyles (ranges, start, end) {
 }
 // 合并重合的 range
 function mergeRanges (ranges) {
-  if (ranges.length < 2) return ranges
+  if (!ranges) return
+  if (ranges.length < 2) return
   function each (arr) {
     let go = false // 是否继续下次循环
     arr.forEach((item1, i) => {
@@ -467,7 +642,6 @@ function mergeRanges (ranges) {
     if (go) each(ranges)
   }
   each(ranges)
-  return ranges
 }
 // 过滤无效 range
 // function filterRanges (ranges, maxOffset) {
@@ -504,6 +678,7 @@ function getFocusNodeAndOffset (root, offset) {
     let len = 0
     let focusNode = _root
     let focusOffset = 0
+    if (!_root) return { focusNode, focusOffset }
     const nodes = _root.childNodes
     const length = nodes.length
     for (let i = 0; i < length; i++) {
@@ -535,7 +710,7 @@ function getFocusNodeAndOffset (root, offset) {
   }
   return getResult(root, offset)
 }
-// 在指 range 位置插入 length 长度的文字后重新计算 ranges
+// 在指定 range 位置插入 length 长度的文字后重新计算 ranges
 function replaceRange (ranges, range, inputLength) {
   // console.log(JSON.parse(JSON.stringify(range)), inputLength)
   const rangeStart = range.offset
@@ -546,7 +721,7 @@ function replaceRange (ranges, range, inputLength) {
     let itemStart = item.offset
     let itemEnd = item.offset + item.length
     // 在选区之前，不受影响
-    if (rangeStart > itemEnd) {
+    if (rangeStart >= itemEnd) {
       // console.log(1)
       return
     }
@@ -563,7 +738,7 @@ function replaceRange (ranges, range, inputLength) {
       return
     }
     // 选区在其内部，需要调整 length 长度
-    if (rangeStart > itemStart && rangeEnd <= itemEnd) {
+    if (rangeStart >= itemStart && rangeEnd <= itemEnd) {
       // console.log(4)
       item.length += changeLength
       return
@@ -581,4 +756,70 @@ function replaceRange (ranges, range, inputLength) {
       item.length -= itemEnd - rangeStart
     }
   })
+}
+// 根据 range 将 block 一分为二 返回分割后的产生的新 block
+function splitBlock (block, range) {
+  if (!isTextBlock(block)) return null
+  const rangeStart = range.offset
+  const rangeEnd = range.offset + range.length
+  const text1 = block.text.slice(0, rangeStart)
+  const text2 = block.text.slice(rangeEnd, block.text.length)
+  const ranges1 = []
+  const ranges2 = []
+  block.ranges.forEach(item => {
+    const itemStart = item.offset
+    const itemEnd = item.offset + item.length
+    if (itemEnd <= rangeStart) {
+      ranges1.push(item)
+      return
+    }
+    if (itemStart >= rangeEnd) {
+      item.offset -= rangeEnd
+      ranges2.push(item)
+      return
+    }
+    if (itemStart > rangeStart && itemEnd < rangeEnd) {
+      return
+    }
+    if (rangeStart > itemStart && rangeEnd < itemEnd) {
+      item.length = rangeStart - itemStart
+      ranges1.push(item)
+      const newRange = {
+        offset: 0,
+        length: itemEnd - rangeEnd,
+        style: item.style
+      }
+      for (let key in item) if (newRange[key] === undefined) newRange[key] = item[key]
+      ranges2.push(newRange)
+      return
+    }
+    if (itemStart > rangeStart && itemStart < rangeEnd) {
+      item.offset = 0
+      item.length = itemEnd - rangeEnd
+      ranges2.push(item)
+      return
+    }
+    if (itemEnd > rangeStart && itemEnd < rangeEnd) {
+      item.length = rangeStart - itemStart
+      ranges1.push(item)
+    }
+  })
+  block.text = text1
+  block.ranges = ranges1
+  const result = {
+    id: createGUID(),
+    key: 0,
+    text: text2,
+    ranges: ranges2
+  }
+  return result
+}
+// 合并两个 block
+function mergeBlocks (block1, block2) {
+  if (!isTextBlock(block1) || !isTextBlock(block2)) return
+  block2.ranges.forEach(item => {
+    item.offset += block1.text.length
+  })
+  block1.ranges = block1.ranges.concat(block2.ranges)
+  block1.text += block2.text
 }

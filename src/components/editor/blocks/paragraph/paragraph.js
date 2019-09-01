@@ -1,12 +1,14 @@
-import createBlockTextElement from '../create-block-text-element'
+// import createBlockTextElement from '../create-block-text-element'
 import blockMixin from '../block-mixin'
+import renderText from '../../text/text-render'
 
 export default {
   name: 'editor-block-paragraph',
   mixins: [blockMixin],
   render (h) {
-    let { value } = this
-    const tagName = 'p'
-    return h('div', [createBlockTextElement(h, this, tagName, value)])
+    let { text, ranges, key } = this.value
+    return h('div', { key }, [
+      h('p', renderText(h, this, text, ranges))
+    ])
   }
 }

@@ -6,8 +6,7 @@ export default {
   name: 'editor-list-item',
   mixins: [blockMxin],
   render (h) {
-    const { text, ranges } = this.value
-    const tagName = 'li'
-    return h(tagName, renderText(h, this, text, ranges))
+    const { text, ranges, key } = this.value
+    return h('li', { key }, renderText(h, this, text, ranges))
   }
 }

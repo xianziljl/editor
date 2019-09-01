@@ -1,62 +1,78 @@
 export default [
-  function (value, context) {
+  function (block, context) {
+    if (!block.text || block.type === 'blockquote') return false
     const reg = /^>\s/
-    const match = value.text.match(reg)
+    const match = block.text.match(reg)
     if (match) {
-      value.type = 'blockquote'
-      value.text = value.text.replace(reg, '')
-      value.ranges.forEach(item => { item.offset -= 2 })
+      block.type = 'blockquote'
+      block.text = block.text.replace(reg, '')
+      block.ranges.forEach(item => { item.offset -= 2 })
       return true
     }
   },
-  function (value, context) {
+  function (block, context) {
+    if (!block.text) return false
     const reg = /^#+\s/
-    const match = value.text.match(reg)
+    const match = block.text.match(reg)
     if (match) {
-      value.type = 'heading'
+      block.type = 'heading'
       const level = match[0].length - 1
-      value.level = level > 4 ? 4 : level
-      value.text = value.text.replace(reg, '')
-      value.ranges.forEach(item => { item.offset -= match[0].length })
+      block.level = level > 4 ? 4 : level
+      block.text = block.text.replace(reg, '')
+      block.ranges.forEach(item => { item.offset -= match[0].length })
       return true
     }
   },
-  function (value, context) {
+  function (block, context) {
+    if (!block.text || block.type === 'unorderlist') return false
     const reg = /^(\*|-|\+)\s/
-    const match = value.text.match(reg)
+    const match = block.text.match(reg)
     if (match) {
-      value.type = 'unorderlist'
-      value.text = value.text.replace(reg, '')
-      value.ranges.forEach(item => { item.offset -= 2 })
+      block.type = 'unorderlist'
+      block.text = block.text.replace(reg, '')
+      block.ranges.forEach(item => { item.offset -= 2 })
       return true
     }
   },
-  function (value, context) {
+  function (block, context) {
+    if (!block.text || block.type === 'orderlist') return false
     const reg = /^\d\.\s/
-    const match = value.text.match(reg)
+    const match = block.text.match(reg)
     if (match) {
-      value.type = 'orderlist'
-      value.text = value.text.replace(reg, '')
-      value.ranges.forEach(item => { item.offset -= 3 })
+      block.type = 'orderlist'
+      block.text = block.text.replace(reg, '')
+      block.ranges.forEach(item => { item.offset -= 3 })
       return true
     }
   },
-  function (value, context) {
+  function (block, context) {
+    if (!block.text || block.type === 'todolist') return false
     const reg = /^\[(\s|x)?\]\s/
-    const match = value.text.match(reg)
+    const match = block.text.match(reg)
     if (match) {
-      value.type = 'todolist'
-      context.$set(value, 'checked', !!match[0].match('x'))
-      value.text = value.text.replace(reg, '')
-      value.ranges.forEach(item => { item.offset -= 3 })
+      block.type = 'todolist'
+      context.$set(block, 'checked', !!match[0].match('x'))
+      block.text = block.text.replace(reg, '')
+      block.ranges.forEach(item => { item.offset -= 3 })
       return true
     }
   },
-  function (value) {
+  function (block) {
+    if (!block.text) return false
     const reg = /^-{3,10}$/
-    if (value.text.match(reg)) {
-      value.type = 'divider'
-      value.text = '---'
+    if (block.text.match(reg)) {
+      block.type = 'divider'
+      block.text = ''
+      return true
+    }
+  },
+  function (block) {
+    if (!block.text || block.type === 'blockcode') return false
+    const reg = /^`{3}/
+    if (block.text.match(reg)) {
+      block.type = 'blockcode'
+      block.text = block.text.replace(reg, '')
+      block.ranges.forEach(item => { item.offset -= 3 })
       return true
     }
   }

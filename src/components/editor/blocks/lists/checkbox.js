@@ -6,9 +6,13 @@ export default {
   },
   render (h) {
     return h('label', {
-      class: 'editor-checkbox',
+      class: [
+        'editor-checkbox',
+        this.checked ? 'editor-checkbox-checked' : ''
+      ],
       attrs: {
-        'data-skip-check': 1
+        'data-skip-check': 1,
+        contenteditable: false
       },
       on: {
         change: this.onChange
@@ -26,6 +30,7 @@ export default {
   },
   methods: {
     onChange (e) {
+      e.stopPropagation()
       this.$emit('change', e.target.checked)
       console.log('on change', e.target.checked)
     }

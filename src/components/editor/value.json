@@ -1,0 +1,253 @@
+{
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "CSS Utility Classes and \"Separation of Concerns\"",
+      "ranges": [
+        {
+          "style": "bold",
+          "offset": 25,
+          "length": 22
+        }
+      ]
+    },
+    {
+      "type": "blockquote",
+      "text": "Over the last several years, the way I write CSS has transitioned from a very \"semantic\" approach to something much more like what is often called \"functional CSS.\"the way I write CSS has transitioned from a very \"semantic\" approach to something much more like what is often.",
+      "ranges": [
+        {
+          "style": "bold",
+          "offset": 79,
+          "length": 8
+        },
+        {
+          "style": "hilight",
+          "offset": 79,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "text": "Writing CSS this way can evoke a pretty visceral reaction from a lot of developers, so I'd like to explain how I got to this point and share some of the lessons and insights I've picked up along the way.",
+      "ranges": [],
+      "type": "paragraph"
+    },
+    {
+      "text": "Phase 1: \"Semantic\" CSS",
+      "ranges": [
+        {
+          "style": "link",
+          "offset": 10,
+          "length": 8,
+          "href": "https://www.google.com"
+        }
+      ],
+      "type": "heading",
+      "level": 2
+    },
+    {
+      "text": "One of the best practices you'll hear about when you're trying to learn how to CSS good is \"separation of concerns.\" The idea is that your HTML should only contain information about your content, and all of your styling decisions should be made in your CSS.",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 253,
+          "length": 3
+        },
+        {
+          "style": "code",
+          "offset": 139,
+          "length": 4
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "text": "Write the markup I needed for some new UI (an author bio card in this case).",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "Add a descriptive class or two based on the content.",
+      "ranges": [],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "Use those classes as \"hooks\" in my CSS/Less/Sass to style my new markup.",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 35,
+          "length": 13
+        },
+        {
+          "style": "code",
+          "offset": 22,
+          "length": 5
+        }
+      ],
+      "type": "todolist",
+      "checked": false
+    },
+    {
+      "text": "Take a look at this HTML:",
+      "ranges": [],
+      "type": "paragraph"
+    },
+    {
+      "type": "blockcode",
+      "level": 2,
+      "text": "<p class=\"text-center\">",
+      "ranges": [
+        {
+          "offset": 0,
+          "length": 0,
+          "style": "hilight"
+        }
+      ]
+    },
+    {
+      "text": "    Hello there!",
+      "ranges": [],
+      "type": "blockcode",
+      "checked": false
+    },
+    {
+      "type": "blockcode",
+      "text": "</p>",
+      "ranges": []
+    },
+    {
+      "type": "paragraph",
+      "text": "See that .text-center class? Centering text is a design decision, so this code violates \"separation of concerns\" because we've let styling information bleed into our HTML.",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 9,
+          "length": 12
+        }
+      ]
+    },
+    {
+      "text": "Instead, the recommended approach is to give your elements class names based on their content, and use those classes as hooks in your CSS to style your markup.",
+      "ranges": [],
+      "type": "paragraph"
+    },
+    {
+      "text": "<style>",
+      "ranges": [],
+      "type": "blockcode"
+    },
+    {
+      "text": ".greeting {",
+      "ranges": [],
+      "type": "blockcode",
+      "checked": false
+    },
+    {
+      "text": "    text-align: center;",
+      "ranges": [],
+      "type": "blockcode",
+      "checked": false
+    },
+    {
+      "text": "}",
+      "ranges": [],
+      "type": "blockcode",
+      "checked": false
+    },
+    {
+      "text": "</style>",
+      "ranges": [],
+      "type": "blockcode",
+      "checked": false
+    },
+    {
+      "text": "<p class=\"greeting\">",
+      "ranges": [],
+      "type": "blockcode",
+      "checked": false
+    },
+    {
+      "text": "    Hello there!",
+      "ranges": [],
+      "type": "blockcode",
+      "checked": false
+    },
+    {
+      "text": "</p>",
+      "ranges": [],
+      "type": "blockcode",
+      "checked": false
+    },
+    {
+      "text": "The quintessential example of this approach has always been CSS Zen Garden; a site designed to show that if you \"separate your concerns\", you can completely redesign a site just by swapping out the stylesheet.",
+      "ranges": [],
+      "type": "paragraph"
+    },
+    {
+      "text": "My workflow looked something like this:",
+      "ranges": [],
+      "type": "paragraph"
+    },
+    {
+      "text": "Write the markup I needed for some new UI (an author bio card in this case).",
+      "ranges": [],
+      "type": "orderlist"
+    },
+    {
+      "text": "Add a descriptive class or two based on the content.",
+      "ranges": [],
+      "type": "orderlist",
+      "checked": false
+    },
+    {
+      "text": "Use those classes as \"hooks\" in my CSS/Less/Sass to style my new markup.",
+      "ranges": [
+        {
+          "style": "code",
+          "offset": 35,
+          "length": 13
+        },
+        {
+          "style": "code",
+          "offset": 22,
+          "length": 5
+        }
+      ],
+      "type": "orderlist",
+      "checked": false
+    },
+    {
+      "text": "My markup wasn't concerned with styling decisions, but my CSS was very concerned with my markup structure.",
+      "ranges": [
+        {
+          "style": "bold",
+          "offset": 0,
+          "length": 106
+        }
+      ],
+      "type": "paragraph",
+      "checked": false
+    },
+    {
+      "text": "",
+      "ranges": [
+        {
+          "style": "bold",
+          "offset": 0,
+          "length": 0
+        }
+      ],
+      "type": "paragraph",
+      "level": 2
+    },
+    {
+      "text": "",
+      "ranges": [],
+      "type": "paragraph"
+    }
+  ]
+}

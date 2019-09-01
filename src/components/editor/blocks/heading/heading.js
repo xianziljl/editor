@@ -1,14 +1,17 @@
-import createBlockTextElement from '../create-block-text-element'
 import blockMixin from '../block-mixin'
+import renderText from '../../text/text-render'
 
 export default {
   name: 'editor-block-heading',
   mixins: [blockMixin],
   render (h) {
-    let { value } = this
-    const tagName = 'h' + (value.level || 1)
+    let { text, ranges, key, level } = this.value
+    const tagName = 'h' + (level || 1)
     return h('div', {
-      attrs: { id: `user-content-${this.value.text}` }
-    }, [createBlockTextElement(h, this, tagName, value)])
+      key,
+      attrs: { id: `user-content-${text}` }
+    }, [
+      h(tagName, renderText(h, this, text, ranges))
+    ])
   }
 }
