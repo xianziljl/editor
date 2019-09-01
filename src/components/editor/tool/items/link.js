@@ -9,7 +9,7 @@ export default {
   },
   watch: {
     '$editor.selection.inlineStyles' (styles) {
-      this.isActive = !!styles.link
+      this.isActive = styles && styles.link
     },
     '$tool.isShow' (isShow) {
       if (this.isInput && !isShow) this.cancelInput()
@@ -66,8 +66,8 @@ export default {
       }
       if (e.keyCode === 27) {
         this.$editor.isOperating = false
-        this.cancelInput()
         this.$tool.close()
+        this.isInput = false
       }
     }
   }

@@ -1,16 +1,16 @@
 import toolItemMixin from './toolItemMixin'
 
 export default {
-  name: 'editor-tool-blockquote',
+  name: 'editor-tool-unorderlist',
   mixins: [toolItemMixin],
   watch: {
     '$editor.selection.blockStyle' (val) {
-      this.isActive = val === 'blockquote'
+      this.isActive = val === 'unorderlist'
     }
   },
   methods: {
     onClick () {
-      this.$editor.toggleBlockStyle('blockquote')
+      this.$editor.toggleBlockStyle('unorderlist')
       this.$editor.isOperating = false
     }
   }

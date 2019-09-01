@@ -4,7 +4,7 @@ export default {
   mixins: [toolItemMixin],
   watch: {
     '$editor.selection.inlineStyles' (styles) {
-      this.isActive = !!styles.hilight
+      this.isActive = styles && styles.hilight
     }
   },
   methods: {

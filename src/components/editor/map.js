@@ -6,6 +6,7 @@ import Listitem from './blocks/lists/listitem'
 import Todoitem from './blocks/lists/todoitem'
 import Images from './blocks/image/images'
 import Image from './blocks/image/image'
+import Blockcode from './blocks/blockcode/blockcode'
 // import Orderlist from './blocks/lists/orderlist'
 // import Unorderlist from './blocks/lists/unorderlist'
 // import Todolist from './blocks/lists/todolist'
@@ -29,13 +30,25 @@ const blockMap = {
   unorderlist: Listitem,
   todolist: Todoitem,
   images: Images,
-  image: Image
+  image: Image,
+  blockcode: Blockcode
+}
+
+const textBlockMap = {
+  heading: Heading,
+  paragraph: Paragraph,
+  blockquote: Blockquote,
+  orderlist: Listitem,
+  unorderlist: Listitem,
+  todolist: Todoitem,
+  blockcode: Blockcode
 }
 
 const listTypes = {
   orderlist: 'ol',
   unorderlist: 'ul',
-  todolist: 'ul'
+  todolist: 'ul',
+  blockcode: 'code'
 }
 
-export { spanMap, blockMap, listTypes }
+export { spanMap, blockMap, listTypes, textBlockMap }

@@ -5,7 +5,10 @@ export default {
   mixins: [blockMixin],
   render (h) {
     return h('hr', this.readonly ? {} : {
-      attrs: { tabindex: 0 },
+      attrs: {
+        tabindex: 0,
+        contenteditable: false
+      },
       on: {
         keydown: this.onKeydown
       }

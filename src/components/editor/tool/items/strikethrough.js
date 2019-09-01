@@ -4,7 +4,7 @@ export default {
   mixins: [toolItemMixin],
   watch: {
     '$editor.selection.inlineStyles' (styles) {
-      this.isActive = !!styles.strikethrough
+      this.isActive = styles && styles.strikethrough
     }
   },
   methods: {

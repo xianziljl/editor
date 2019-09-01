@@ -4,8 +4,12 @@ import Link from './items/link'
 import Code from './items/code'
 import Hilight from './items/hilight'
 import Strikethrough from './items/strikethrough'
+import Blockquote from './items/blockquote'
+import Unorderlist from './items/unorderlist'
+import Heading1 from './items/heading1'
+import Heading2 from './items/heading2'
 
-const items = [Bold, Italic, Strikethrough, Link, Code, Hilight]
+const items = [Bold, Italic, Strikethrough, Link, Code, Hilight, 'hr', Heading1, Heading2, Blockquote, Unorderlist]
 
 export default {
   name: 'editor-tool-popup',

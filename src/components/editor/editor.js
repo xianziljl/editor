@@ -1,6 +1,8 @@
 import ToolPopup from './tool/popup-tool'
 import renderBlocks from './blocks/block-render'
 import formatValue from './utils/formatValue'
+import createGUID from './utils/createGUID'
+import { textBlockMap } from './map'
 // import debounce from 'debounce'
 
 export default {
@@ -45,6 +47,7 @@ export default {
       attrs: { contenteditable: !readonly },
       on: readonly ? null : {
         input: this.onInput,
+        paste: this.onPaste,
         keydown: this.onKeydown,
         mousedown: this.onMousedown,
         compositionstart: this.onCompositionstart,
@@ -79,23 +82,54 @@ export default {
     },
     onInput (e) {
       if (this.isComposing) return
-      console.log('input')
+      console.log('input', e.data) // input 比 selectionchange 先触发
+      // const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
+    },
+    onPaste (e) {
+      e.preventDefault()
+      const { clipboardData } = e
+      const text = clipboardData.getData('text/plain')
+      if (!text) return
+      const arr = text.split(/\n/)
+      console.log('on paste: ', arr)
     },
     onKeydown (e) {
-      //
+      const code = e.keyCode
+      // const ctrl = (e.ctrlKey || e.metaKey)
+      // console.log(ctrl, code)
+      switch (code) {
+        case 8: // 退格
+          this.onKeyBackspace(e)
+          break
+        case 13: // 回车
+          this.onKeyEnter(e)
+          break
+      }
+    },
+    onKeyBackspace (e) {
+      // const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      // if (!(startBlock === endBlock && startOffset === endOffset)) {
+      //   e.preventDefault()
+      // }
+    },
+    onKeyEnter (e) {
+      e.preventDefault()
+      // const { startBlock, endBlock, startOffset, endOffset } = this.selection
     },
     onMousedown (e) {
-      this.selection.rangeRect = null
+      // this.selection.rangeRect = null
     },
     onSelectionchange (e) {
+      // console.log('selection change', e)
+      if (this.isComposing) return
       this.getSelection()
       this.getSelectedBlockStyle()
       this.getSelectedInlineStyles()
-      this.$emit('selectionchange', JSON.parse(JSON.stringify(this.selection)))
+      this.$emit('selectionchange', JSON.parse(JSON.stringify(this.selection))) // 不用要取消，耗费性能
     },
     getSelection () {
       if (this.isOperating) return
-      console.log('get selection')
+      // console.log('get selection')
       const clearSelection = () => {
         for (let key in this.selection) this.selection[key] = null
       }
@@ -148,27 +182,33 @@ export default {
     },
     getSelectedBlockStyle () {
       const { blocks } = this.selection
-      if (!blocks || !blocks.length) {
+      const _blocks = (blocks || []).filter(item => textBlockMap[item.type])
+      if (!_blocks || !_blocks.length) {
         this.selection.blockStyle = null
         return
       }
-      let styles = blocks.map(item => item.type)
+      let styles = _blocks.map(item => {
+        if (item.type === 'heading') return item.type + item.level
+        return item.type
+      })
       styles = Array.from(new Set(styles))
       this.selection.blockStyle = styles.length === 1 ? styles[0] : null
     },
     getSelectedInlineStyles () {
       const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
-      if (!blocks || !blocks.length) {
+      // 略过其它非文本 block
+      const _blocks = (blocks || []).filter(item => textBlockMap[item.type])
+      if (!_blocks || !_blocks.length) {
         this.selection.inlineStyles = null
         return
       }
-      if (blocks.length === 1) {
+      if (_blocks.length === 1) {
         this.selection.inlineStyles = getRangeStyles(startBlock.ranges, startOffset, endOffset)
         return
       }
       const stylesMap = {} // { bold: [1, 1, 1] } 判断每一项长度是否和选中的 blocks 长度相同
       const result = {}
-      blocks.forEach(item => {
+      _blocks.forEach(item => {
         let styles = {}
         if (item === startBlock) styles = getRangeStyles(item.ranges, startOffset, item.text.length)
         else if (item === endBlock) styles = getRangeStyles(item.ranges, 0, endOffset)
@@ -181,25 +221,23 @@ export default {
       for (let key in stylesMap) {
         const item = stylesMap[key]
         // console.log(item)
-        if (item.length === blocks.length) result[key] = 1
+        if (item.length === _blocks.length) result[key] = 1
       }
       this.selection.inlineStyles = result
     },
-    addInlineStyle (style, attrs) {
+    addInlineStyle (style, attrs = {}) {
       const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
 
       if (startBlock === endBlock) {
         const newRange = { style, offset: startOffset, length: endOffset - startOffset }
-        if (attrs) {
-          for (let key in attrs) this.$set(newRange, key, attrs[key])
-        }
+        for (let key in attrs) this.$set(newRange, key, attrs[key])
         startBlock.ranges.push(newRange)
         mergeRanges(startBlock.ranges)
-        filterRanges(startBlock.ranges, startBlock.text.length)
         return
       }
 
       blocks.forEach(item => {
+        if (!textBlockMap[item.type]) return
         const newRange = { style, offset: 0, length: 0 }
         if (attrs) {
           for (let key in attrs) this.$set(newRange, key, attrs[key])
@@ -216,7 +254,6 @@ export default {
           item.ranges.push(newRange)
         }
         mergeRanges(item.ranges)
-        filterRanges(item.ranges, item.text.length)
       })
     },
     removeInlineStyle (style) {
@@ -236,7 +273,6 @@ export default {
           item.ranges = ranges.concat(newRanges)
         }
         mergeRanges(item.ranges)
-        filterRanges(item.ranges, item.text.length)
       }
 
       if (startBlock === endBlock) {
@@ -244,6 +280,7 @@ export default {
         return
       }
       blocks.forEach(item => {
+        if (!textBlockMap[item.type]) return
         if (item === startBlock) {
           handleItem(item, startOffset, item.text.length)
         } else if (item === endBlock) {
@@ -253,7 +290,7 @@ export default {
         }
       })
     },
-    toggleInlineStyle (style, attrs) {
+    toggleInlineStyle (style, attrs = {}) {
       const { inlineStyles } = this.selection
       if (!inlineStyles[style]) {
         this.addInlineStyle(style, attrs)
@@ -262,25 +299,33 @@ export default {
       }
       this.restoreSelection()
     },
-    setBlockStyle (style, attrs) {
+    setBlockStyle (style, attrs = {}) {
       const { blocks } = this.selection
       blocks.forEach(item => {
+        if (!textBlockMap[item.type]) return
         item.type = style
-        if (attrs) {
-          for (let key in attrs) this.$set(item, key, attrs[key])
-        }
+        for (let key in attrs) this.$set(item, key, attrs[key])
       })
     },
     removeBlockStyle (style) {
-      console.log('removeBlockStyle')
+      const { blocks } = this.selection
+      blocks.forEach(item => {
+        if (!textBlockMap[item.type]) return
+        item.type = 'paragraph'
+      })
     },
-    toggleBlockStyle (style, attrs) {
-      const { blockStyle } = this.selection
-      if (style === blockStyle) {
+    toggleBlockStyle (style, attrs = {}) {
+      const { blockStyle, startBlock } = this.selection
+      const { type } = startBlock
+      let isSame = style === blockStyle
+      // 对 heading 特殊处理
+      if (type === 'heading') isSame = blockStyle === style + attrs.level
+      if (isSame) {
         this.removeBlockStyle()
       } else {
         this.setBlockStyle(style, attrs)
       }
+      this.restoreSelection()
     },
     restoreSelection () {
       this.$nextTick(() => {
@@ -306,6 +351,15 @@ export default {
       } catch (err) {
         console.warn('setRange failed: ' + err.message)
       }
+    },
+    addBlockAt (index) {
+      const newBlock = {
+        key: createGUID(),
+        type: 'paragraph',
+        text: '',
+        ranges: []
+      }
+      this.value.blocks.splice(index, 0, newBlock)
     }
   }
 }
@@ -416,18 +470,18 @@ function mergeRanges (ranges) {
   return ranges
 }
 // 过滤无效 range
-function filterRanges (ranges, maxOffset) {
-  ranges.forEach((item, i) => {
-    if (
-      item.offset < 0 ||
-      item.length <= 0 ||
-      !item.style ||
-      item.offset >= maxOffset
-    ) {
-      ranges.splice(i, 1)
-    }
-  })
-}
+// function filterRanges (ranges, maxOffset) {
+//   ranges.forEach((item, i) => {
+//     if (
+//       item.offset < 0 ||
+//       item.length <= 0 ||
+//       !item.style ||
+//       item.offset >= maxOffset
+//     ) {
+//       ranges.splice(i, 1)
+//     }
+//   })
+// }
 // 分割 range
 function splitRange (baseRange, cutRange) {
   const { style } = baseRange
@@ -440,7 +494,7 @@ function splitRange (baseRange, cutRange) {
   return [
     { offset: points[0], length: points[1] - points[0], style },
     { offset: points[2], length: points[3] - points[2], style }
-  ]
+  ].filter(item => item.offset >= 0 && item.length > 0)
 }
 // 根据全局 offset 值查找光标所在的文本节点和相对节点的位置
 function getFocusNodeAndOffset (root, offset) {
@@ -480,4 +534,51 @@ function getFocusNodeAndOffset (root, offset) {
     return getResult(focusNode, focusOffset)
   }
   return getResult(root, offset)
+}
+// 在指 range 位置插入 length 长度的文字后重新计算 ranges
+function replaceRange (ranges, range, inputLength) {
+  // console.log(JSON.parse(JSON.stringify(range)), inputLength)
+  const rangeStart = range.offset
+  const rangeEnd = range.offset + range.length
+  const changeLength = inputLength - range.length
+  // console.log('change lenght', changeLength, inputLength)
+  ranges.forEach((item, i) => {
+    let itemStart = item.offset
+    let itemEnd = item.offset + item.length
+    // 在选区之前，不受影响
+    if (rangeStart > itemEnd) {
+      // console.log(1)
+      return
+    }
+    // 在选区之后，需要调整 offset 值
+    if (rangeEnd <= itemStart) {
+      // console.log(2)
+      item.offset += changeLength
+      return
+    }
+    // 被选取包裹，需要被置为无效
+    if (rangeStart <= itemStart && rangeEnd >= itemEnd) {
+      // console.log(3)
+      item.offset = item.length = 0
+      return
+    }
+    // 选区在其内部，需要调整 length 长度
+    if (rangeStart > itemStart && rangeEnd <= itemEnd) {
+      // console.log(4)
+      item.length += changeLength
+      return
+    }
+    // 开始位置与选区交叉
+    if (rangeStart < itemStart && rangeEnd > itemStart) {
+      // console.log(5)
+      item.offset = rangeStart + inputLength
+      item.length -= rangeEnd - itemStart
+      return
+    }
+    // 结束位置与选区交叉
+    if (rangeStart < itemEnd && rangeEnd > itemEnd) {
+      // console.log(6)
+      item.length -= itemEnd - rangeStart
+    }
+  })
 }

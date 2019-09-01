@@ -10,9 +10,7 @@ export default {
       type: 'blockquote',
       text: 'The 2019 NFL season starts in less than two weeks, and Indianapolis is trying to maintain a sense of normalcy after Andrew Luck announced his retirement. But what does that new normal look like? For now, Jacoby Brissett is a large piece of it. Also, Jason Witten’s advice for Rob Gronkowski, what Josh Allen was up to this offseason, the NFL’s field surface struggles and more.',
       ranges: [
-        // { offset: 4, length: 8, style: 'link', href: 'https://www.google.com' }
-        { offset: 150, length: 227, style: 'hilight' },
-        { offset: 160, length: 217, style: 'link', href: 'a.com' }
+        { offset: 4, length: 8, style: 'link', href: 'https://www.google.com' }
       ]
     },
     {
@@ -20,9 +18,18 @@ export default {
       level: 2,
       text: 'What is clean data',
       ranges: [
-        { offset: 0, length: 10, style: 'hilight' },
-        { offset: 0, length: 5, style: 'link', href: 'b.com' }
+        { offset: 0, length: 4, style: 'hilight' }
       ]
+    },
+    {
+      type: 'blockcode',
+      text: 'var a = 0; console.log(a)',
+      ranges: []
+    },
+    {
+      type: 'blockcode',
+      text: 'document.body.querySelector("#12345")',
+      ranges: []
     },
     // {
     //   type: 'images',
@@ -46,6 +53,9 @@ export default {
       type: 'paragraph',
       text: 'INDIANAPOLIS — The building on West 56th Street in Indianapolis is a workplace, just like the buildings so many of you are heading to for the beginning of a new week. And on Sunday, the day after everything changed with the news of Andrew Luck’s unexpected retirement, the Colts’ home facility was like how you might expect your workplace to be on the day after a seismic, shifting event.',
       ranges: []
+    },
+    {
+      type: 'divider'
     },
     {
       type: 'todolist',
@@ -94,9 +104,6 @@ export default {
       type: 'orderlist',
       text: 'This an orderlist 3.',
       ranges: []
-    },
-    {
-      type: 'divider'
     }
     // {
     //   type: 'paragraph',

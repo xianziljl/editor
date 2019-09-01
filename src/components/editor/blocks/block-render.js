@@ -26,9 +26,10 @@ function renderBlocks (h, blocks, readonly) {
     list.push(child)
     const next = blocks[i + 1]
     if (!next || next.type !== item.type) {
-      children.push(h(listTypes[type], {
-        class: 'editor-block'
-      }, list))
+      const listNode = h(listTypes[type], { class: 'editor-list' }, list)
+      children.push(
+        h('div', { class: 'editor-block' }, [listNode])
+      )
       list = []
     }
   })

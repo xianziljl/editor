@@ -4,7 +4,10 @@ export default {
   mixins: [toolItemMixin],
   watch: {
     '$editor.selection.inlineStyles' (styles) {
-      this.isActive = !!styles.code
+      this.isActive = styles && styles.code
+    },
+    '$editor.selection.blockStyle' (style) {
+      this.isDisabled = style === 'blockcode'
     }
   },
   methods: {
