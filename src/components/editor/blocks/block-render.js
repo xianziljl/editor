@@ -27,7 +27,7 @@ function renderBlocks (h, blocks) {
     // 是 list
     list.push(child)
     const next = blocks[i + 1]
-    if (!next || next.type !== item.type) {
+    if (!next || next.type !== item.type || next.row !== item.row) {
       const listNode = h(listTypes[type], {
         class: ['editor-list', 'editor-list-' + type]
       }, list)

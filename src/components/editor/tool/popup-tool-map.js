@@ -30,6 +30,8 @@ const toolItems = {
   paragraph: common,
   heading1: common,
   heading2: common,
+  heading3: common,
+  heading4: common,
   blockquote: common,
   orderlist: common,
   unorderlist: common,
