@@ -40,19 +40,15 @@ export default {
     text: '',
     ranges: []
   },
-  images: {
-    type: 'images',
-    id: '',
-    images: []
-  },
   image: {
     type: 'image',
+    row: '',
     id: '',
     width: 0,
     height: 0,
     src: '',
     alt: '',
-    desc: '',
+    text: '',
     ranges: []
   }
 }

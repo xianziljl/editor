@@ -41,14 +41,16 @@ const textBlockMap = {
   orderlist: Listitem,
   unorderlist: Listitem,
   todolist: Todoitem,
-  blockcode: Blockcode
+  blockcode: Blockcode,
+  image: Image
 }
 
 const listTypes = {
   orderlist: 'ol',
   unorderlist: 'ul',
   todolist: 'ul',
-  blockcode: 'code'
+  blockcode: 'code',
+  image: 'div'
 }
 
 export { spanMap, blockMap, listTypes, textBlockMap }

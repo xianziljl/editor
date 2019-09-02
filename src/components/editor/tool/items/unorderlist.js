@@ -4,8 +4,9 @@ export default {
   name: 'editor-tool-unorderlist',
   mixins: [toolItemMixin],
   watch: {
-    '$editor.selection.blockStyle' (val) {
-      this.isActive = val === 'unorderlist'
+    '$editor.selection.blockStyle' (style) {
+      this.isActive = style && style === 'unorderlist'
+      this.isDisabled = style === 'image'
     }
   },
   methods: {

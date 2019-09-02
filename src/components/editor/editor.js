@@ -16,9 +16,11 @@ export default {
     }
   },
   data () {
+    formatValue(this.value)
     return {
       isComposing: false,
       isOperating: false,
+      isFocus: false,
 
       key: 0, // 用于一些极端情况下更新整个 article 如跨行输入
 
@@ -27,7 +29,7 @@ export default {
         endOffset: null, // 结束点相对 block 区域的 offset
         startBlock: null,
         endBlock: null,
-        rangeRect: null, // 选中文字的坐标区域
+        rangeRect: null, // 选中文字相对编辑器的坐标区域
         blocks: null, // 被选中的 block value
         blockStyle: null, // 被选中的 block 部分所应用的样式
         inlineStyles: null // 被选中的部分所应用的 inline 样式
@@ -38,9 +40,6 @@ export default {
     return {
       $editor: this
     }
-  },
-  created () {
-    formatValue(this.value)
   },
   render (h) {
     const { value, readonly } = this
@@ -54,7 +53,8 @@ export default {
         keydown: this.onKeydown,
         mousedown: this.onMousedown,
         compositionstart: this.onCompositionstart,
-        compositionend: this.onCompositionend
+        compositionend: this.onCompositionend,
+        '!focus': this.onFocus
       },
       ref: 'article',
       key: this.key
@@ -73,9 +73,20 @@ export default {
   methods: {
     addListeners () {
       document.addEventListener('selectionchange', this.onSelectionchange)
+      document.addEventListener('mousedown', this.onPageMousedown)
     },
     removeListeners () {
       document.removeEventListener('selectionchange', this.onSelectionchange)
+      document.removeEventListener('mousedown', this.onPageMousedown)
+    },
+    onPageMousedown (e) {
+      const path = e.path || (e.composedPath && e.composedPath())
+      if (!path.includes(this.$el)) {
+        for (let key in this.selection) this.selection[key] = null
+        this.isFocus = false
+      } else {
+        this.isFocus = true
+      }
     },
     onCompositionstart (e) {
       this.isComposing = true
@@ -163,7 +174,7 @@ export default {
     onKeydown (e) {
       const code = e.keyCode
       this.selection.rangeRect = null
-      // const ctrl = (e.ctrlKey || e.metaKey)
+      const ctrl = (e.ctrlKey || e.metaKey)
       // console.log(ctrl, code)
       switch (code) {
         case 8: // 退格
@@ -172,6 +183,32 @@ export default {
         case 13: // 回车
           this.onKeyEnter(e)
           break
+      }
+      // 禁用快捷键
+      if (ctrl) {
+        // console.log(e.keyCode)
+        switch (e.keyCode) {
+          case 66: // ctrl+B
+            e.preventDefault()
+            this.toggleInlineStyle('bold')
+            break
+          case 73: // ctrl+I
+            e.preventDefault()
+            this.toggleInlineStyle('italic')
+            break
+          case 85: // ctrl+U
+            e.preventDefault()
+            this.toggleInlineStyle('underline')
+            break
+          case 83: // ctrl+S
+            // e.preventDefault()
+            // console.log(e)
+            // this.exe('underline')
+            break
+          case 90: // ctrl+Z
+            // this.historyBack()
+            break
+        }
       }
     },
     onKeyBackspace (e) {
@@ -189,7 +226,9 @@ export default {
             const prevBlock = vblocks[vblocks.indexOf(startBlock) - 1]
             if (!prevBlock) return
             if (!isTextBlock(prevBlock)) {
-              this.removeBlock(prevBlock)
+              this.removeBlock(startBlock)
+              const prevBlockNode = getNodeById(prevBlock.id)
+              prevBlockNode.focus()
               return
             }
             const offset = prevBlock.text.length
@@ -268,10 +307,37 @@ export default {
       this.setSelection(endBlock, endBlock, 0, 0)
     },
     onMousedown (e) {
+      // console.log('mousedown')
       // this.selection.rangeRect = null
     },
+    onFocus (e) {
+      this.isFocus = true
+      // console.log('focus')
+      const focusNode = e.target
+      if (focusNode === this.$refs.article) {
+        this.onSelectionchange()
+        return
+      }
+      if (!focusNode.dataset.id) return
+      // this.isChildFocus = true
+      const block = getBlockById(this.value.blocks, focusNode.dataset.id)
+      // console.log('focus', block)
+      this.selection = {
+        startBlock: block,
+        endBlock: block,
+        startOffset: null,
+        endOffset: null,
+        rangeRect: getRangeRect(focusNode, this.$el),
+        blockStyle: block.type,
+        inlineStyles: null
+      }
+      // const selection = getSelection()
+      // console.log(_selection.getRangeAt(0))
+      // if (selection.type === 'Range') selection.removeAllRanges()
+      // console.log('sb', selection.blockStyle)
+    },
     onSelectionchange (e) {
-      // console.log('selection change')
+      // console.log('selectionchange')
       if (this.isComposing) return
       this.getSelection()
       this.getSelectedBlockStyle()
@@ -525,9 +591,24 @@ export default {
     },
     getValue (e) {
       const value = JSON.parse(JSON.stringify(this.value))
-      value.blocks.forEach(item => {
-        delete item.id
-        delete item.key
+      value.blocks.forEach(block => {
+        delete block.id
+        delete block.key
+        if (block.ranges && block.ranges.length) {
+          const { text } = block
+          if (text === undefined && block.ranges) {
+            delete block.ranges
+            return
+          }
+          block.ranges.forEach((range, i) => {
+            const { offset, length } = range
+            if (offset < 0) range.offset = 0
+            if (offset + length > text.length) range.length = text.length - offset
+            if (!length) {
+              block.ranges.splice(i, 1)
+            }
+          })
+        }
       })
       return value
     }
@@ -546,6 +627,11 @@ function getBlockNodeByChildNode (node) {
 
 function getNodeById (id) {
   return document.querySelector(`[data-id="${id}"]`)
+}
+
+function getBlockById (blocks, id) {
+  if (!blocks || !blocks.length || !id) return null
+  return blocks.filter(item => item.id === id)[0] || null
 }
 
 function getSelectedBlocks (blocks, startId, endId) {

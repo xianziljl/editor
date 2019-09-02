@@ -13,13 +13,13 @@
       <div><span>inlineStyles: </span>{{selection.inlineStyles || 'null'}}</div>
       <div><span>offset: </span>{{selection.startOffset || 'null'}}, {{selection.endOffset || 'null'}}</div>
     </div> -->
-    <!-- <button @click="getValue">Get value</button> -->
+    <button @click="getValue">Get value</button>
   </div>
 </template>
 
 <script>
 // import JsonViewer from 'vue-json-viewer'
-import '@/components/editor/editor.scss'
+import '@/components/editor/style/index.scss'
 import testValue from './components/editor/value.json'
 import Editor from '@/components/editor/editor'
 
@@ -52,7 +52,7 @@ export default {
 </script>
 
 <style lang="scss">
-body{background: #fff;}
+body{background: #fff;margin: 0;}
   #app{margin: 60px auto;font-size: 16px;}
   .main{display: flex;}
   .editor-container, .json-container{

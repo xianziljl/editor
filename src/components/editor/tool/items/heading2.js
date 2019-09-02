@@ -4,8 +4,9 @@ export default {
   name: 'editor-tool-heading-2',
   mixins: [toolItemMixin],
   watch: {
-    '$editor.selection.blockStyle' (val) {
-      this.isActive = val && val === 'heading2'
+    '$editor.selection.blockStyle' (style) {
+      this.isActive = style && style === 'heading2'
+      this.isDisabled = style === 'image'
     }
   },
   methods: {

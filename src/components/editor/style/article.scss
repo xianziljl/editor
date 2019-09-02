@@ -1,0 +1,83 @@
+@import './vars';
+.editor{
+  &-text-view{outline: none;}
+  article{outline: none;white-space: pre-wrap;min-height: 100px;}
+  div, .editor-block{box-sizing: border-box;}
+  h1, h2, h3, h4, h5, h6, p, blockquote{font-weight: normal;margin: 0;min-height: #{$line-height}em;}
+  h1{font-size: 2em;}
+  h2{font-size: 1.7em;}
+  h3{font-size: 1.5em;}
+  h4{font-size: 1.3em;}
+  h5{font-size: 1.15em;}
+  h6{font-size: 1.05em;}
+  p, ul, ol{margin: 0;padding: 0;}
+  blockquote{margin: 0;padding-left: 1.8em;border-left: 5px solid rgba(0, 158, 100, 0.2);}
+  code{font-family: Monaco, Menlo, Consolas, Courier New, monospace;border-radius: 3px;padding: 0.1em 0.2em;
+    color: #616f7c;font-size: 0.86em;background: rgba(0, 128, 255, 0.05);border: 1px solid rgba(0, 0, 0, 0.08);}
+  hr{border: none;user-select: none;}
+  img{vertical-align: middle;}
+  figure{margin: 0;}
+
+  // inline
+  a{color: #03a87c;text-decoration: none;}
+  a:hover{text-decoration: underline;}
+  mark{background: rgba(12,242,143,.15);color: inherit;padding: 0.15em 0;}
+  strong{font-weight: 600;}
+  // [tabindex]{outline: none;}
+
+  .editor-list-blockcode{
+    box-sizing: border-box;display: block;padding: 0.5em 0;font-weight: 100;
+    .editor-list-item{position: relative;min-height: #{$line-height + 0.3}em; padding: 0.1em 1em 0.1em 3em;
+      &:before{content: attr(data-index);position: absolute;left: 1em;color: rgba(97, 111, 124, 0.3);
+      font-size: 0.8em;top: 0.3em;}}
+  }
+  &-block{
+    padding: 0.5em 20px;display: block;
+    &-image{padding-left: 15px;padding-right: 15px;}
+    &-divider{
+      margin: 1em 20px;padding: 1em 10%;
+      &:after{content: '';display: block;height: 1px;background: rgba(0, 0, 0, 0.15)}
+    }
+  }
+  &-list{
+    &-todolist, &-orderlist, &-unorderlist{
+      li{position: relative;padding: 0.22em 0;padding-left: 2.5em;list-style-type: none;min-height: #{$line-height}em;}
+    }
+    &-todolist{
+      .editor-checkbox{position: absolute;left: 0.8em;top: 0.5em;}
+      .editor-todo-content{min-height: #{$line-height}em;}
+    }
+    &-orderlist{
+      li:before{content: attr(data-index-num);position: absolute;left: 0.8em;}
+    }
+    &-unorderlist{
+      li:before{content: '';position: absolute;display: block;width: 0.43em;height: 0.43em;background: currentColor;border-radius: 50%;left: 0.9em;top: 0.7em;}
+    }
+    &-image{display: flex;padding-left: -0.3em;
+      figure{padding: 5px;overflow: hidden;transition: flex 0.4;}
+      img{width: 100%;height: auto;}
+      figcaption{
+        outline: none;position: relative;font-size: 0.95em;overflow: hidden;white-space: nowrap;
+        min-height: #{$line-height}em;margin-top: 0.2em;text-align: center;color: rgba($color, 0.6);
+        &:empty:before{
+          content: '写点说明文字';position: absolute;width: 100%;left: 0;
+          color: rgba($color, 0.3);pointer-events: none;
+        }
+      }
+    }
+  }
+  &-checkbox{
+    display: inline-flex;width: 0.9em;height: 0.9em;box-sizing: border-box;
+    border-radius: 0.15em;border: 0.1em solid rgba(41, 64, 97, 0.3);cursor: pointer;
+    position: relative;
+    &-checked{background: #4cbfa0;border-color: transparent;
+      &:after{
+        position: absolute;left: 0.05em;top: 0.14em;
+        content: '';display: block;width: 0.6em;height: 0.3em;box-sizing: border-box;
+        border: 0.1em solid #fff;border-width: 0 0 0.1em 0.1em;transform: rotate(-45deg);
+      }
+    }
+    input{margin: 0;display: none;}
+  }
+  .editor-todo-checked{color: rgba($color, 0.5);text-decoration: line-through;}
+}

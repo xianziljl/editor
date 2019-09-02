@@ -13,27 +13,27 @@ export default {
     }
   },
   render (h) {
-    const { readonly, value, width } = this
-    const { src, alt, text, ranges } = value
+    const { readonly, value } = this
+    const { src, alt, text, ranges, width, height } = value
     const img = h('img', {
-      attrs: { src, alt, width: '100%', draggable: readonly }
+      attrs: { src, alt, width, height, draggable: readonly }
     })
 
     const descClass = 'editor-block-image-desc'
-    const desc = h('div', { class: descClass }, renderText(h, this, text, ranges))
-
-    return h('div', {
-      class: 'editor-block-image',
-      attrs: readonly ? null : { tabindex: 1 },
-      style: { flex: width },
-      on: readonly ? null : {
-        focus: this.onFocus
+    const desc = h('figcaption', {
+      class: descClass,
+      attrs: { contenteditable: true },
+      on: {
+        focus: e => {
+          console.log('figcaption focus')
+          this.$editor.isChildFocus = false
+        }
       }
+    }, renderText(h, this, text, ranges))
+
+    return h('figure', {
+      attrs: { tabindex: readonly ? null : 1, contenteditable: false },
+      style: { flex: 100 / height * width }
     }, [img, desc])
-  },
-  methods: {
-    onFocus (e) {
-      console.log(e)
-    }
   }
 }

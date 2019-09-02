@@ -15,7 +15,7 @@ function renderBlocks (h, blocks) {
         'data-index-num': dataindex ? dataindex + '.' : null,
         'data-id': item.id
       },
-      class: ['editor-block', 'editor-block-' + type],
+      class: dataindex ? `editor-list-item` : ['editor-block', 'editor-block-' + type],
       key: item.id,
       on: {}
     })
@@ -28,9 +28,13 @@ function renderBlocks (h, blocks) {
     list.push(child)
     const next = blocks[i + 1]
     if (!next || next.type !== item.type) {
-      const listNode = h(listTypes[type], { class: 'editor-list' }, list)
+      const listNode = h(listTypes[type], {
+        class: ['editor-list', 'editor-list-' + type]
+      }, list)
       children.push(
-        h('div', { class: 'editor-block' }, [listNode])
+        h('div', {
+          class: ['editor-block', 'editor-block-' + type]
+        }, [listNode])
       )
       list = []
     }

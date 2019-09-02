@@ -1,15 +1,6 @@
-import Bold from './items/bold'
-import Italic from './items/italic'
-import Link from './items/link'
-import Code from './items/code'
-import Hilight from './items/hilight'
-import Strikethrough from './items/strikethrough'
-import Blockquote from './items/blockquote'
-import Unorderlist from './items/unorderlist'
-import Heading1 from './items/heading1'
-import Heading2 from './items/heading2'
-
-const items = [Bold, Italic, Strikethrough, Link, Code, Hilight, 'hr', Heading1, Heading2, Blockquote, Unorderlist]
+import toolMaps from './popup-tool-map'
+const { toolMap, toolItems } = toolMaps
+// console.log(toolMap, toolItems)
 
 export default {
   name: 'editor-tool-popup',
@@ -17,7 +8,9 @@ export default {
   data () {
     return {
       isShow: false,
-      position: {}
+      // focusBlockType: 'paragraph',
+      position: {},
+      items: []
     }
   },
   provide () {
@@ -26,43 +19,44 @@ export default {
     }
   },
   render (h) {
-    const { x, y, arrowX } = this.position
+    const { items, position } = this
+    const { x, y, arrowX } = position
+    // const { rangeRect } = this.$editor.selection
+    // console.log(x, y, arrowX)
     const children = items.map(item => {
-      return h(item)
+      return h(toolMap[item])
     })
     children.push(h('i', {
       class: 'editor-tool-popup-arrow',
       style: { left: arrowX + '%' }
     }))
     return h('div', {
-      class: [
-        'editor-tool-popup', '',
-        this.isShow ? 'editor-tool-popup-show' : ''
-      ],
-      style: {
-        left: x + 'px',
-        top: y + 'px'
-      },
+      class: ['editor-tool-popup', '', this.isShow ? 'editor-tool-popup-show' : ''],
+      style: { left: x + 'px', top: y + 'px' },
       on: { mousedown: this.onMousedown },
       key: 1
     }, children)
   },
   watch: {
     '$editor.selection.rangeRect' (val) {
-      if (val) this.position = this.getPosition()
-      this.$nextTick(() => {
-        this.isShow = !!val
-      })
+      this.isShow = !!val
+      this.$nextTick(this.getPosition)
+    },
+    '$editor.selection.blockStyle' (style) {
+      this.items = toolItems[style || 'paragraph']
+      // console.log('xx', style)
     }
   },
   methods: {
     getPosition () {
       const { rangeRect } = this.$editor.selection
-      if (!rangeRect || !this.$el) return { x: 0, y: 0 }
+      if (!rangeRect || !this.$el) {
+        this.position = { x: 0, y: 0, arrowX: 50 }
+        return
+      }
       const PADDING = 0
       const { clientWidth, clientHeight } = this.$el
       const innerWidth = this.$el.parentNode.clientWidth
-
       const { left, top, width } = rangeRect
       let x = ~~(left + (width - clientWidth) / 2)
       let y = ~~(top - clientHeight - 10)
@@ -70,7 +64,7 @@ export default {
       if (x < PADDING) x = PADDING
       if (x + clientWidth + PADDING > innerWidth) x = innerWidth - clientWidth - PADDING
       arrowX = (left - x + width / 2) / clientWidth * 100
-      return { x, y, arrowX }
+      this.position = { x, y, arrowX }
     },
     onMousedown (e) {
       this.$editor.isOperating = true

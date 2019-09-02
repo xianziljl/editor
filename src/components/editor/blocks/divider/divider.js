@@ -8,6 +8,6 @@ export default {
         tabindex: 0,
         contenteditable: false
       }
-    }, [h('div')])
+    })
   }
 }

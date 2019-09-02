@@ -4,8 +4,9 @@ export default {
   name: 'editor-tool-blockquote',
   mixins: [toolItemMixin],
   watch: {
-    '$editor.selection.blockStyle' (val) {
-      this.isActive = val === 'blockquote'
+    '$editor.selection.blockStyle' (style) {
+      this.isActive = style && style === 'blockquote'
+      this.isDisabled = style === 'image'
     }
   },
   methods: {
