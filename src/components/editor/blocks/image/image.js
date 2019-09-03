@@ -12,7 +12,13 @@ export default {
     const { readonly, value } = this
     const { src, alt, text, width, height } = value
     const img = h('img', {
-      attrs: { src, alt, width, height, draggable: readonly }
+      attrs: { src, alt, width, height, draggable: readonly },
+      on: {
+        load: e => {
+          value.width = e.target.width
+          value.height = e.target.height
+        }
+      }
     })
     const descClass = 'editor-block-desc'
     let desc

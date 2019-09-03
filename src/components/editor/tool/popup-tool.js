@@ -38,13 +38,16 @@ export default {
     }, children)
   },
   watch: {
+    '$editor.isSelecting' (isSelecting) {
+      this.isShow = !isSelecting && this.$editor.selection.rangeRect
+      if (this.isShow) this.$nextTick(this.getPosition)
+    },
     '$editor.selection.rangeRect' (val) {
-      this.isShow = !!val
-      this.$nextTick(this.getPosition)
+      this.isShow = !this.$editor.isSelecting && val
+      if (this.isShow) this.$nextTick(this.getPosition)
     },
     '$editor.selection.blockStyle' (style) {
       this.items = toolItems[style || 'paragraph']
-      // console.log('xx', style)
     }
   },
   methods: {

@@ -27,7 +27,7 @@ export default {
       files = Array.from(files)
       const { startBlock } = this.$editor.selection
       const rowId = startBlock && startBlock.type === 'image' ? startBlock.row : Math.random().toString(16).substr(2)
-      const image = files.map(item => {
+      const images = files.map(item => {
         const imgData = {
           type: 'image',
           key: createGUID(),
@@ -38,15 +38,9 @@ export default {
           height: 0,
           row: rowId
         }
-        const image = new Image()
-        image.src = imgData.src
-        image.onload = () => {
-          imgData.width = image.width
-          imgData.height = image.height
-        }
         return imgData
       })
-      console.log(image)
+      console.log(images)
       this.$editor.isOperating = false
     }
   }

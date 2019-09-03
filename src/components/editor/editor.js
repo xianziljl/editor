@@ -37,6 +37,7 @@ export default {
     return {
       isComposing: false,
       isOperating: false,
+      isSelecting: false,
       isFocus: false,
       key: 0, // 用于一些极端情况下更新整个 article 如跨行输入
 
@@ -93,6 +94,7 @@ export default {
     addListeners () {
       document.addEventListener('selectionchange', this.onSelectionchange)
       document.addEventListener('mousedown', this.onPageMousedown)
+      document.addEventListener('mouseup', this.onPageMouseup)
     },
     removeListeners () {
       document.removeEventListener('selectionchange', this.onSelectionchange)
@@ -106,6 +108,9 @@ export default {
       } else {
         this.isFocus = true
       }
+    },
+    onPageMouseup (e) {
+      this.isSelecting = false
     },
     onCompositionstart (e) {
       this.isComposing = true
@@ -201,9 +206,9 @@ export default {
       }
     },
     onKeydown (e) {
-      console.log('onkeydown')
+      // console.log('onkeydown')
       const code = e.keyCode
-      this.selection.rangeRect = null
+      // this.selection.rangeRect = null
       const ctrl = (e.ctrlKey || e.metaKey)
       // console.log(ctrl, code)
       switch (code) {
@@ -347,8 +352,10 @@ export default {
       this.setSelection(endBlock, endBlock, 0, 0)
     },
     onMousedown (e) {
-      // console.log('mousedown')
-      // this.selection.rangeRect = null
+      this.isSelecting = true
+      // const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      // if (startBlock === endBlock && startOffset === endOffset) this.isSelecting = true
+      // console.log(this.isSelecting)
     },
     onFocus (e) {
       this.isFocus = true
