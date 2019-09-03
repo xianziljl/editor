@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     onClick () {
-      this.$editor.toggleBlockStyle('heading', { level: 1 })
+      this.$editor.toggleBlockType('heading', { level: 1 })
       this.$editor.isOperating = false
     }
   }

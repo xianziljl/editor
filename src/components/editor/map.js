@@ -7,6 +7,7 @@ import Todoitem from './blocks/lists/todoitem'
 import Images from './blocks/image/images'
 import Image from './blocks/image/image'
 import Blockcode from './blocks/blockcode/blockcode'
+import Video from './blocks/video/video'
 // import Orderlist from './blocks/lists/orderlist'
 // import Unorderlist from './blocks/lists/unorderlist'
 // import Todolist from './blocks/lists/todolist'
@@ -31,7 +32,8 @@ const blockMap = {
   todolist: Todoitem,
   images: Images,
   image: Image,
-  blockcode: Blockcode
+  blockcode: Blockcode,
+  video: Video
 }
 
 const textBlockMap = {
@@ -41,8 +43,7 @@ const textBlockMap = {
   orderlist: Listitem,
   unorderlist: Listitem,
   todolist: Todoitem,
-  blockcode: Blockcode,
-  image: Image
+  blockcode: Blockcode
 }
 
 const listTypes = {

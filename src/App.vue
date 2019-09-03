@@ -2,7 +2,7 @@
   <div id="app">
     <div class="main">
       <div class="editor-container">
-        <editor readonly :value="testValue" ref="editor"></editor>
+        <editor :value="testValue" ref="editor"></editor>
       </div>
       <!-- <div class="json-container">
         <json-viewer :value="testValue" :expand-depth="5"></json-viewer>

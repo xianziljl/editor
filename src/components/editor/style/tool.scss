@@ -39,11 +39,12 @@
     &-strikethrough::after{content: 'strikethrough_s';padding-top: 2px;}
     &-code::after{content: 'code';}
     &-blockquote:after{content: 'format_quote';}
-    &-images:after{content: 'insert_photo';}
+    &-image:after{content: 'insert_photo';}
     &-divider:after{content: 'horizontal_split';}
     &-unorderlist:after{content: 'format_list_bulleted';}
     &-heading-1:after{content: 'H';font-family: $font-family;font-size: 18px;font-weight: bolder;}
     &-heading-2:after{content: 'H';font-family: $font-family;font-size: 14px;font-weight: bolder;}
+    &-delete:after{content: 'delete';}
     &--link{
       display: inline-flex;justify-content: center;align-items: center;
       pointer-events: auto;

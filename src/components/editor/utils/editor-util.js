@@ -3,6 +3,7 @@ import { textBlockMap } from '../map'
 import createGUID from '../utils/createGUID'
 
 export function isTextBlock (block) {
+  if (!block) return false
   return !!textBlockMap[block.type]
 }
 

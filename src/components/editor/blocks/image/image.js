@@ -1,11 +1,11 @@
+import blockMixin from '../block-mixin'
 export default {
   name: 'editor-block-image',
-  inject: ['$editor'],
-  props: {
-    readonly: Boolean,
-    value: {
-      type: Object,
-      default: () => ({})
+  mixins: [blockMixin],
+  computed: {
+    isSelected () {
+      const { blocks } = this.$editor.selection
+      return (blocks && blocks.includes(this.value))
     }
   },
   render (h) {
@@ -14,7 +14,7 @@ export default {
     const img = h('img', {
       attrs: { src, alt, width, height, draggable: readonly }
     })
-    const descClass = 'editor-list-image-desc'
+    const descClass = 'editor-block-desc'
     let desc
     if (readonly) {
       desc = h('figcaption', { class: descClass }, [text])
@@ -28,12 +28,14 @@ export default {
         },
         on: {
           input: e => { value.text = e.target.value },
-          paste: e => { e.stopPropagation() }
+          paste: e => { e.stopPropagation() },
+          selectionchange: e => { e.stopPropagation() }
         }
       })
     }
 
     return h('figure', {
+      class: this.isSelected ? 'editor-block-selected' : '',
       attrs: { tabindex: readonly ? null : 1, contenteditable: false },
       style: { flex: 100 / height * width }
     }, [img, desc])

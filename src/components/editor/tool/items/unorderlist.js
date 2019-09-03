@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     onClick () {
-      this.$editor.toggleBlockStyle('unorderlist')
+      this.$editor.toggleBlockType('unorderlist')
       this.$editor.isOperating = false
     }
   }

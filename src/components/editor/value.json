@@ -35,8 +35,7 @@
       "text": "This is an image",
       "width": 634,
       "height": 951,
-      "alt": "Test-image.jpg",
-      "ranges": []
+      "alt": "Test-image.jpg"
     },
     {
       "type": "image",
@@ -45,13 +44,19 @@
       "text": "This is an image",
       "width": 1500,
       "height": 1000,
-      "alt": "Test-image.jpg",
-      "ranges": []
+      "alt": "Test-image.jpg"
     },
     {
       "text": "Writing CSS this way can evoke a pretty visceral reaction from a lot of developers, so I'd like to explain how I got to this point and share some of the lessons and insights I've picked up along the way.",
       "ranges": [],
       "type": "paragraph"
+    },
+    {
+      "type": "video",
+      "src": "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4",
+      "name": "View From A Blue Moon Trailer",
+      "poster": "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg",
+      "text": "This a video"
     },
     {
       "text": "Phase 1: \"Semantic\" CSS",

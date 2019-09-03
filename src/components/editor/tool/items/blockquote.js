@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     onClick () {
-      this.$editor.toggleBlockStyle('blockquote')
+      this.$editor.toggleBlockType('blockquote')
       this.$editor.isOperating = false
     }
   }

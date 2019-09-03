@@ -17,6 +17,7 @@
   hr{border: none;user-select: none;}
   img{vertical-align: middle;}
   figure{margin: 0;}
+  video{width: 100%;outline: none;user-select: none;vertical-align: middle;}
 
   // inline
   a{color: #03a87c;text-decoration: none;}
@@ -24,7 +25,7 @@
   mark{background: rgba(12,242,143,.15);color: inherit;padding: 0.15em 0;}
   strong{font-weight: 600;}
   [tabindex]{outline: none;}
-  [tabindex]:focus{box-shadow: inset 0 0 0 2px rgba(0, 153, 255, 0.5);border-radius: 3px;}
+  // [tabindex]:focus{}
 
   .editor-list-blockcode{
     box-sizing: border-box;display: block;padding: 0.5em 0;font-weight: 100;
@@ -34,10 +35,16 @@
   }
   &-block{
     padding: 0.5em 20px;display: block;
+    &-selected{box-shadow: inset 0 0 0 2px rgba(0, 153, 255, 0.5);border-radius: 3px;}
     &-image{padding-left: 15px;padding-right: 15px;}
-    &-divider{
-      margin: 1em 20px;padding: 1em 10%;
+    &-video{padding: 5px;margin: 0.5em 15px;}
+    &-divider{ margin: 1em 20px;padding: 1em 10%;
       &:after{content: '';display: block;height: 1px;background: rgba(0, 0, 0, 0.15)}
+    }
+    &-desc{
+      outline: none;position: relative;font-size: 0.9em;overflow: hidden;white-space: nowrap;width: 100%;border: none;
+      min-height: #{$line-height}em;margin-top: 0.2em;text-align: center;color: rgba($color, 0.5);padding: 0;
+      &::-webkit-input-placeholder{color: rgba($color, 0.3);}
     }
   }
   &-list{
@@ -56,12 +63,7 @@
     }
     &-image{display: flex;padding-left: -0.3em;
       figure{padding: 5px;overflow: hidden;transition: flex 0.4;}
-      img{width: 100%;height: auto;}
-      &-desc{
-        outline: none;position: relative;font-size: 0.9em;overflow: hidden;white-space: nowrap;width: 100%;border: none;
-        min-height: #{$line-height}em;margin-top: 0.2em;text-align: center;color: rgba($color, 0.5);padding: 0;
-        &::-webkit-input-placeholder{color: rgba($color, 0.3);}
-      }
+      img{width: 100%;height: auto;user-select: none;}
     }
   }
   &-checkbox{

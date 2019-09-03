@@ -26,6 +26,7 @@ export default {
   name: 'editor',
   props: {
     readonly: Boolean,
+    // image
     value: {
       type: Object,
       default: () => ({})
@@ -81,6 +82,9 @@ export default {
       class: 'editor'
     }, [article, toolPopup])
   },
+  errorCaptured (err, vm, info) {
+    console.log(err, vm, info)
+  },
   mounted () {
     this.addListeners()
     this.$once('hook:beforeDestroy', this.removeListeners)
@@ -112,7 +116,7 @@ export default {
     },
     onInput (e) {
       if (this.isComposing || e.srcElement !== this.$refs.article) return
-      console.log('input') // input 比 selectionchange 先触发
+      // console.log('input') // input 比 selectionchange 先触发
       const { startBlock, endBlock, startOffset, endOffset } = this.selection
       if (startBlock === endBlock) {
         const oldLength = startBlock.text.length
@@ -134,8 +138,15 @@ export default {
           if (res) formated = true
         })
         startBlock.key++
-        const newOffset = formated ? 0 : range.offset + inputLength
-        this.setSelection(startBlock, startBlock, newOffset, newOffset)
+        if (isTextBlock(startBlock)) {
+          const newOffset = formated ? 0 : range.offset + inputLength
+          this.setSelection(startBlock, startBlock, newOffset, newOffset)
+        } else {
+          this.$nextTick(() => {
+            const node = getNodeById(startBlock.id)
+            node && node.focus()
+          })
+        }
         return
       }
       this.onInputCrossBlocks()
@@ -150,7 +161,7 @@ export default {
     onInputCrossBlocks () { // 跨行发生输入行为后对两端 block 处理，并删除中间 block
       const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
       blocks.forEach(item => {
-        if (item !== startBlock && item !== endBlock) this.removeBlock(item)
+        if (!isTextBlock(item) || (item !== startBlock && item !== endBlock)) this.removeBlock(item)
       })
       if (isTextBlock(startBlock)) {
         const range1 = { offset: startOffset, length: startBlock.text.length - startOffset }
@@ -232,41 +243,51 @@ export default {
     },
     onKeyBackspace (e) {
       const { startBlock, endBlock, startOffset, endOffset } = this.selection
+      if (!startBlock || !endBlock) return
       const vblocks = this.value.blocks
       if (startBlock === endBlock) {
-        if (endOffset === startOffset && startOffset === 0) {
-          e.preventDefault()
-          // console.log('xxx')
-          const type = startBlock.type
-          const node = getNodeById(startBlock.id)
-          // console.log(node.dataset.index)
-          // 在段落开始位置退格，合并到上一个 block 中 需要考虑 blockcode.index > 1 需要直接合并到上一个，并不清除样式
-          if (type === 'paragraph' || (type === 'blockcode' && node.dataset.index !== '1')) {
-            const prevBlock = vblocks[vblocks.indexOf(startBlock) - 1]
-            if (!prevBlock) return
-            if (!isTextBlock(prevBlock)) {
-              this.removeBlock(startBlock)
-              const prevBlockNode = getNodeById(prevBlock.id)
-              prevBlockNode.focus()
-              return
-            }
-            const offset = prevBlock.text.length
-            mergeBlocks(prevBlock, startBlock)
-            this.removeBlock(startBlock)
-            mergeRanges(prevBlock.ranges)
-            this.setSelection(prevBlock, prevBlock, offset, offset)
-          } else {
-            if (isTextBlock(startBlock)) {
-              // if (type === 'blockcode' && )
-              startBlock.type = 'paragraph'
-              this.setSelection(startBlock, startBlock, 0, 0)
-            } else {
-              const prev = vblocks[vblocks.indexOf(startBlock) - 1]
-              this.removeBlock(startBlock)
-              if (prev && prev.text) this.setSelection(prev, prev, prev.text.length, prev.text.length)
-            }
+        const type = startBlock.type
+        const node = getNodeById(startBlock.id)
+        const prevBlock = vblocks[vblocks.indexOf(startBlock) - 1]
+        const prevBlockNode = prevBlock ? getNodeById(prevBlock.id) : null
+
+        // 当 startBlock 为第一个时
+        if (!prevBlock) {
+          if (!isTextBlock(startBlock)) return
+          if (startOffset === 0 && endOffset === 0) {
+            e.preventDefault()
+            if (type === 'paragraph') return
+            this.clearBlockType()
+            this.setSelection(startBlock, startBlock, 0, 0)
+            return
           }
         }
+        // 正常退格
+        if (!(!startOffset && !endOffset)) return
+        e.preventDefault()
+        // 非文本元素上
+        if (!isTextBlock(startBlock)) {
+          this.removeBlock(startBlock)
+          isTextBlock(prevBlock)
+            ? this.setSelection(prevBlock, prevBlock, prevBlock.text.length, prevBlock.text.length)
+            : prevBlockNode.focus()
+          return
+        }
+        if (type === 'paragraph' || (type === 'blockcode' && node.dataset.index !== '1')) {
+          if (!isTextBlock(prevBlock)) {
+            if (!startBlock.text.length) this.removeBlock(startBlock)
+            prevBlockNode.focus()
+            return
+          }
+          const prevTextLen = prevBlock.text.length
+          mergeBlocks(prevBlock, startBlock)
+          mergeRanges(prevBlock.ranges)
+          this.removeBlock(startBlock)
+          this.setSelection(prevBlock, prevBlock, prevTextLen, prevTextLen)
+          return
+        }
+        this.clearBlockType()
+        this.setSelection(startBlock, startBlock, 0, 0)
         return
       }
       e.preventDefault()
@@ -305,13 +326,13 @@ export default {
         } else {
           // 对代码块特殊处理两个空行才跳出
           if (type !== 'blockcode') {
-            this.clearBlockStyle(startBlock)
+            this.clearBlockType(startBlock)
             this.setSelection(startBlock, startBlock, 0, 0)
           } else {
             const prev = this.value.blocks[this.value.blocks.indexOf(startBlock) - 1]
             if (!prev) return
             if (!prev.text.length) {
-              this.clearBlockStyle(startBlock)
+              this.clearBlockType(startBlock)
               this.setSelection(startBlock, startBlock, 0, 0)
             } else {
               newBlock.type = type
@@ -331,32 +352,39 @@ export default {
     },
     onFocus (e) {
       this.isFocus = true
+      // console.log(e)
       // console.log('focus')
-      const focusNode = e.target
+      let focusNode = e.target
+      if (focusNode.tagName === 'INPUT' || focusNode.tagName === 'TEXTAREA') return
       if (focusNode === this.$refs.article) {
         this.onSelectionchange()
         return
       }
-      if (!focusNode.dataset.id) return
+      const selection = getSelection()
+      if (selection) selection.removeAllRanges()
+      if (!focusNode.dataset.id) {
+        focusNode = getBlockNodeByChildNode(focusNode)
+      }
+      if (!focusNode) return
       // this.isChildFocus = true
       const block = getBlockById(this.value.blocks, focusNode.dataset.id)
-      // console.log('focus', block)
-      this.selection = {
-        startBlock: block,
-        endBlock: block,
-        startOffset: null,
-        endOffset: null,
-        rangeRect: getRangeRect(focusNode, this.$el),
-        blockStyle: block.type,
-        inlineStyles: null
-      }
-      // const selection = getSelection()
-      // console.log(_selection.getRangeAt(0))
-      // if (selection.type === 'Range') selection.removeAllRanges()
-      // console.log('sb', selection.blockStyle)
+
+      // 前面的 selection.removeAllRanges 会触发 selectionchange 这里延时等触发完成后再设置 this.selection
+      setTimeout(() => {
+        this.selection = {
+          blocks: [block],
+          startBlock: block,
+          endBlock: block,
+          startOffset: null,
+          endOffset: null,
+          rangeRect: getRangeRect(focusNode, this.$el),
+          blockStyle: block.type,
+          inlineStyles: null
+        }
+      }, 60)
     },
-    onSelectionchange (e) {
-      // console.log('selectionchange')
+    onSelectionchange (e = {}) {
+      // console.log('selectionchange', e.isTrusted)
       if (this.isComposing) return
       this.getSelection()
       this.getSelectedBlockStyle()
@@ -369,12 +397,13 @@ export default {
     getSelection () {
       if (this.isOperating) return
       // console.log('get selection')
-      const clearSelection = () => {
-        for (let key in this.selection) this.selection[key] = null
-      }
       const selection = getSelection()
+      if (selection.anchorNode === this.$refs.article) {
+        selection.removeAllRanges()
+        return
+      }
       if (selection.type === 'None') {
-        clearSelection()
+        this.clearSelection()
         return
       }
       const range = selection.getRangeAt(0)
@@ -389,7 +418,7 @@ export default {
       const startNode = getBlockNodeByChildNode(range.startContainer)
       const endNode = getBlockNodeByChildNode(range.endContainer)
       if (!startNode || !endNode) {
-        clearSelection()
+        this.clearSelection()
         return
       }
 
@@ -441,8 +470,9 @@ export default {
         this.selection.inlineStyles = null
         return
       }
+      // console.log(_blocks.length)
       if (_blocks.length === 1) {
-        this.selection.inlineStyles = getRangeStyles(startBlock.ranges, startOffset, endOffset)
+        this.selection.inlineStyles = getRangeStyles(_blocks[0].ranges, startOffset, endOffset)
         return
       }
       const stylesMap = {} // { bold: [1, 1, 1] } 判断每一项长度是否和选中的 blocks 长度相同
@@ -543,31 +573,36 @@ export default {
       }
       this.restoreSelection()
     },
-    setBlockStyle (style, attrs = {}) {
+    setBlockType (type, attrs = {}) {
+      // console.log(type, attrs)
       const { blocks } = this.selection
       blocks.forEach(item => {
         if (!isTextBlock(item)) return
-        item.type = style
+        this.$set(item, 'type', type)
         for (let key in attrs) this.$set(item, key, attrs[key])
       })
     },
-    clearBlockStyle (style) {
+    clearBlockType () {
       const { blocks } = this.selection
+      let attrs = ['type', 'id', 'key', 'text', 'ranges']
       blocks.forEach(item => {
         if (!isTextBlock(item)) return
-        item.type = 'paragraph'
+        for (let key in item) if (!attrs.includes(key)) delete item[key]
+        this.$set(item, 'type', 'paragraph')
+        this.$set(item, 'key', 0)
+        this.$set(item, 'text', item.text || '')
+        this.$set(item, 'ranges', item.ranges || [])
       })
     },
-    toggleBlockStyle (style, attrs = {}) {
+    toggleBlockType (type, attrs = {}) {
       const { blockStyle, startBlock } = this.selection
-      const { type } = startBlock
-      let isSame = style === blockStyle
+      let isSame = type === blockStyle
       // 对 heading 特殊处理
-      if (type === 'heading') isSame = blockStyle === style + attrs.level
+      if (startBlock.type === 'heading') isSame = blockStyle === type + attrs.level
       if (isSame) {
-        this.clearBlockStyle()
+        this.clearBlockType()
       } else {
-        this.setBlockStyle(style, attrs)
+        this.setBlockType(type, attrs)
       }
       this.restoreSelection()
     },
@@ -595,6 +630,9 @@ export default {
           console.warn('setRange failed: ' + err.message)
         }
       })
+    },
+    clearSelection () {
+      for (let key in this.selection) this.selection[key] = null
     },
     addBlockAt (index, block) {
       if (!block) return

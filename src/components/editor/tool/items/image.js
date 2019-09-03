@@ -1,7 +1,8 @@
 import createGUID from '../../utils/createGUID'
 
 export default {
-  name: 'editor-tool-images',
+  name: 'editor-tool-image',
+  inject: ['$editor'],
   render (h) {
     const input = h('input', {
       attrs: {
@@ -16,7 +17,7 @@ export default {
       }
     })
     return h('label', {
-      class: ['editor-tool-btn', 'editor-tool-images']
+      class: ['editor-tool-btn', 'editor-tool-image']
     }, [input])
   },
   methods: {
@@ -24,14 +25,18 @@ export default {
       let files = e.target.files
       if (!files.length) return
       files = Array.from(files)
-      const images = files.map(item => {
+      const { startBlock } = this.$editor.selection
+      const rowId = startBlock && startBlock.type === 'image' ? startBlock.row : Math.random().toString(16).substr(2)
+      const image = files.map(item => {
         const imgData = {
+          type: 'image',
+          key: createGUID(),
           src: URL.createObjectURL(item),
           alt: item.name,
           text: '',
           width: 0,
           height: 0,
-          ranges: []
+          row: rowId
         }
         const image = new Image()
         image.src = imgData.src
@@ -41,12 +46,8 @@ export default {
         }
         return imgData
       })
-      const imagesData = {
-        key: createGUID(),
-        type: 'images',
-        images
-      }
-      console.log(imagesData)
+      console.log(image)
+      this.$editor.isOperating = false
     }
   }
 }

@@ -5,7 +5,10 @@ export default {
   mixins: [toolItemMixin],
   methods: {
     onClick (e) {
-      console.log('toolclick: delete.')
+      const { startBlock } = this.$editor.selection
+      this.$editor.removeBlock(startBlock)
+      this.$editor.clearSelection()
+      this.$editor.isOperating = false
     }
   }
 }

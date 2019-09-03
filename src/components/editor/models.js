@@ -49,6 +49,6 @@ export default {
     src: '',
     alt: '',
     text: '',
-    ranges: []
+    float: null // left, right, null
   }
 }

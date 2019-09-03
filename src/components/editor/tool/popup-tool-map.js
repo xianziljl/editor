@@ -9,6 +9,7 @@ import Unorderlist from './items/unorderlist'
 import Heading1 from './items/heading1'
 import Heading2 from './items/heading2'
 import Delete from './items/delete'
+import Image from './items/image'
 
 const toolMap = {
   'bold': Bold,
@@ -22,7 +23,8 @@ const toolMap = {
   'heading1': Heading1,
   'heading2': Heading2,
   'delete': Delete,
-  'hr': 'hr'
+  'hr': 'hr',
+  'image': Image
 }
 
 const common = ['bold', 'italic', 'strikethrough', 'link', 'code', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist']
@@ -38,8 +40,9 @@ const toolItems = {
   todolist: common,
   blockcode: ['bolc', 'italic', 'strikethrough', 'link', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist'],
   imagetext: ['bolc', 'italic', 'strikethrough', 'link', 'hilight'],
-  image: ['bold'],
-  divider: ['bold']
+  image: ['image', 'hr', 'delete'],
+  divider: ['delete'],
+  video: ['delete']
 }
 
 export default { toolMap, toolItems }
