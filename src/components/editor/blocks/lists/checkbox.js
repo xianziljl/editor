@@ -2,13 +2,14 @@ export default {
   name: 'editor-checkbox',
   props: {
     checked: Boolean,
-    readonly: Boolean
+    disabled: Boolean
   },
   render (h) {
     return h('label', {
       class: [
         'editor-checkbox',
-        this.checked ? 'editor-checkbox-checked' : ''
+        this.checked ? 'editor-checkbox-checked' : '',
+        this.disabled ? 'editor-checkbox-disabled' : ''
       ],
       attrs: {
         'data-skip-check': 1,
@@ -23,7 +24,7 @@ export default {
           type: 'checkbox',
           'data-skip-check': 1,
           checked: this.checked,
-          disabled: this.readonly
+          disabled: this.disabled
         }
       })
     ])

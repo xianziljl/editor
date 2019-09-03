@@ -2,7 +2,7 @@
   <div id="app">
     <div class="main">
       <div class="editor-container">
-        <editor :value="testValue" ref="editor"></editor>
+        <editor readonly :value="testValue" ref="editor"></editor>
       </div>
       <!-- <div class="json-container">
         <json-viewer :value="testValue" :expand-depth="5"></json-viewer>
@@ -58,7 +58,7 @@ body{background: #fff;margin: 0;}
   .editor-container, .json-container{
     flex: 1;
   }
-  .editor{max-width: 800px;margin: 0 auto;}
+  .editor{max-width: 700px;margin: 0 auto;}
   .json-container {max-height: 800px;overflow-y: auto}
   .info-box{
     position: fixed;bottom: 0;left: 0;padding: 10px;

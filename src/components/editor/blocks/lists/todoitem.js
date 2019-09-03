@@ -12,7 +12,7 @@ export default {
       class: 'editor-todo-content'
     }, renderText(h, this, text, ranges))
     const checkbox = h(Checkbox, {
-      props: { readonly, checked },
+      props: { disabled: readonly, checked },
       on: {
         change: e => { value.checked = e }
       }

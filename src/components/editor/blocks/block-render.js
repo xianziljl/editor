@@ -1,7 +1,7 @@
 import { blockMap, listTypes } from '../map'
 // import BlockContainer from './block-container'
 
-function renderBlocks (h, blocks) {
+function renderBlocks (h, blocks, readonly) {
   let children = []
   let list = []
   blocks.forEach((item, i) => {
@@ -9,7 +9,7 @@ function renderBlocks (h, blocks) {
     const component = blockMap[type] || blockMap.paragraph
     const dataindex = listTypes[type] ? list.length + 1 : null
     const child = h(component, {
-      props: { value: item },
+      props: { value: item, readonly },
       attrs: {
         'data-index': dataindex,
         'data-index-num': dataindex ? dataindex + '.' : null,

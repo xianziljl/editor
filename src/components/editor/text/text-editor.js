@@ -5,6 +5,7 @@ export default {
   name: 'editor-text-editor',
   props: {
     tagName: String,
+    readonly: Boolean,
     value: {
       type: Object,
       default: () => ({})
