@@ -15,8 +15,8 @@ export default {
       attrs: { src, alt, width, height, draggable: readonly },
       on: {
         load: e => {
-          value.width = e.target.width
-          value.height = e.target.height
+          value.width = e.target.naturalWidth
+          value.height = e.target.naturalHeight
         }
       }
     })

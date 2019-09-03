@@ -71,6 +71,7 @@ export default {
         mousedown: this.onMousedown,
         compositionstart: this.onCompositionstart,
         compositionend: this.onCompositionend,
+        drop: this.onDrop,
         '!focus': this.onFocus
       },
       ref: 'article',
@@ -204,6 +205,9 @@ export default {
       if (arr.length === 1) {
 
       }
+    },
+    onDrop (e) {
+      e.preventDefault()
     },
     onKeydown (e) {
       // console.log('onkeydown')
@@ -353,6 +357,7 @@ export default {
     },
     onMousedown (e) {
       this.isSelecting = true
+      this.isOperating = false
       // const { startBlock, endBlock, startOffset, endOffset } = this.selection
       // if (startBlock === endBlock && startOffset === endOffset) this.isSelecting = true
       // console.log(this.isSelecting)

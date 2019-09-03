@@ -10,12 +10,23 @@ export default {
   },
   render (h) {
     const { readonly, value } = this
-    const { src, text, poster } = value
+    const { src, text, poster, width, height } = value
     const video = h('video', {
       attrs: {
         src,
         controls: true,
-        poster
+        poster,
+        width,
+        height
+      },
+      on: {
+        loadedmetadata: e => {
+          const v = e.target
+          if (v.readyState > 0) {
+            value.width = v.videoWidth
+            value.height = v.videoHeight
+          }
+        }
       }
     })
     const descClass = 'editor-block-desc'
