@@ -246,7 +246,7 @@ export default {
       const code = e.keyCode
       // this.selection.rangeRect = null
       const ctrl = (e.ctrlKey || e.metaKey)
-      console.log(ctrl, code)
+      // console.log(ctrl, code)
       switch (code) {
         case 8: // 退格
           this.onKeyBackspace(e)
@@ -423,6 +423,7 @@ export default {
       if (focusNode.tagName === 'INPUT' || focusNode.tagName === 'TEXTAREA') return
       if (focusNode === this.$refs.article) {
         this.onSelectionchange()
+        this.$refs.addTool.isOpen = false
         return
       }
       const selection = getSelection()

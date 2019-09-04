@@ -53,7 +53,13 @@
     },
     {
       "text": "Writing CSS this way can evoke a pretty visceral reaction from a lot of developers, so I'd like to explain how I got to this point and share some of the lessons and insights I've picked up along the way.",
-      "ranges": [],
+      "ranges": [
+        {
+          "style": "hilight",
+          "offset": 0,
+          "length": 1
+        }
+      ],
       "type": "paragraph"
     },
     {
@@ -427,7 +433,7 @@
       "text": "Block 工具条",
       "ranges": [],
       "type": "todolist",
-      "checked": false
+      "checked": true
     },
     {
       "text": "链接鼠标悬停显示和点击访问",
@@ -439,10 +445,16 @@
       "text": "Image 组件(开发中)",
       "ranges": [],
       "type": "todolist",
-      "checked": false
+      "checked": true
     },
     {
-      "text": "Video、Audio 组件",
+      "text": "Video组件",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
+      "text": "Audio 组件",
       "ranges": [],
       "type": "todolist",
       "checked": false

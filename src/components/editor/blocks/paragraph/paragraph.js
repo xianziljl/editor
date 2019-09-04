@@ -7,7 +7,10 @@ export default {
   mixins: [blockMixin],
   render (h) {
     let { text, ranges, key } = this.value
-    return h('div', { key }, [
+    return h('div', {
+      key,
+      class: text.length ? '' : 'editor-block-paragraph-empty'
+    }, [
       h('p', renderText(h, this, text, ranges))
     ])
   }

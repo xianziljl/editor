@@ -48,7 +48,7 @@ export default {
       else this.position = { x: 0, y: 0, arrowX: 50 }
     },
     '$editor.selection.blockStyle' (style) {
-      this.items = toolItems[style] || []
+      this.items = toolItems[style || 'paragraph']
     }
   },
   methods: {

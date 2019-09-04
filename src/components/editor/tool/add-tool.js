@@ -40,7 +40,10 @@ export default {
 
     const btns = items.map(item => h(toolMap[item]))
 
-    const btnsContainer = h('div', { class: 'editor-tool-add-btns' }, btns)
+    const btnsContainer = h('div', {
+      class: 'editor-tool-add-btns',
+      on: { mousedown: this.onMousedown }
+    }, btns)
 
     return h('div', {
       class: [
@@ -71,6 +74,9 @@ export default {
         y: rect.top + (nodeHeight - clientHeight) / 2
       }
       // console.log(this.position.x, this.position.y)
+    },
+    onMousedown (e) {
+      this.$editor.isOperating = true
     },
     onKeydown (e) {
       switch (e.keyCode) {
