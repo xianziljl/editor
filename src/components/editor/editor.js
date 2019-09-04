@@ -78,7 +78,9 @@ export default {
         compositionstart: this.onCompositionstart,
         compositionend: this.onCompositionend,
         drop: this.onDrop,
-        '!focus': this.onFocus
+        '!focus': this.onFocus,
+        '!mouseenter': this.onMouseenter,
+        '!mouseout': this.onMouseout
       },
       ref: 'article',
       key: this.key
@@ -448,6 +450,16 @@ export default {
           inlineStyles: null
         }
       }, 60)
+    },
+    onMouseenter (e) {
+      const el = e.target
+      if (el.tagName !== 'A') return
+      console.log(el.getAttribute('href'))
+    },
+    onMouseout (e) {
+      const el = e.target
+      if (el.tagName !== 'A') return
+      console.log(el.getAttribute('href'))
     },
     onSelectionchange (e = {}) {
       // console.log('selectionchange', e.isTrusted)

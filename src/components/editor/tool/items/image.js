@@ -3,13 +3,22 @@ import createGUID from '../../utils/createGUID'
 export default {
   name: 'editor-tool-image',
   inject: ['$editor', '$tool'],
+  data () {
+    return {
+      multiple: true
+    }
+  },
+  watch: {
+    '$editor.selection.startBlock' (block) {
+      this.multiple = !(block && block.type === 'image')
+    }
+  },
   render (h) {
-    const { startBlock } = this.$editor.selection
     const input = h('input', {
       attrs: {
         type: 'file',
         accept: 'image/jpg, image/jpeg, image/png, image/gif',
-        multiple: !(startBlock && startBlock.type === 'image')
+        multiple: this.multiple
       },
       style: {
         display: 'none'

@@ -82,6 +82,7 @@ export default {
       switch (e.keyCode) {
         case 27:
           this.isOpen = false
+          this.$editor.restoreSelection()
           break
         case 9:
           this.isOpen = true

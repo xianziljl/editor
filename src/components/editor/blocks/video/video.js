@@ -2,10 +2,14 @@ import blockMixin from '../block-mixin'
 export default {
   name: 'editor-block-video',
   mixins: [blockMixin],
-  computed: {
-    isSelected () {
-      const { blocks } = this.$editor.selection
-      return (blocks && blocks.includes(this.value))
+  data () {
+    return {
+      isSelected: false
+    }
+  },
+  watch: {
+    '$editor.selection.blocks' (blocks) {
+      this.isSelected = (blocks && blocks.includes(this.value))
     }
   },
   render (h) {

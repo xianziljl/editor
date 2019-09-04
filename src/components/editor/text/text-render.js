@@ -6,10 +6,6 @@ function createLinkNode (h, context, child) {
     attrs: {
       href: child._href,
       target: 'blank'
-    },
-    on: {
-      mouseenter: e => context.$emit('link-hover', e),
-      mouseleave: e => context.$emit('link-leave', e)
     }
   }, [child])
 }
