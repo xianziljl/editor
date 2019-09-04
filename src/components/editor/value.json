@@ -29,6 +29,11 @@
       ]
     },
     {
+      "type": "paragraph",
+      "text": "",
+      "ranges": []
+    },
+    {
       "type": "image",
       "src": "https://images.unsplash.com/photo-1567091318296-08346e7e99d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
       "row": "89ds02j0sk1",
@@ -401,6 +406,12 @@
       "checked": true
     },
     {
+      "text": "历史记录功能",
+      "ranges": [],
+      "type": "todolist",
+      "checked": true
+    },
+    {
       "text": "多行粘贴和跨行粘贴",
       "ranges": [],
       "type": "todolist",
@@ -455,10 +466,10 @@
       "checked": false
     },
     {
-      "text": "历史记录功能",
+      "text": "区块的拖动排序",
       "ranges": [],
       "type": "todolist",
-      "checked": true
+      "checked": false
     },
     {
       "text": "其它功能",

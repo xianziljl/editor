@@ -6,11 +6,15 @@ import Hilight from './items/hilight'
 import Strikethrough from './items/strikethrough'
 import Blockquote from './items/blockquote'
 import Unorderlist from './items/unorderlist'
+import Orderlist from './items/orderlist'
+import Todolist from './items/todolist'
 import Heading1 from './items/heading1'
 import Heading2 from './items/heading2'
 import Delete from './items/delete'
 import Image from './items/image'
 import Video from './items/video'
+import Divider from './items/divider'
+import Blockcode from './items/blockcode'
 
 const toolMap = {
   'bold': Bold,
@@ -20,13 +24,17 @@ const toolMap = {
   'hilight': Hilight,
   'strikethrough': Strikethrough,
   'blockquote': Blockquote,
+  'orderlist': Orderlist,
   'unorderlist': Unorderlist,
+  'todolist': Todolist,
   'heading1': Heading1,
   'heading2': Heading2,
   'delete': Delete,
   'hr': 'hr',
   'image': Image,
-  'video': Video
+  'video': Video,
+  'divider': Divider,
+  'blockcode': Blockcode
 }
 
 const common = ['bold', 'italic', 'strikethrough', 'link', 'code', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist']

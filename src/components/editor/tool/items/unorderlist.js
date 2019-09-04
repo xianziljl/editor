@@ -6,7 +6,6 @@ export default {
   watch: {
     '$editor.selection.blockStyle' (style) {
       this.isActive = style && style === 'unorderlist'
-      this.isDisabled = style === 'image'
     }
   },
   methods: {

@@ -2,7 +2,7 @@ import createGUID from '../../utils/createGUID'
 
 export default {
   name: 'editor-tool-video',
-  inject: ['$editor'],
+  inject: ['$editor', '$tool'],
   render (h) {
     const input = h('input', {
       attrs: {
@@ -24,22 +24,30 @@ export default {
     onChange (e) {
       let files = e.target.files
       if (!files.length) return
-      files = Array.from(files)
-      const video = files.map(item => {
-        const videoData = {
-          type: 'video',
-          key: createGUID(),
-          src: URL.createObjectURL(item),
-          poster: '',
-          name: item.name,
-          text: '',
-          width: 0,
-          height: 0
-        }
-        return videoData
-      })
-      console.log(video)
+      const { startBlock } = this.$editor.selection
+      if (!startBlock) return
+      const isChangeVideo = startBlock.type === 'image'
+      const file = Array.from(files)[0]
+      const video = {
+        type: 'video',
+        id: isChangeVideo ? startBlock.id : createGUID(),
+        key: 0,
+        src: URL.createObjectURL(file),
+        poster: '',
+        name: file.name,
+        text: '',
+        width: 0,
+        height: 0
+      }
+      if (isChangeVideo) {
+        for (let key in video) startBlock[key] = video[key]
+      } else {
+        let index = this.$editor.value.blocks.indexOf(startBlock)
+        this.$editor.removeBlock(startBlock)
+        this.$editor.addBlockAt(index, video)
+      }
       this.$editor.isOperating = false
+      this.$tool.isShow = false
     }
   }
 }

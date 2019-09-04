@@ -1,10 +1,10 @@
 @import './vars';
 .editor{
   &-tool{
-    &-popup, &-block{
-      pointer-events: none;
+    &-popup{
+      position: absolute;left: 0;top: 0;pointer-events: none;
       user-select: none;padding: 0 5px;min-width: 40px;min-height: 40px;
-      position: absolute;display: flex;align-items: center;//border: 1px solid rgba(0, 0, 0, 0.2);
+      display: flex;align-items: center;//border: 1px solid rgba(0, 0, 0, 0.2);
       background: #233036;border-radius: 5px;transform-origin: bottom;
       transform: translateY(10px) scale(0.95);transition: transform .1s ease, opacity .1s;
       visibility: hidden;opacity: 0;box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
@@ -21,9 +21,9 @@
     &-btn{
       display: inline-flex;justify-content: center;align-items: center;width: 32px;height: 40px;
       border: none;background: transparent;padding: 0;margin: 0;font-size: 20px;color: #cfecf1;
-      outline: none;cursor: pointer;pointer-events: auto;
+      outline: none;cursor: pointer;pointer-events: auto;box-sizing: border-box;
       font-family: 'Editor Icons';font-weight: normal;font-style: normal;
-      line-height: 1;letter-spacing: normal;text-transform: none;
+      line-height: 1;letter-spacing: normal;text-transform: none;transition: color .2s;
       white-space: nowrap;word-wrap: normal;direction: ltr;-webkit-font-feature-settings: 'liga';
       -webkit-font-smoothing: antialiased;user-select: none;
       &-on{color: #00ffbb;}
@@ -37,16 +37,17 @@
     &-link::after{content: 'insert_link';}
     &-hilight::after{content: 'highlight';padding-bottom: 2px;}
     &-strikethrough::after{content: 'strikethrough_s';padding-top: 2px;}
-    &-code::after{content: 'code';}
+    &-code::after, &-blockcode:after{content: 'code';}
     &-blockquote:after{content: 'format_quote';}
     &-image:after{content: 'insert_photo';}
     &-video:after{content: 'movie';}
     &-divider:after{content: 'horizontal_split';}
+    &-orderlist:after{content: 'format_list_numbered';}
     &-unorderlist:after{content: 'format_list_bulleted';}
+    &-todolist:after{content: 'check_box';}
     &-heading-1:after{content: 'H';font-family: $font-family;font-size: 18px;font-weight: bolder;}
     &-heading-2:after{content: 'H';font-family: $font-family;font-size: 14px;font-weight: bolder;}
     &-delete:after{content: 'delete';}
-    &-divider:after{content: 'horizontal_split';}
     &-chart:after{content: 'insert_chart';}
     &--link{
       display: inline-flex;justify-content: center;align-items: center;
@@ -55,6 +56,29 @@
         border: none;margin: 0;background: #233036;padding: 0 15px;color: #fff;
         font-size: 14px;outline: none;border-radius: 4px;box-sizing: border-box;}
       input::-webkit-input-placeholder{color: rgba(255,255,255,0.3)}
+    }
+
+    &-add{
+      position: absolute;left: 0;top: 0;pointer-events: none;min-height: 40px;min-width: 40px;
+      visibility: hidden;//box-shadow: 0 0 0 1px #eee;
+      hr{margin: 0 5px;padding: 0;height: 20px;width: 1px;background: rgba(71, 95, 100, 0.2);}
+      .editor-tool-btn{color: #2a434e;
+        &:hover{background: transparent;color: #009b72;}
+      }
+      &-btn{position: absolute;left: -35px;top: 5px;width: 30px;height: 30px;border-radius: 20px;
+        border: 1px solid rgba(0, 46, 73, 0.1);pointer-events: auto;transition: transform .2s;
+        &:after{content: 'add'}
+      }
+      &-btns{height: 40px;display: flex;align-items: center;justify-content: center;opacity: 0;
+        transform: translateX(-5px);transition: opacity .2s, transform .2s;
+        .editor-tool-btn{pointer-events: none;}
+      }
+      &-show{visibility: visible;}
+      &-open{
+        .editor-tool-add-btns{transform: translateX(0);opacity: 1;}
+        .editor-tool-add-btn{transform: rotate(45deg);}
+        .editor-tool-btn{pointer-events: auto;}
+      }
     }
   }
 }

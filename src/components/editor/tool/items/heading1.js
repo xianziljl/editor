@@ -6,7 +6,6 @@ export default {
   watch: {
     '$editor.selection.blockStyle' (style) {
       this.isActive = style && style === 'heading1'
-      this.isDisabled = style === 'image'
     }
   },
   methods: {

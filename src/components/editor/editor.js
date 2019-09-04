@@ -1,4 +1,5 @@
 import ToolPopup from './tool/popup-tool'
+import ToolAdd from './tool/add-tool'
 import renderBlocks from './blocks/block-render'
 import formatValue from './utils/formatValue'
 import createGUID from './utils/createGUID'
@@ -33,7 +34,7 @@ export default {
     }
   },
   data () {
-    formatValue(this.value)
+    formatValue(this, this.value)
     return {
       isComposing: false,
       isOperating: false,
@@ -65,7 +66,7 @@ export default {
   },
   render (h) {
     const { value, readonly } = this
-    let article, toolPopup
+    let article, toolPopup, addTool
 
     article = h('article', {
       attrs: { contenteditable: !readonly },
@@ -83,11 +84,14 @@ export default {
       key: this.key
     }, renderBlocks(h, value.blocks, readonly))
 
-    if (!readonly) toolPopup = h(ToolPopup, { ref: 'popupTool' })
+    if (!readonly) {
+      toolPopup = h(ToolPopup, { ref: 'popupTool' })
+      addTool = h(ToolAdd, { ref: 'addTool' })
+    }
 
     return h('div', {
       class: 'editor'
-    }, [article, toolPopup])
+    }, [article, toolPopup, addTool])
   },
   errorCaptured (err, vm, info) {
     console.log(err, vm, info)
@@ -542,8 +546,10 @@ export default {
     },
     addInlineStyle (style, attrs = {}) {
       const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
+      if (!blocks || !blocks.length) return
 
       if (startBlock === endBlock) {
+        if (startOffset === endOffset) return
         if (startBlock.type === 'blockcode' && style === 'code') return // 代码块不能再应用行内代码样式
         const newRange = { style, offset: startOffset, length: endOffset - startOffset }
         for (let key in attrs) this.$set(newRange, key, attrs[key])
@@ -577,6 +583,7 @@ export default {
     },
     removeInlineStyle (style) {
       const { startBlock, endBlock, blocks, startOffset, endOffset } = this.selection
+      if (!blocks || !blocks.length) return
 
       function handleItem (item, start, end) {
         const ranges = item.ranges
@@ -596,6 +603,7 @@ export default {
       }
 
       if (startBlock === endBlock) {
+        if (startOffset === endOffset) return
         handleItem(startBlock, startOffset, endOffset)
         return
       }
@@ -612,6 +620,7 @@ export default {
     },
     toggleInlineStyle (style, attrs = {}) {
       const { inlineStyles } = this.selection
+      if (!inlineStyles) return
       if (!inlineStyles[style]) {
         this.addInlineStyle(style, attrs)
       } else {
@@ -625,6 +634,7 @@ export default {
       blocks.forEach(item => {
         if (!isTextBlock(item)) return
         this.$set(item, 'type', type)
+        if (type === 'todolist') this.$set(item, 'checked', false)
         for (let key in attrs) this.$set(item, key, attrs[key])
       })
     },
@@ -720,12 +730,10 @@ export default {
       const historyItem = {
         value: JSON.stringify(this.value)
       }
-      // this.$nextTick(() => {
       historyItem.selection = JSON.stringify(this.selection)
       list.push(historyItem)
       if (list.length > 20) list.shift()
       this.history.index = list.length - 1 || 0
-      // })
     },
     historyBack () {
       const { list } = this.history
