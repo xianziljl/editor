@@ -1,14 +1,13 @@
 import createGUID from '../../utils/createGUID'
 
 export default {
-  name: 'editor-tool-image',
+  name: 'editor-tool-video',
   inject: ['$editor'],
   render (h) {
     const input = h('input', {
       attrs: {
         type: 'file',
-        accept: 'image/jpg, image/jpeg, image/png, image/gif',
-        multiple: 'multiple'
+        accept: 'video/mp4'
       },
       style: {
         display: 'none'
@@ -18,7 +17,7 @@ export default {
       }
     })
     return h('label', {
-      class: ['editor-tool-btn', 'editor-tool-image']
+      class: ['editor-tool-btn', 'editor-tool-video']
     }, [input])
   },
   methods: {
@@ -26,22 +25,20 @@ export default {
       let files = e.target.files
       if (!files.length) return
       files = Array.from(files)
-      const { startBlock } = this.$editor.selection
-      const rowId = startBlock && startBlock.type === 'image' ? startBlock.row : Math.random().toString(16).substr(2)
-      const images = files.map(item => {
-        const imgData = {
-          type: 'image',
+      const video = files.map(item => {
+        const videoData = {
+          type: 'video',
           key: createGUID(),
           src: URL.createObjectURL(item),
-          alt: item.name,
+          poster: '',
+          name: item.name,
           text: '',
           width: 0,
-          height: 0,
-          row: rowId
+          height: 0
         }
-        return imgData
+        return videoData
       })
-      console.log(images)
+      console.log(video)
       this.$editor.isOperating = false
     }
   }

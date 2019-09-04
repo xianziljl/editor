@@ -11,10 +11,7 @@ export default {
   render (h) {
     return h('hr', this.readonly ? {} : {
       class: this.isSelected ? 'editor-block-selected' : '',
-      attrs: {
-        tabindex: 0,
-        contenteditable: false
-      }
+      attrs: { tabindex: 0 }
     })
   }
 }

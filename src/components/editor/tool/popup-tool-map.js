@@ -10,6 +10,7 @@ import Heading1 from './items/heading1'
 import Heading2 from './items/heading2'
 import Delete from './items/delete'
 import Image from './items/image'
+import Video from './items/video'
 
 const toolMap = {
   'bold': Bold,
@@ -24,7 +25,8 @@ const toolMap = {
   'heading2': Heading2,
   'delete': Delete,
   'hr': 'hr',
-  'image': Image
+  'image': Image,
+  'video': Video
 }
 
 const common = ['bold', 'italic', 'strikethrough', 'link', 'code', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist']
@@ -42,7 +44,7 @@ const toolItems = {
   imagetext: ['bolc', 'italic', 'strikethrough', 'link', 'hilight'],
   image: ['image', 'hr', 'delete'],
   divider: ['delete'],
-  video: ['delete']
+  video: ['video', 'hr', 'delete']
 }
 
 export default { toolMap, toolItems }

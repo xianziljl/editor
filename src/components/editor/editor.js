@@ -2,7 +2,7 @@ import ToolPopup from './tool/popup-tool'
 import renderBlocks from './blocks/block-render'
 import formatValue from './utils/formatValue'
 import createGUID from './utils/createGUID'
-// import debounce from 'debounce'
+import debounce from 'debounce'
 import { listTypes } from './map'
 import formatters from './formatters'
 import {
@@ -38,6 +38,7 @@ export default {
       isComposing: false,
       isOperating: false,
       isSelecting: false,
+      isHistoryBacking: false,
       isFocus: false,
       key: 0, // 用于一些极端情况下更新整个 article 如跨行输入
 
@@ -50,6 +51,10 @@ export default {
         blocks: null, // 被选中的 block value
         blockStyle: null, // 被选中的 block 部分所应用的样式
         inlineStyles: null // 被选中的部分所应用的 inline 样式
+      },
+      history: {
+        index: 0,
+        list: [] // [{ selection, value }, ...]
       }
     }
   },
@@ -91,6 +96,24 @@ export default {
     this.addListeners()
     this.$once('hook:beforeDestroy', this.removeListeners)
   },
+  watch: {
+    value: {
+      handler: debounce(function (val) {
+        if (this.isHistoryBacking) {
+          this.isHistoryBacking = false
+          return
+        }
+        this.historyForward()
+      }, 300),
+      deep: true
+    },
+    selection (val) {
+      if (!this.history.list.length) {
+        this.historyForward()
+        console.log('history add')
+      }
+    }
+  },
   methods: {
     addListeners () {
       document.addEventListener('selectionchange', this.onSelectionchange)
@@ -122,6 +145,7 @@ export default {
     },
     onInput (e) {
       if (this.isComposing || e.srcElement !== this.$refs.article) return
+      if (this.isHistoryBacking) return
       // console.log('input') // input 比 selectionchange 先触发
       const { startBlock, endBlock, startOffset, endOffset } = this.selection
       if (startBlock === endBlock) {
@@ -210,6 +234,10 @@ export default {
       e.preventDefault()
     },
     onKeydown (e) {
+      if (!this.isFocus) {
+        e.preventDefault()
+        return
+      }
       // console.log('onkeydown')
       const code = e.keyCode
       // this.selection.rangeRect = null
@@ -245,7 +273,7 @@ export default {
             // this.exe('underline')
             break
           case 90: // ctrl+Z
-            // this.historyBack()
+            this.historyBack()
             break
         }
       }
@@ -410,6 +438,7 @@ export default {
       if (this.isOperating) return
       // console.log('get selection')
       const selection = getSelection()
+      // console.log(selection)
       if (selection.anchorNode === this.$refs.article) {
         selection.removeAllRanges()
         return
@@ -428,10 +457,15 @@ export default {
       }
 
       const startNode = getBlockNodeByChildNode(range.startContainer)
-      const endNode = getBlockNodeByChildNode(range.endContainer)
-      if (!startNode || !endNode) {
+      let endNode = getBlockNodeByChildNode(range.endContainer)
+      // console.log(startNode, endNode)
+      if (!startNode) {
         this.clearSelection()
         return
+      }
+      if (!endNode) {
+        if (this.selection.endBlock) endNode = getNodeById(this.selection.endBlock.id)
+        else return this.clearSelection()
       }
 
       const startId = startNode.dataset.id
@@ -624,16 +658,16 @@ export default {
     },
     setSelection (startBlock, endBlock, startOffset, endOffset) {
       this.$nextTick(() => {
-        const startNode = getNodeById(startBlock.id)
-        const endNode = getNodeById(endBlock.id)
-        const start = getFocusNodeAndOffset(startNode, startOffset)
-        const end = (startBlock === endBlock && startOffset === endOffset)
-          ? start
-          : getFocusNodeAndOffset(endNode, endOffset)
-        // console.log(start, end)
-        const selection = getSelection()
-        const range = document.createRange()
         try {
+          const startNode = getNodeById(startBlock.id)
+          const endNode = getNodeById(endBlock.id)
+          const start = getFocusNodeAndOffset(startNode, startOffset)
+          const end = (startBlock === endBlock && startOffset === endOffset)
+            ? start
+            : getFocusNodeAndOffset(endNode, endOffset)
+          // console.log(start, end)
+          const selection = getSelection()
+          const range = document.createRange()
           range.setStart(start.focusNode, start.focusOffset)
           range.setEnd(end.focusNode, end.focusOffset)
           selection.removeAllRanges()
@@ -680,6 +714,30 @@ export default {
         }
       })
       return value
+    },
+    historyForward () {
+      const { list } = this.history
+      const historyItem = {
+        value: JSON.stringify(this.value)
+      }
+      // this.$nextTick(() => {
+      historyItem.selection = JSON.stringify(this.selection)
+      list.push(historyItem)
+      if (list.length > 20) list.shift()
+      this.history.index = list.length - 1 || 0
+      // })
+    },
+    historyBack () {
+      const { list } = this.history
+      if (list.length < 2) return
+      this.isHistoryBacking = true
+      list.pop()
+      const historyItem = list[list.length - 1]
+      // const prevItem = list[list.length - 2]
+      this.value.blocks = JSON.parse(historyItem.value).blocks
+      this.selection = JSON.parse(historyItem.selection)
+      // if (prevItem) this.selection = JSON.parse(prevItem.selection)
+      this.restoreSelection()
     }
   }
 }
