@@ -48,7 +48,10 @@ export default {
         isShow ? 'editor-tool-add-show' : '',
         isOpen ? 'editor-tool-add-open' : ''
       ],
-      style: { left: x + 'px', top: y + 'px' }
+      style: { left: x + 'px', top: y + 'px' },
+      on: {
+        keydown: this.onKeydown
+      }
     }, [addBtn, btnsContainer])
   },
   methods: {
@@ -68,6 +71,16 @@ export default {
         y: rect.top + (nodeHeight - clientHeight) / 2
       }
       // console.log(this.position.x, this.position.y)
+    },
+    onKeydown (e) {
+      switch (e.keyCode) {
+        case 27:
+          this.isOpen = false
+          break
+        case 9:
+          this.isOpen = true
+          break
+      }
     }
   }
 }

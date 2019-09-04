@@ -64,6 +64,7 @@
       hr{margin: 0 5px;padding: 0;height: 20px;width: 1px;background: rgba(71, 95, 100, 0.2);}
       .editor-tool-btn{color: #2a434e;
         &:hover{background: transparent;color: #009b72;}
+        &:focus{background: rgba(0, 0, 0, 0.06);}
       }
       &-btn{position: absolute;left: -35px;top: 5px;width: 30px;height: 30px;border-radius: 20px;
         border: 1px solid rgba(0, 46, 73, 0.1);pointer-events: auto;transition: transform .2s;

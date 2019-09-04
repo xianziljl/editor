@@ -45,9 +45,10 @@ export default {
     '$editor.selection.rangeRect' (val) {
       this.isShow = !this.$editor.isSelecting && val
       if (this.isShow) this.$nextTick(this.getPosition)
+      else this.position = { x: 0, y: 0, arrowX: 50 }
     },
     '$editor.selection.blockStyle' (style) {
-      this.items = toolItems[style || 'paragraph']
+      this.items = toolItems[style] || []
     }
   },
   methods: {

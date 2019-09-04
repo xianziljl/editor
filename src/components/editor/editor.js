@@ -246,10 +246,16 @@ export default {
       const code = e.keyCode
       // this.selection.rangeRect = null
       const ctrl = (e.ctrlKey || e.metaKey)
-      // console.log(ctrl, code)
+      console.log(ctrl, code)
       switch (code) {
         case 8: // 退格
           this.onKeyBackspace(e)
+          break
+        case 9:
+          this.onKeyTab(e)
+          break
+        case 27:
+          this.onKeyEsc(e)
           break
         case 13: // 回车
           this.onKeyEnter(e)
@@ -386,6 +392,21 @@ export default {
       }
       this.onInputCrossBlocks()
       this.setSelection(endBlock, endBlock, 0, 0)
+    },
+    onKeyTab (e) {
+      const { addTool } = this.$refs
+      if (addTool.isShow) {
+        e.preventDefault()
+        addTool.isOpen = true
+        addTool.$el.querySelector('button').focus()
+      }
+    },
+    onKeyEsc (e) {
+      const { addTool } = this.$refs
+      if (addTool.isShow) {
+        e.preventDefault()
+        addTool.isOpen = false
+      }
     },
     onMousedown (e) {
       this.isSelecting = true

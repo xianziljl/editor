@@ -19,7 +19,8 @@ export default {
       }
     })
     return h('label', {
-      class: ['editor-tool-btn', 'editor-tool-image']
+      class: ['editor-tool-btn', 'editor-tool-image'],
+      attrs: { tabindex: 0 }
     }, [input])
   },
   methods: {
