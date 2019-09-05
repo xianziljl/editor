@@ -39,7 +39,8 @@ export default {
         on: {
           input: e => { value.text = e.target.value },
           paste: e => { e.stopPropagation() },
-          selectionchange: e => { e.stopPropagation() }
+          selectionchange: e => { e.stopPropagation() },
+          keydown: e => { e.stopPropagation() }
         }
       })
     }

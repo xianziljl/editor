@@ -453,6 +453,7 @@ export default {
     },
     onSelectionchange (e = {}) {
       // console.log('selectionchange', e.isTrusted)
+      if (this.readonly) return
       if (this.isComposing) return
       this.getSelection()
       this.getSelectedBlockStyle()

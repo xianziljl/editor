@@ -2,7 +2,7 @@
   <div id="app">
     <div class="main">
       <div class="editor-container">
-        <editor :value="testValue" ref="editor"></editor>
+        <editor :readonly="readonly" :value="testValue" ref="editor"></editor>
       </div>
       <!-- <div class="json-container">
         <json-viewer :value="testValue" :expand-depth="5"></json-viewer>
@@ -14,6 +14,7 @@
       <div><span>offset: </span>{{selection.startOffset || 'null'}}, {{selection.endOffset || 'null'}}</div>
     </div> -->
     <button @click="getValue">Get value</button>
+    <button @click="readonly = !readonly">readonly: {{readonly}}</button>
   </div>
 </template>
 
