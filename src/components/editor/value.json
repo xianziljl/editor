@@ -439,7 +439,7 @@
       "text": "链接鼠标悬停显示和点击访问",
       "ranges": [],
       "type": "todolist",
-      "checked": false
+      "checked": true
     },
     {
       "text": "Image 组件(开发中)",

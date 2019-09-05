@@ -10,7 +10,8 @@ export default {
       target: null,
       x: 0,
       y: 0,
-      arrowX: 50
+      arrowX: 50,
+      timer: null
     }
   },
   render (h) {
@@ -31,10 +32,10 @@ export default {
     addListeners () {
       const editorEl = this.$el.parentNode
       editorEl.addEventListener('mouseenter', this.onMouseenter, true)
-      editorEl.addEventListener('mouseout', this.onMouseout, true)
+      editorEl.addEventListener('mouseleave', this.onMouseleave, true)
       this.$once('hook:beforeDestroy', () => {
         editorEl.removeEventListener('mouseenter', this.onMouseenter, true)
-        editorEl.removeEventListener('mouseout', this.onMouseout, true)
+        editorEl.removeEventListener('mouseleave', this.onMouseleave, true)
       })
     },
     onMouseenter (e) {
@@ -42,7 +43,7 @@ export default {
       if (!el.dataset.tip || this.isEnter) return
       this.target = el
       this.isEnter = true
-      setTimeout(() => {
+      this.timer = setTimeout(() => {
         if (this.isEnter) {
           this.content = this.target.dataset.tip
           this.isShow = true
@@ -50,9 +51,10 @@ export default {
         }
       }, 500)
     },
-    onMouseout (e) {
+    onMouseleave (e) {
       const el = e.target
       if (!el.dataset.tip) return
+      clearTimeout(this.timer)
       this.isEnter = false
       this.content = ''
       this.isShow = false
