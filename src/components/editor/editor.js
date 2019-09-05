@@ -71,6 +71,10 @@ export default {
 
     article = h('article', {
       attrs: { contenteditable: !readonly },
+      class: [
+        'editor-article',
+        readonly ? 'editor-article-readonly' : ''
+      ],
       on: readonly ? null : {
         input: this.onInput,
         paste: this.onPaste,
