@@ -7,6 +7,11 @@ function createLinkNode (h, context, child) {
       href: child._href,
       target: 'blank',
       'data-tip': child._href
+    },
+    on: context.readonly ? null : {
+      click: e => {
+        if (e.ctrlKey || e.metaKey) window.open(child._href)
+      }
     }
   }, [child])
 }
