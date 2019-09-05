@@ -33,6 +33,7 @@ export default {
     const { x, y } = position
     const addBtn = h('button', {
       class: ['editor-tool-btn', 'editor-tool-add-btn'],
+      attrs: { 'data-tip': 'Add: ⟶| tab' },
       on: {
         click: e => { this.isOpen = !this.isOpen }
       }

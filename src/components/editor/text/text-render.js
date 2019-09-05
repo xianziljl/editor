@@ -5,7 +5,8 @@ function createLinkNode (h, context, child) {
   return h('a', {
     attrs: {
       href: child._href,
-      target: 'blank'
+      target: 'blank',
+      'data-tip': child._href
     }
   }, [child])
 }

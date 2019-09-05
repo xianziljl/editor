@@ -1,5 +1,6 @@
 import ToolPopup from './tool/popup-tool'
 import ToolAdd from './tool/add-tool'
+import ToolTip from './tool/tool-tip'
 import renderBlocks from './blocks/block-render'
 import formatValue from './utils/formatValue'
 import createGUID from './utils/createGUID'
@@ -66,7 +67,7 @@ export default {
   },
   render (h) {
     const { value, readonly } = this
-    let article, toolPopup, addTool
+    let article, toolPopup, addTool, toolTip
 
     article = h('article', {
       attrs: { contenteditable: !readonly },
@@ -78,9 +79,7 @@ export default {
         compositionstart: this.onCompositionstart,
         compositionend: this.onCompositionend,
         drop: this.onDrop,
-        '!focus': this.onFocus,
-        '!mouseenter': this.onMouseenter,
-        '!mouseout': this.onMouseout
+        '!focus': this.onFocus
       },
       ref: 'article',
       key: this.key
@@ -90,10 +89,11 @@ export default {
       toolPopup = h(ToolPopup, { ref: 'popupTool' })
       addTool = h(ToolAdd, { ref: 'addTool' })
     }
+    toolTip = h(ToolTip, { ref: 'tip' })
 
     return h('div', {
       class: 'editor'
-    }, [article, toolPopup, addTool])
+    }, [article, toolPopup, addTool, toolTip])
   },
   errorCaptured (err, vm, info) {
     console.log(err, vm, info)
@@ -450,16 +450,6 @@ export default {
           inlineStyles: null
         }
       }, 60)
-    },
-    onMouseenter (e) {
-      const el = e.target
-      if (el.tagName !== 'A') return
-      console.log(el.getAttribute('href'))
-    },
-    onMouseout (e) {
-      const el = e.target
-      if (el.tagName !== 'A') return
-      console.log(el.getAttribute('href'))
     },
     onSelectionchange (e = {}) {
       // console.log('selectionchange', e.isTrusted)
