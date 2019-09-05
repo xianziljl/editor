@@ -15,6 +15,15 @@
     </div> -->
     <button @click="getValue">Get value</button>
     <button @click="readonly = !readonly">readonly: {{readonly}}</button>
+    <table style="margin: 50px;">
+      <tr>
+        <td>1111111</td>
+        <td style="border:none;"></td>
+        <td>2333333</td>
+        <td></td>
+        <td>3444444</td>
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -66,4 +75,6 @@ body{background: #fff;margin: 0;}
     font-size: 14px;
     span{color: #888}
   }
+  table{border-collapse: collapse;}
+  td{border: 1px solid #ddd;padding: 0;}
 </style>

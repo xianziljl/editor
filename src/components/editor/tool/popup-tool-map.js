@@ -15,6 +15,7 @@ import Image from './items/image'
 import Video from './items/video'
 import Divider from './items/divider'
 import Blockcode from './items/blockcode'
+import Table from './items/table'
 
 const toolMap = {
   'bold': Bold,
@@ -34,7 +35,8 @@ const toolMap = {
   'image': Image,
   'video': Video,
   'divider': Divider,
-  'blockcode': Blockcode
+  'blockcode': Blockcode,
+  'table': Table
 }
 
 const common = ['bold', 'italic', 'strikethrough', 'link', 'code', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist']
@@ -52,7 +54,8 @@ const toolItems = {
   imagetext: ['bolc', 'italic', 'strikethrough', 'link', 'hilight'],
   image: ['image', 'hr', 'delete'],
   divider: ['delete'],
-  video: ['video', 'hr', 'delete']
+  video: ['video', 'hr', 'delete'],
+  table: ['delete']
 }
 
 export default { toolMap, toolItems }

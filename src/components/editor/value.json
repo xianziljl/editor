@@ -29,9 +29,12 @@
       ]
     },
     {
-      "type": "paragraph",
-      "text": "",
-      "ranges": []
+      "type": "table",
+      "rows": [
+        ["Name", "Email", "Age"],
+        ["Jhon", "jhon@gmail.com", "28"],
+        ["", "", ""]
+      ]
     },
     {
       "type": "image",

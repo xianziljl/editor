@@ -3,7 +3,7 @@ import toolMaps from './popup-tool-map'
 const { toolMap } = toolMaps
 
 const items = ['heading1', 'heading2', 'blockquote', 'unorderlist', 'orderlist', 'todolist', 'hr',
-  'image', 'video', 'divider', 'blockcode']
+  'image', 'video', 'table', 'blockcode', 'divider']
 
 export default {
   name: 'editor-tool-add',

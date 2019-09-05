@@ -8,6 +8,7 @@ import Images from './blocks/image/images'
 import Image from './blocks/image/image'
 import Blockcode from './blocks/blockcode/blockcode'
 import Video from './blocks/video/video'
+import Table from './blocks/table/table'
 // import Orderlist from './blocks/lists/orderlist'
 // import Unorderlist from './blocks/lists/unorderlist'
 // import Todolist from './blocks/lists/todolist'
@@ -33,7 +34,8 @@ const blockMap = {
   images: Images,
   image: Image,
   blockcode: Blockcode,
-  video: Video
+  video: Video,
+  table: Table
 }
 
 const textBlockMap = {

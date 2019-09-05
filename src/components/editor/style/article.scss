@@ -18,6 +18,7 @@
   img{vertical-align: middle;}
   figure{margin: 0;}
   video{width: 100%;height: auto;outline: none;user-select: none;vertical-align: middle;}
+  table{border-collapse: collapse;}
 
   // inline
   a{color: #03a87c;text-decoration: none;}
@@ -37,6 +38,8 @@
   }
   &-article-readonly{
     .editor-block-video:after{content: none;}
+    .editor-block-table .td{visibility: visible;}
+    .editor-block-table-container{padding: 0;}
   }
   &-block{
     margin: 0.5em 0;display: block;padding: 5px;
@@ -55,6 +58,32 @@
       outline: none;position: relative;font-size: 0.9em;overflow: hidden;white-space: nowrap;width: 100%;border: none;
       min-height: #{$line-height}em;margin-top: 0.2em;text-align: center;color: rgba($color, 0.5);padding: 0;
       &::-webkit-input-placeholder{color: rgba($color, 0.3);}
+    }
+    &-table{
+      &-container{padding-top: 15px;}
+      table{width: 100%;border: 1px solid rgba(0, 0, 0, 0.15);}
+      tr.editor-table-row-hover{border-top: 2px solid #03a87c;}
+      td{padding: 2px 5px;border: 1px solid rgba(0, 0, 0, 0.15);position: relative;
+        vertical-align: top;box-sizing: border-box;border-right-width: 0;}
+      td.editor-table-col-hover{border-left-color: #03a87c;box-shadow: -1px 0 0 #03a87c;}//
+      textarea{margin: 0;padding: 2px 5px;font-size: 1em;width: 100%;color: rgba($color, 0.8);
+      resize: none;line-height: $line-height;vertical-align: top;border: none;outline: none;background: transparent;
+      box-sizing: border-box;position: absolute;left: 0;top: 0;width: 100%;height: 100%;word-break: break-word;
+      visibility: visible;font-family: $font-family;overflow: hidden;}
+      .td{min-height: #{$line-height}em;visibility: hidden;}
+      .editor-table-addbtn{
+        @include icon-font;user-select: none;
+        display: flex;align-items: center;justify-content: center;
+        position: absolute;visibility: visible;background: transparent;border: none;padding: 0;margin: 0;
+        width: 18px;height: 18px;border-radius: 9px;left: -25px;top: -10px;outline: none;
+        &:before{content: '';display: block;width: 4px;height: 4px;background: rgba(0, 0, 0, 0.2);border-radius: 3px;}
+        &:after{content: 'add';display: none;color: #fff;font-size: 14px;}
+        &:hover{background: #03a87c;
+          &:before{display: none;}
+          &:after{display: inherit;}
+        }
+        &-col{left: -10px;top: -25px;}
+      }
     }
   }
   &-list{
