@@ -19,7 +19,7 @@ function createLinkNode (h, context, child) {
 /**
  * 渲染 inline 文字样式
  * @param {function} h vue createElement 方法
- * @param {function} createTextNode vue._v 方法,用以创建纯文本节点
+ * @param {function} context 组件实例
  * @param {string} text 文字内容
  * @param {array} ranges 样式范围
  * @returns {array} vnodes
