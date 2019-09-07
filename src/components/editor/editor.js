@@ -120,7 +120,6 @@ export default {
     selection (val) {
       if (!this.history.list.length) {
         this.historyForward()
-        console.log('history add')
       }
     }
   },
@@ -423,8 +422,9 @@ export default {
     },
     onFocus (e) {
       this.isFocus = true
+      if (this.isOperating) return
       // console.log(e)
-      // console.log('focus')
+      console.log('focus')
       let focusNode = e.target
       if (focusNode.tagName === 'INPUT' || focusNode.tagName === 'TEXTAREA') return
       if (focusNode === this.$refs.article) {
@@ -755,18 +755,20 @@ export default {
       return value
     },
     historyForward () {
+      console.log('history forward')
       const { list } = this.history
       const historyItem = {
         value: JSON.stringify(this.value)
       }
       historyItem.selection = JSON.stringify(this.selection)
       list.push(historyItem)
-      if (list.length > 20) list.shift()
+      if (list.length > 40) list.shift()
       this.history.index = list.length - 1 || 0
     },
     historyBack () {
       const { list } = this.history
       if (list.length < 2) return
+      console.log('history back')
       this.isHistoryBacking = true
       list.pop()
       const historyItem = list[list.length - 1]

@@ -39,6 +39,7 @@ export default {
   },
   methods: {
     onClick (e) {
+      // console.log(this.$editor.isOperating)
       const { inlineStyles } = this.$editor.selection
       if (inlineStyles.link) {
         this.$editor.toggleInlineStyle('link')
