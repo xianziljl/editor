@@ -1,8 +1,11 @@
 {
   "blocks": [
     {
-      "type": "heading",
-      "level": 1,
+      "type": "paragraph",
+      "text": "尝试编辑这篇文章",
+      "ranges": []
+    },
+    {
       "text": "CSS Utility Classes and \"Separation of Concerns\"",
       "ranges": [
         {
@@ -10,7 +13,9 @@
           "offset": 25,
           "length": 22
         }
-      ]
+      ],
+      "type": "heading",
+      "level": 1
     },
     {
       "type": "blockquote",
@@ -29,39 +34,6 @@
       ]
     },
     {
-      "type": "attach",
-      "name": "3WEKJXC9SD6A5VC8FG5A0A7D6DA9Z.png",
-      "url": "https://images.unsplash.com/photo-1565551828813-9e8455aab496?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80",
-      "size": 174859,
-      "ext": "png"
-    },
-    {
-      "type": "table",
-      "rows": [
-        ["Name", "Email", "Age"],
-        ["Jhon", "jhon@gmail.com", "28"],
-        ["", "", ""]
-      ]
-    },
-    {
-      "type": "image",
-      "src": "https://images.unsplash.com/photo-1567091318296-08346e7e99d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
-      "row": "89ds02j0sk1",
-      "text": "This is an image",
-      "width": 634,
-      "height": 951,
-      "alt": "Test-image.jpg"
-    },
-    {
-      "type": "image",
-      "src": "https://images.unsplash.com/photo-1565551828813-9e8455aab496?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80",
-      "row": "89ds02j0sk1",
-      "text": "",
-      "width": 1500,
-      "height": 1000,
-      "alt": "Test-image.jpg"
-    },
-    {
       "text": "Writing CSS this way can evoke a pretty visceral reaction from a lot of developers, so I'd like to explain how I got to this point and share some of the lessons and insights I've picked up along the way.",
       "ranges": [
         {
@@ -77,7 +49,7 @@
       "src": "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4",
       "name": "View From A Blue Moon Trailer",
       "poster": "https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg",
-      "text": "This a video",
+      "text": "",
       "width": 1024,
       "height": 576
     },
@@ -176,9 +148,54 @@
       "type": "divider"
     },
     {
+      "type": "image",
+      "src": "https://images.unsplash.com/photo-1567091318296-08346e7e99d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
+      "row": "89ds02j0sk1",
+      "text": "This is an image",
+      "width": 634,
+      "height": 951,
+      "alt": "Test-image.jpg"
+    },
+    {
+      "type": "image",
+      "src": "https://images.unsplash.com/photo-1565551828813-9e8455aab496?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80",
+      "row": "89ds02j0sk1",
+      "text": "",
+      "width": 1500,
+      "height": 1000,
+      "alt": "Test-image.jpg"
+    },
+    {
       "text": "The quintessential example of this approach has always been CSS Zen Garden; a site designed to show that if you \"separate your concerns\", you can completely redesign a site just by swapping out the stylesheet.",
       "ranges": [],
       "type": "paragraph"
+    },
+    {
+      "type": "attach",
+      "name": "3WEKJXC9SD6A5VC8FG5A0A7D6DA9Z.png",
+      "url": "https://images.unsplash.com/photo-1565551828813-9e8455aab496?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80",
+      "size": 174859,
+      "ext": "png"
+    },
+    {
+      "type": "table",
+      "rows": [
+        [
+          "Name",
+          "Email",
+          "Age"
+        ],
+        [
+          "Jhon",
+          "jhon@gmail.com",
+          "28"
+        ],
+        [
+          "",
+          "",
+          ""
+        ]
+      ]
     },
     {
       "text": "My workflow looked something like this:",
