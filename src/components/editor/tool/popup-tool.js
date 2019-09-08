@@ -23,7 +23,7 @@ export default {
     const { x, y, arrowX } = position
     // const { rangeRect } = this.$editor.selection
     // console.log(x, y, arrowX)
-    const children = items.map(item => {
+    const children = (items || []).map(item => {
       return h(toolMap[item])
     })
     children.push(h('i', {

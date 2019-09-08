@@ -16,6 +16,7 @@ import Video from './items/video'
 import Divider from './items/divider'
 import Blockcode from './items/blockcode'
 import Table from './items/table'
+import Attach from './items/attach'
 
 const toolMap = {
   'bold': Bold,
@@ -36,7 +37,8 @@ const toolMap = {
   'video': Video,
   'divider': Divider,
   'blockcode': Blockcode,
-  'table': Table
+  'table': Table,
+  'attach': Attach
 }
 
 const common = ['bold', 'italic', 'strikethrough', 'link', 'code', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist']
@@ -50,12 +52,13 @@ const toolItems = {
   orderlist: common,
   unorderlist: common,
   todolist: common,
-  blockcode: ['bolc', 'italic', 'strikethrough', 'link', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist'],
-  imagetext: ['bolc', 'italic', 'strikethrough', 'link', 'hilight'],
+  blockcode: ['bold', 'italic', 'strikethrough', 'link', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist'],
+  // imagetext: ['bold', 'italic', 'strikethrough', 'link', 'hilight'],
   image: ['image', 'hr', 'delete'],
   divider: ['delete'],
   video: ['video', 'hr', 'delete'],
-  table: ['delete']
+  table: ['delete'],
+  attach: ['delete']
 }
 
 export default { toolMap, toolItems }

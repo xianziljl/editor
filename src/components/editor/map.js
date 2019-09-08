@@ -9,6 +9,7 @@ import Image from './blocks/image/image'
 import Blockcode from './blocks/blockcode/blockcode'
 import Video from './blocks/video/video'
 import Table from './blocks/table/table'
+import Attach from './blocks/attach/attach'
 // import Orderlist from './blocks/lists/orderlist'
 // import Unorderlist from './blocks/lists/unorderlist'
 // import Todolist from './blocks/lists/todolist'
@@ -35,7 +36,8 @@ const blockMap = {
   image: Image,
   blockcode: Blockcode,
   video: Video,
-  table: Table
+  table: Table,
+  attach: Attach
 }
 
 const textBlockMap = {

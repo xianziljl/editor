@@ -13,7 +13,7 @@
   p, ul, ol{margin: 0;padding: 0;}
   blockquote{margin: 0;padding-left: 1.8em;border-left: 5px solid rgba(0, 158, 100, 0.2);}
   code{font-family: Monaco, Menlo, Consolas, Courier New, monospace, Microsoft Yahei;border-radius: 3px;padding: 0.1em 0.2em;
-    color: #616f7c;font-size: 0.86em;background: rgba(0, 128, 255, 0.05);border: 1px solid rgba(0, 0, 0, 0.08);}
+    color: #616f7c;font-size: 0.86em;background: rgba(0, 128, 255, 0.05);border: 1px solid rgba(0, 0, 0, 0.1);}
   hr{border: none;user-select: none;}
   img{vertical-align: middle;}
   figure{margin: 0;}
@@ -21,8 +21,9 @@
   table{border-collapse: collapse;}
 
   // inline
-  a{color: #03a87c;text-decoration: none;}
-  a:hover{text-decoration: underline;}
+  a{text-decoration: none;color: inherit;}
+  a.link{color: #03a87c;}
+  a.link:hover{text-decoration: underline;}
   mark{background: rgba(12,242,143,.15);color: inherit;padding: 0.15em 0;}
   strong{font-weight: 600;}
   [tabindex]{outline: none;}
@@ -66,9 +67,9 @@
       tr.editor-table-row-hover{border-top: 2px solid #03a87c;}
       td{padding: 2px 5px;border: 1px solid #cbd6db;position: relative;min-width: 20px;
         vertical-align: top;box-sizing: border-box;border-right-width: 0;
-        &.editor-table-td-selected{background: rgba(0, 153, 255, 0.3);border-color: rgba(0, 153, 255, 0.6);
-          // .editor-table-selrowbtn, .editor-table-selcolbtn{background: rgba(0, 153, 255, 0.8);}
-        }
+        &.editor-table-row-selected, &.editor-table-col-selected{background: rgba(0, 153, 255, 0.3);border-color: rgba(0, 153, 255, 0.6);}
+        &.editor-table-row-selected .editor-table-selrowbtn{background: rgba(0, 128, 255, 0.5);box-shadow: 0 1px 0 0 rgba(0, 128, 255, 0.7)}
+        &.editor-table-col-selected .editor-table-selcolbtn{background: rgba(0, 128, 255, 0.5);box-shadow: 1px 0 0 0 rgba(0, 128, 255, 0.7)}
       }
       td.editor-table-col-hover{border-left-color: #03a87c;box-shadow: -1px 0 0 #03a87c;}//
       textarea{margin: 0;padding: 2px 5px;font-size: 1em;width: 100%;color: rgba($color, 0.8);
@@ -89,14 +90,14 @@
         }
         &-col{left: -10px;top: -25px;}
       }
-      &-addrowbtn, &-addcolbtn{display:none;background: rgba(0, 59, 87, 0.05);z-index: 2;
-        &:hover{background: rgba(0, 59, 87, 0.1);}
+      &-addrowbtn, &-addcolbtn{display:none;background: rgba(0, 38, 87, 0.05);z-index: 2;
+        &:hover{background: rgba(0, 38, 87, 0.1);}
       }
       &-addrowbtn{height: 15px;border-radius: 0 0 0 4px;border-right: 1px solid rgba($color, 0.1);}
       &-addcolbtn{position: absolute;width: 15px;height: 100%;left: 100%;top: 0;border-radius: 0 4px 4px 0;}
-      .editor-table-selrowbtn, .editor-table-selcolbtn{position: absolute;background: rgba(0, 59, 87, 0.05);display: none;
+      .editor-table-selrowbtn, .editor-table-selcolbtn{position: absolute;background: rgba(0, 38, 87, 0.05);display: none;
         margin: 0;padding: 0;border: none;outline: none;
-        &:hover{background: rgba(0, 59, 87, 0.1);}
+        &:hover{background: rgba(0, 38, 87, 0.1);}
       }
       .editor-table-selrowbtn{width: 10px;height: 100%;left: -10px;top: 0;box-shadow: 0 1px 0 0 rgba($color, 0.2)}
       .editor-table-selcolbtn{width: 100%;height: 10px;left: 0;top: -10px;box-shadow: 1px 0 0 0 rgba($color, 0.2)}
@@ -109,6 +110,10 @@
           &:after{content: 'add'}
         }
       }
+    }
+    &-attach{
+      user-select: none;
+      .editor-progressbar{margin-top: 5px;}
     }
   }
   &-list{
@@ -145,4 +150,21 @@
     input{margin: 0;display: none;}
   }
   .editor-todo-checked{color: rgba($color, 0.5);text-decoration: line-through;}
+  &-attach{
+    &-container{display: flex;padding: 10px;background: rgba(0, 128, 255, 0.05);border-radius: 3px;
+      border: 1px solid rgba(0, 0, 0, 0.1);align-items: center;}
+    &-content{flex: 1;overflow: hidden;}
+    &-name{overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+    &-size{font-size: 0.9em;color: rgba($color, 0.5);}
+    &-icon{width: 55px;height: 55px;background: #9bddcb;margin-right: 15px;display: flex;align-items: center;justify-content: center;
+      @include icon-font;font-size: 30px;color: #fff;
+      &:after{content: 'attach_file';}
+    }
+    &-download{display:flex;border: none;background: transparent;width: 40px;height: 40px;outline: none;margin-left: 10px;
+      @include icon-font;font-size: 20px;align-items: center;justify-content: center;
+      &:after{content: 'download'}
+    }
+  }
+  &-progressbar{height: 5px;background: rgba(0, 0, 0, 0.1);}
+  &-progress{height: 100%;background: #4cbfa0;}
 }

@@ -4,6 +4,7 @@ import { spanMap } from '../map'
 function createLinkNode (h, context, child) {
   return h('a', {
     attrs: {
+      class: 'link',
       href: child._href,
       target: 'blank',
       'data-tip': child._href

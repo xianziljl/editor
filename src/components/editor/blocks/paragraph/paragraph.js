@@ -9,7 +9,7 @@ export default {
     let { text, ranges, key } = this.value
     return h('div', {
       key,
-      class: text.length ? '' : 'editor-block-paragraph-empty'
+      class: text && text.length ? '' : 'editor-block-paragraph-empty'
     }, [
       h('p', renderText(h, this, text, ranges))
     ])

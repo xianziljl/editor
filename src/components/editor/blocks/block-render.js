@@ -6,7 +6,7 @@ function renderBlocks (h, blocks, readonly) {
   let list = []
   blocks.forEach((item, i) => {
     const type = item.type || 'paragraph'
-    const component = blockMap[type] || blockMap.paragraph
+    const component = blockMap[type]
     const dataindex = listTypes[type] ? list.length + 1 : null
     const child = h(component, {
       props: { value: item, readonly },

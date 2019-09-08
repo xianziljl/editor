@@ -38,7 +38,8 @@ export default {
             attrs: { rows: '1' },
             on: {
               input: e => { this.onInput(i, j, e) },
-              focus: this.onTextareaFocus
+              focus: this.onTextareaFocus,
+              paste: this.onPaste
             },
             key: value.key
           }, [text])
@@ -79,7 +80,8 @@ export default {
         return h('td', {
           class: {
             'editor-table-col-hover': this.hover.col === j,
-            'editor-table-td-selected': selection.rows.includes(i) || selection.cols.includes(j)
+            'editor-table-row-selected': selection.rows.includes(i),
+            'editor-table-col-selected': selection.cols.includes(j)
           }
         }, [
           h('div', { class: 'td' }, [text, textarea]), selRowHandler, addRowBtn, selColHandler, addColBtn
@@ -160,9 +162,13 @@ export default {
           ranges: []
         }
         this.$editor.addBlockAt(index + 1, newBlock)
+        this.isFocus = false
         this.$editor.isOperating = false
         this.$editor.setSelection(newBlock, newBlock, 0, 0)
       }
+    },
+    onPaste (e) {
+      e.stopPropagation()
     },
     onDoucumentMousedown (e) {
       if (this.readonly) return

@@ -37,6 +37,7 @@ export default {
       let files = e.target.files
       if (!files.length) return
       files = Array.from(files)
+      console.log(files)
       const { startBlock } = this.$editor.selection
       if (!startBlock) return
       const isChangeImage = startBlock.type === 'image'

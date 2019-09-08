@@ -55,6 +55,7 @@
     &-delete:after{content: 'delete';}
     &-table:after{content: 'table_chart';}
     &-chart:after{content: 'insert_chart';}
+    &-attach:after{content: 'attach_file';}
     &--link{
       display: inline-flex;justify-content: center;align-items: center;
       pointer-events: auto;
