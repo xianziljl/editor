@@ -479,13 +479,13 @@
       "text": "Table 组件",
       "ranges": [],
       "type": "todolist",
-      "checked": false
+      "checked": true
     },
     {
       "text": "Attach 组件",
       "ranges": [],
       "type": "todolist",
-      "checked": false
+      "checked": true
     },
     {
       "text": "区块的拖动排序",
