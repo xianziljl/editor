@@ -416,6 +416,7 @@ export default {
     onMousedown (e) {
       this.isSelecting = true
       this.isOperating = false
+      // console.log(e.target)
       // const { startBlock, endBlock, startOffset, endOffset } = this.selection
       // if (startBlock === endBlock && startOffset === endOffset) this.isSelecting = true
       // console.log(this.isSelecting)
@@ -424,7 +425,7 @@ export default {
       this.isFocus = true
       if (this.isOperating) return
       // console.log(e)
-      console.log('focus')
+      // console.log('focus')
       let focusNode = e.target
       if (focusNode.tagName === 'INPUT' || focusNode.tagName === 'TEXTAREA') return
       if (focusNode === this.$refs.article) {
@@ -755,7 +756,7 @@ export default {
       return value
     },
     historyForward () {
-      console.log('history forward')
+      // console.log('history forward')
       const { list } = this.history
       const historyItem = {
         value: JSON.stringify(this.value)
@@ -764,6 +765,7 @@ export default {
       list.push(historyItem)
       if (list.length > 40) list.shift()
       this.history.index = list.length - 1 || 0
+      this.$emit('change')
     },
     historyBack () {
       const { list } = this.history
@@ -777,6 +779,7 @@ export default {
       this.selection = JSON.parse(historyItem.selection)
       // if (prevItem) this.selection = JSON.parse(prevItem.selection)
       this.restoreSelection()
+      this.$emit('change')
     }
   }
 }

@@ -41,7 +41,7 @@ const toolMap = {
   'attach': Attach
 }
 
-const common = ['bold', 'italic', 'strikethrough', 'link', 'code', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist']
+const common = ['bold', 'italic', 'strikethrough', 'link', 'code', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist', 'todolist']
 const toolItems = {
   paragraph: common,
   heading1: common,
@@ -52,7 +52,7 @@ const toolItems = {
   orderlist: common,
   unorderlist: common,
   todolist: common,
-  blockcode: ['bold', 'italic', 'strikethrough', 'link', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist'],
+  blockcode: ['bold', 'italic', 'strikethrough', 'link', 'hilight', 'hr', 'heading1', 'heading2', 'blockquote', 'unorderlist', 'todolist'],
   // imagetext: ['bold', 'italic', 'strikethrough', 'link', 'hilight'],
   image: ['image', 'hr', 'delete'],
   divider: ['delete'],

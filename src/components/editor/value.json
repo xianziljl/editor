@@ -454,7 +454,7 @@
       "text": "标题导航功能",
       "ranges": [],
       "type": "todolist",
-      "checked": false
+      "checked": true
     },
     {
       "text": "Block 工具条",
